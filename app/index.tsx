@@ -1,9 +1,11 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
 
 export default function Index() {
+  const router = useRouter();
+
   return (
     <View style={styles.container}>
-
       {/* Logo Area */}
       <View style={styles.logoContainer}>
         <Text style={styles.logoIcon}>🌍</Text>
@@ -17,13 +19,14 @@ export default function Index() {
           Your gateway to Ghana's hidden gems, local guides, and unforgettable experiences.
         </Text>
 
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => router.push('/register')}>
           <Text style={styles.buttonText}>Get Started 🇬🇭</Text>
         </TouchableOpacity>
 
-        <Text style={styles.loginText}>Already have an account? Log in</Text>
+        <TouchableOpacity onPress={() => router.push('/login')}>
+          <Text style={styles.loginText}>Already have an account? Log in</Text>
+        </TouchableOpacity>
       </View>
-
     </View>
   );
 }
