@@ -68,6 +68,10 @@ export default function Home() {
       <TouchableOpacity style={styles.tripButton} onPress={() => router.push('/trip-planner')}>
         <Text style={styles.tripButtonText}>📅 My Trip Planner</Text>
       </TouchableOpacity>
+      {/* Vendor Marketplace Button */}
+      <TouchableOpacity style={styles.vendorButton} onPress={() => router.push('/vendor-marketplace')}>
+        <Text style={styles.vendorButtonText}>🛍️ Vendor Marketplace</Text>
+      </TouchableOpacity>
       <TouchableOpacity style={styles.safetyButton} onPress={() => router.push('/safety-alerts')}>
         <Text style={styles.safetyButtonText}>⚠️ View Safety Alerts</Text>
       </TouchableOpacity>
@@ -87,6 +91,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  vendorButton: {
+    backgroundColor: '#FCD20F',
+    marginHorizontal: 16,
+    marginTop: 16,
+    paddingVertical: 14,
+    borderRadius: 30,
+    alignItems: 'center',
+  },
+  vendorButtonText: {
+    color: '#006B3F',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   greeting: {
     fontSize: 24,
