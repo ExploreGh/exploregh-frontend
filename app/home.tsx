@@ -51,7 +51,7 @@ export default function Home() {
       <Text style={styles.sectionTitle}>Featured Sites</Text>
       <View style={styles.sitesContainer}>
         {sites.map((site) => (
-          <TouchableOpacity key={site.id} style={styles.siteCard}>
+          <TouchableOpacity key={site.id} style={styles.siteCard} onPress={() => router.push('/site-details')}>
             <Text style={styles.siteEmoji}>{site.emoji}</Text>
             <View style={styles.siteInfo}>
               <Text style={styles.siteName}>{site.name}</Text>
