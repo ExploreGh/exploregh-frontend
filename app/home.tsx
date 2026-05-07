@@ -64,6 +64,10 @@ export default function Home() {
         ))}
       </View>
      {/* Safety Alerts Button */}
+     {/* Trip Planner Button */}
+      <TouchableOpacity style={styles.tripButton} onPress={() => router.push('/trip-planner')}>
+        <Text style={styles.tripButtonText}>📅 My Trip Planner</Text>
+      </TouchableOpacity>
       <TouchableOpacity style={styles.safetyButton} onPress={() => router.push('/safety-alerts')}>
         <Text style={styles.safetyButtonText}>⚠️ View Safety Alerts</Text>
       </TouchableOpacity>
@@ -187,6 +191,19 @@ const styles = StyleSheet.create({
   categoryTagText: {
     color: '#006B3F',
     fontSize: 12,
+    fontWeight: 'bold',
+  },
+  tripButton: {
+    backgroundColor: '#006B3F',
+    marginHorizontal: 16,
+    marginTop: 16,
+    paddingVertical: 14,
+    borderRadius: 30,
+    alignItems: 'center',
+  },
+  tripButtonText: {
+    color: '#FCD20F',
+    fontSize: 16,
     fontWeight: 'bold',
   },
   safetyButton: {
