@@ -63,7 +63,10 @@ export default function Home() {
           </TouchableOpacity>
         ))}
       </View>
-
+     {/* Safety Alerts Button */}
+      <TouchableOpacity style={styles.safetyButton} onPress={() => router.push('/safety-alerts')}>
+        <Text style={styles.safetyButtonText}>⚠️ View Safety Alerts</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -184,6 +187,18 @@ const styles = StyleSheet.create({
   categoryTagText: {
     color: '#006B3F',
     fontSize: 12,
+    fontWeight: 'bold',
+  },
+  safetyButton: {
+    backgroundColor: '#cc0000',
+    margin: 16,
+    paddingVertical: 14,
+    borderRadius: 30,
+    alignItems: 'center',
+  },
+  safetyButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
     fontWeight: 'bold',
   },
 });
