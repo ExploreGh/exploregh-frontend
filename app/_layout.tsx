@@ -13,6 +13,7 @@ export default function RootLayout() {
       <Stack.Screen name="vendor-marketplace" />
       <Stack.Screen name="tour-guides" />
       <Stack.Screen name="cultural-guide" />
+      <Stack.Screen name="phrasebook" />
     </Stack>
   );
 }

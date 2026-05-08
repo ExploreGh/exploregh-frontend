@@ -72,6 +72,10 @@ export default function Home() {
       <TouchableOpacity style={styles.guideButton} onPress={() => router.push('/tour-guides')}>
         <Text style={styles.guideButtonText}>🎖️ Find Tour Guides</Text>
       </TouchableOpacity>
+{/* Phrasebook Button */}
+      <TouchableOpacity style={styles.phrasebookButton} onPress={() => router.push('/phrasebook')}>
+        <Text style={styles.phrasebookButtonText}>🗣️ Language Phrasebook</Text>
+      </TouchableOpacity>
 {/* Cultural Guide Button */}
       <TouchableOpacity style={styles.culturalButton} onPress={() => router.push('/cultural-guide')}>
         <Text style={styles.culturalButtonText}>🤝 Cultural Etiquette Guide</Text>
@@ -99,6 +103,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+phrasebookButton: {
+    backgroundColor: '#006B3F',
+    marginHorizontal: 16,
+    marginTop: 16,
+    paddingVertical: 14,
+    borderRadius: 30,
+    alignItems: 'center',
+  },
+  phrasebookButtonText: {
+    color: '#FCD20F',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 culturalButton: {
     backgroundColor: '#FCD20F',
