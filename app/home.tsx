@@ -68,6 +68,10 @@ export default function Home() {
       <TouchableOpacity style={styles.tripButton} onPress={() => router.push('/trip-planner')}>
         <Text style={styles.tripButtonText}>📅 My Trip Planner</Text>
       </TouchableOpacity>
+      {/* Tour Guides Button */}
+      <TouchableOpacity style={styles.guideButton} onPress={() => router.push('/tour-guides')}>
+        <Text style={styles.guideButtonText}>🎖️ Find Tour Guides</Text>
+      </TouchableOpacity>
       {/* Vendor Marketplace Button */}
       <TouchableOpacity style={styles.vendorButton} onPress={() => router.push('/vendor-marketplace')}>
         <Text style={styles.vendorButtonText}>🛍️ Vendor Marketplace</Text>
@@ -91,6 +95,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  guideButton: {
+    backgroundColor: '#006B3F',
+    marginHorizontal: 16,
+    marginTop: 16,
+    paddingVertical: 14,
+    borderRadius: 30,
+    alignItems: 'center',
+  },
+  guideButtonText: {
+    color: '#FCD20F',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   vendorButton: {
     backgroundColor: '#FCD20F',

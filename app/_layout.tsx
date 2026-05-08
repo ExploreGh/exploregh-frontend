@@ -11,6 +11,7 @@ export default function RootLayout() {
       <Stack.Screen name="safety-alerts" />
       <Stack.Screen name="trip-planner" />
       <Stack.Screen name="vendor-marketplace" />
+      <Stack.Screen name="tour-guides" />
     </Stack>
   );
 }
