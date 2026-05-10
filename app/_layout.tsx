@@ -12,6 +12,8 @@ export default function RootLayout() {
       <Stack.Screen name="trip-planner" />
       <Stack.Screen name="cultural-guide" />
       <Stack.Screen name="phrasebook" />
+      <Stack.Screen name="coming-soon" />
+      <Stack.Screen name="emergency-contacts" />
     </Stack>
   );
 }

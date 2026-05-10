@@ -39,15 +39,15 @@ const menuItems = [
     title: 'Emergency Contacts',
     description: 'Police, hospitals and embassies',
     emoji: '🚨',
-    route: '/safety-alerts',
+    route: '/emergency-contacts',
     color: '#cc0000',
   },
   {
     id: '6',
     title: 'Currency Converter',
-    description: 'GHS to major world currencies',
+    description: 'Coming soon — live exchange rates',
     emoji: '💱',
-    route: '/safety-alerts',
+    route: '/coming-soon',
     color: '#006B3F',
   },
 ];
