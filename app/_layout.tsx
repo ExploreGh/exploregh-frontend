@@ -6,12 +6,10 @@ export default function RootLayout() {
       <Stack.Screen name="index" />
       <Stack.Screen name="register" />
       <Stack.Screen name="login" />
-      <Stack.Screen name="home" />
+      <Stack.Screen name="(tabs)" />
       <Stack.Screen name="site-details" />
       <Stack.Screen name="safety-alerts" />
       <Stack.Screen name="trip-planner" />
-      <Stack.Screen name="vendor-marketplace" />
-      <Stack.Screen name="tour-guides" />
       <Stack.Screen name="cultural-guide" />
       <Stack.Screen name="phrasebook" />
     </Stack>

@@ -24,7 +24,7 @@ export default function Login() {
           secureTextEntry
         />
 
-        <TouchableOpacity style={styles.button} onPress={() => router.push('/home')}>
+        <TouchableOpacity style={styles.button} onPress={() => router.push('/(tabs)/home')}>
           <Text style={styles.buttonText}>Log In</Text>
         </TouchableOpacity>
 
