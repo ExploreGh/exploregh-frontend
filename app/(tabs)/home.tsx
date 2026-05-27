@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 
 const sites = [
   { id: '1', name: 'Cape Coast Castle', region: 'Central Region', category: 'History', emoji: '🏰' },
@@ -12,6 +13,13 @@ const sites = [
 
 export default function Home() {
   const router = useRouter();
+  const [search, setSearch] = useState('');
+
+  const filteredSites = sites.filter(site =>
+    site.name.toLowerCase().includes(search.toLowerCase()) ||
+    site.region.toLowerCase().includes(search.toLowerCase()) ||
+    site.category.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <ScrollView style={styles.container}>
@@ -32,25 +40,51 @@ export default function Home() {
           style={styles.searchInput}
           placeholder="Search destinations..."
           placeholderTextColor="#999"
+          value={search}
+          onChangeText={setSearch}
         />
+        {search ? (
+          <TouchableOpacity onPress={() => setSearch('')}>
+            <Text style={styles.clearText}>✕</Text>
+          </TouchableOpacity>
+        ) : null}
       </View>
 
+      {/* Results Count */}
+      {search ? (
+        <Text style={styles.resultsText}>
+          {filteredSites.length} result{filteredSites.length !== 1 ? 's' : ''} for "{search}"
+        </Text>
+      ) : null}
+
       {/* Featured Sites */}
-      <Text style={styles.sectionTitle}>Featured Sites</Text>
-      <View style={styles.sitesContainer}>
-        {sites.map((site) => (
-          <TouchableOpacity key={site.id} style={styles.siteCard} onPress={() => router.push('/site-details')}>
-            <Text style={styles.siteEmoji}>{site.emoji}</Text>
-            <View style={styles.siteInfo}>
-              <Text style={styles.siteName}>{site.name}</Text>
-              <Text style={styles.siteRegion}>📍 {site.region}</Text>
-              <View style={styles.categoryTag}>
-                <Text style={styles.categoryTagText}>{site.category}</Text>
+      <Text style={styles.sectionTitle}>
+        {search ? 'Search Results' : 'Featured Sites'}
+      </Text>
+
+      {/* Empty State */}
+      {filteredSites.length === 0 ? (
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyEmoji}>🔍</Text>
+          <Text style={styles.emptyTitle}>No results found</Text>
+          <Text style={styles.emptyText}>Try searching for a different destination or region</Text>
+        </View>
+      ) : (
+        <View style={styles.sitesContainer}>
+          {filteredSites.map((site) => (
+            <TouchableOpacity key={site.id} style={styles.siteCard} onPress={() => router.push('/site-details')}>
+              <Text style={styles.siteEmoji}>{site.emoji}</Text>
+              <View style={styles.siteInfo}>
+                <Text style={styles.siteName}>{site.name}</Text>
+                <Text style={styles.siteRegion}>📍 {site.region}</Text>
+                <View style={styles.categoryTag}>
+                  <Text style={styles.categoryTagText}>{site.category}</Text>
+                </View>
               </View>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
 
     </ScrollView>
   );
@@ -105,6 +139,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
   },
+  clearText: {
+    fontSize: 16,
+    color: '#999',
+    paddingLeft: 8,
+  },
+  resultsText: {
+    fontSize: 13,
+    color: '#006B3F',
+    marginHorizontal: 16,
+    marginBottom: 4,
+    fontWeight: 'bold',
+  },
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
@@ -157,5 +203,26 @@ const styles = StyleSheet.create({
     color: '#006B3F',
     fontSize: 12,
     fontWeight: 'bold',
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: 60,
+    paddingHorizontal: 32,
+  },
+  emptyEmoji: {
+    fontSize: 60,
+    marginBottom: 16,
+  },
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 8,
+  },
+  emptyText: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    lineHeight: 22,
   },
 });
