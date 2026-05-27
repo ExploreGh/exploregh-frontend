@@ -1,8 +1,42 @@
 import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 
 export default function Login() {
   const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState({ email: '', password: '' });
+
+  const validate = () => {
+    let valid = true;
+    let newErrors = { email: '', password: '' };
+
+    if (!email) {
+      newErrors.email = 'Please enter your email address';
+      valid = false;
+    } else if (!email.includes('@')) {
+      newErrors.email = 'Please enter a valid email address';
+      valid = false;
+    }
+
+    if (!password) {
+      newErrors.password = 'Please enter your password';
+      valid = false;
+    } else if (password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+      valid = false;
+    }
+
+    setErrors(newErrors);
+    return valid;
+  };
+
+  const handleLogin = () => {
+    if (validate()) {
+      router.push('/(tabs)/home');
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -11,28 +45,38 @@ export default function Login() {
       <Text style={styles.subtitle}>Log in to ExploreGH 🌍</Text>
 
       <View style={styles.form}>
+
+        {/* Email */}
         <TextInput
-          style={styles.input}
+          style={[styles.input, errors.email ? styles.inputError : null]}
           placeholder="Email Address"
           placeholderTextColor="#999"
           keyboardType="email-address"
+          value={email}
+          onChangeText={setEmail}
         />
+        {errors.email ? <Text style={styles.errorText}>⚠️ {errors.email}</Text> : null}
+
+        {/* Password */}
         <TextInput
-          style={styles.input}
+          style={[styles.input, errors.password ? styles.inputError : null]}
           placeholder="Password"
           placeholderTextColor="#999"
           secureTextEntry
+          value={password}
+          onChangeText={setPassword}
         />
+        {errors.password ? <Text style={styles.errorText}>⚠️ {errors.password}</Text> : null}
 
-        <TouchableOpacity style={styles.button} onPress={() => router.push('/(tabs)/home')}>
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Log In</Text>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => router.push('/register')}>
           <Text style={styles.registerText}>Don't have an account? Register</Text>
         </TouchableOpacity>
-      </View>
 
+      </View>
     </View>
   );
 }
@@ -56,7 +100,7 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   form: {
-    gap: 16,
+    gap: 12,
   },
   input: {
     backgroundColor: '#f5f5f5',
@@ -67,6 +111,16 @@ const styles = StyleSheet.create({
     color: '#333',
     borderWidth: 1,
     borderColor: '#e0e0e0',
+  },
+  inputError: {
+    borderColor: '#cc0000',
+    backgroundColor: '#fff5f5',
+  },
+  errorText: {
+    color: '#cc0000',
+    fontSize: 13,
+    marginTop: -4,
+    marginLeft: 4,
   },
   button: {
     backgroundColor: '#006B3F',
