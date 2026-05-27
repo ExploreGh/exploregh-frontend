@@ -42,6 +42,14 @@ const menuItems = [
     route: '/emergency-contacts',
     color: '#cc0000',
   },
+{
+    id: '7',
+    title: 'Festivals & Events',
+    description: 'Upcoming Ghanaian festivals and cultural events',
+    emoji: '🎉',
+    route: '/festivals',
+    color: '#006B3F',
+  },
   {
     id: '6',
     title: 'Currency Converter',

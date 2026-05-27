@@ -14,6 +14,7 @@ export default function RootLayout() {
       <Stack.Screen name="phrasebook" />
       <Stack.Screen name="coming-soon" />
       <Stack.Screen name="emergency-contacts" />
+      <Stack.Screen name="festivals" />
     </Stack>
   );
 }
