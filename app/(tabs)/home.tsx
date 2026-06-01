@@ -17,6 +17,13 @@ export default function Home() {
   const router = useRouter();
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [wishlist, setWishlist] = useState<string[]>([]);
+
+  const toggleWishlist = (id: string) => {
+    setWishlist(prev =>
+      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+    );
+  };
 
   const filteredSites = sites.filter(site => {
     const matchesSearch =
@@ -39,7 +46,14 @@ export default function Home() {
           <Text style={styles.greeting}>Hello, Explorer! 👋</Text>
           <Text style={styles.subGreeting}>Where are you going today?</Text>
         </View>
-        <Text style={styles.avatar}>🌍</Text>
+        <View style={styles.headerRight}>
+          <Text style={styles.avatar}>🌍</Text>
+          {wishlist.length > 0 && (
+            <View style={styles.wishlistBadge}>
+              <Text style={styles.wishlistBadgeText}>{wishlist.length}</Text>
+            </View>
+          )}
+        </View>
       </View>
 
       {/* Search Bar */}
@@ -73,6 +87,15 @@ export default function Home() {
           </TouchableOpacity>
         ))}
       </ScrollView>
+
+      {/* Wishlist Banner */}
+      {wishlist.length > 0 && (
+        <View style={styles.wishlistBanner}>
+          <Text style={styles.wishlistBannerText}>
+            ❤️ You have {wishlist.length} saved site{wishlist.length !== 1 ? 's' : ''} in your wishlist!
+          </Text>
+        </View>
+      )}
 
       {/* Results Count */}
       {search || selectedCategory !== 'All' ? (
@@ -111,6 +134,17 @@ export default function Home() {
                   <Text style={styles.categoryTagText}>{site.category}</Text>
                 </View>
               </View>
+              <TouchableOpacity
+                style={styles.heartButton}
+                onPress={(e) => {
+                  e.stopPropagation();
+                  toggleWishlist(site.id);
+                }}
+              >
+                <Text style={styles.heartIcon}>
+                  {wishlist.includes(site.id) ? '❤️' : '🤍'}
+                </Text>
+              </TouchableOpacity>
             </TouchableOpacity>
           ))}
         </View>
@@ -144,8 +178,27 @@ const styles = StyleSheet.create({
     marginTop: 4,
     opacity: 0.9,
   },
+  headerRight: {
+    position: 'relative',
+  },
   avatar: {
     fontSize: 40,
+  },
+  wishlistBadge: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    backgroundColor: '#cc0000',
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  wishlistBadgeText: {
+    color: '#ffffff',
+    fontSize: 11,
+    fontWeight: 'bold',
   },
   searchContainer: {
     flexDirection: 'row',
@@ -197,6 +250,20 @@ const styles = StyleSheet.create({
   },
   categoryTextActive: {
     color: '#FCD20F',
+  },
+  wishlistBanner: {
+    backgroundColor: '#fff0f0',
+    padding: 12,
+    marginHorizontal: 16,
+    marginTop: 8,
+    borderRadius: 12,
+    borderLeftWidth: 4,
+    borderLeftColor: '#cc0000',
+  },
+  wishlistBannerText: {
+    fontSize: 13,
+    color: '#cc0000',
+    fontWeight: 'bold',
   },
   resultsText: {
     fontSize: 13,
@@ -257,6 +324,12 @@ const styles = StyleSheet.create({
     color: '#006B3F',
     fontSize: 12,
     fontWeight: 'bold',
+  },
+  heartButton: {
+    padding: 8,
+  },
+  heartIcon: {
+    fontSize: 24,
   },
   emptyState: {
     alignItems: 'center',
