@@ -1,8 +1,9 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 
 export default function SiteDetails() {
   const router = useRouter();
+  const { name, region, category, emoji } = useLocalSearchParams();
 
   return (
     <ScrollView style={styles.container}>
@@ -14,17 +15,17 @@ export default function SiteDetails() {
 
       {/* Hero Section */}
       <View style={styles.hero}>
-        <Text style={styles.heroEmoji}>🏰</Text>
+        <Text style={styles.heroEmoji}>{emoji || '🏛️'}</Text>
         <View style={styles.categoryBadge}>
-          <Text style={styles.categoryBadgeText}>History</Text>
+          <Text style={styles.categoryBadgeText}>{category || 'Site'}</Text>
         </View>
       </View>
 
       {/* Site Info */}
       <View style={styles.content}>
 
-        <Text style={styles.siteName}>Cape Coast Castle</Text>
-        <Text style={styles.siteRegion}>📍 Central Region, Ghana</Text>
+        <Text style={styles.siteName}>{name || 'Tourist Site'}</Text>
+        <Text style={styles.siteRegion}>📍 {region || 'Ghana'}</Text>
 
         {/* Rating */}
         <View style={styles.ratingRow}>
@@ -57,14 +58,14 @@ export default function SiteDetails() {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>📝 About This Site</Text>
           <Text style={styles.cardText}>
-            Cape Coast Castle is one of about forty slave castles built on the Gold Coast of West Africa. It is a UNESCO World Heritage Site and one of Ghana's most visited historical landmarks. Visitors can tour the dungeons, learn about the transatlantic slave trade, and walk through the Door of No Return.
+            {name} is one of Ghana's most visited and celebrated tourist destinations located in {region}. It offers visitors a unique and unforgettable experience of Ghana's rich history, culture and natural beauty.
           </Text>
         </View>
 
         {/* Cultural Guide */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>🤝 Cultural Etiquette</Text>
-          <Text style={styles.cardText}>Dress respectfully. Photography is allowed in most areas but not in the dungeons. Speak quietly and be respectful of the site's history.</Text>
+          <Text style={styles.cardText}>Dress respectfully. Ask permission before taking photographs of people or sacred areas. Be respectful of the site's history and cultural significance.</Text>
         </View>
 
         {/* Action Buttons */}

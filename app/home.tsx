@@ -51,7 +51,10 @@ export default function Home() {
       <Text style={styles.sectionTitle}>Featured Sites</Text>
       <View style={styles.sitesContainer}>
         {sites.map((site) => (
-          <TouchableOpacity key={site.id} style={styles.siteCard} onPress={() => router.push('/site-details')}>
+          <TouchableOpacity key={site.id} style={styles.siteCard} onPress={() => router.push({
+  pathname: '/site-details',
+  params: { name: site.name, region: site.region, category: site.category, emoji: site.emoji }
+})}>
             <Text style={styles.siteEmoji}>{site.emoji}</Text>
             <View style={styles.siteInfo}>
               <Text style={styles.siteName}>{site.name}</Text>
