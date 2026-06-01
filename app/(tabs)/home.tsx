@@ -2,10 +2,12 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput } from 
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 
+const categories = ['All', 'Nature', 'History', 'Culture', 'Beach'];
+
 const sites = [
   { id: '1', name: 'Cape Coast Castle', region: 'Central Region', category: 'History', emoji: '🏰' },
   { id: '2', name: 'Kakum National Park', region: 'Central Region', category: 'Nature', emoji: '🌿' },
-  { id: '3', name: 'Labadi Beach', region: 'Greater Accra', category: 'Nature', emoji: '🏖️' },
+  { id: '3', name: 'Labadi Beach', region: 'Greater Accra', category: 'Beach', emoji: '🏖️' },
   { id: '4', name: 'Kejetia Market', region: 'Ashanti Region', category: 'Culture', emoji: '🛍️' },
   { id: '5', name: 'Mole National Park', region: 'Savannah Region', category: 'Nature', emoji: '🐘' },
   { id: '6', name: 'Elmina Castle', region: 'Central Region', category: 'History', emoji: '🏯' },
@@ -14,12 +16,19 @@ const sites = [
 export default function Home() {
   const router = useRouter();
   const [search, setSearch] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
 
-  const filteredSites = sites.filter(site =>
-    site.name.toLowerCase().includes(search.toLowerCase()) ||
-    site.region.toLowerCase().includes(search.toLowerCase()) ||
-    site.category.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredSites = sites.filter(site => {
+    const matchesSearch =
+      site.name.toLowerCase().includes(search.toLowerCase()) ||
+      site.region.toLowerCase().includes(search.toLowerCase()) ||
+      site.category.toLowerCase().includes(search.toLowerCase());
+
+    const matchesCategory =
+      selectedCategory === 'All' || site.category === selectedCategory;
+
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <ScrollView style={styles.container}>
@@ -50,16 +59,33 @@ export default function Home() {
         ) : null}
       </View>
 
+      {/* Categories */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoriesContainer}>
+        {categories.map((cat) => (
+          <TouchableOpacity
+            key={cat}
+            style={[styles.categoryButton, selectedCategory === cat && styles.categoryButtonActive]}
+            onPress={() => setSelectedCategory(cat)}
+          >
+            <Text style={[styles.categoryText, selectedCategory === cat && styles.categoryTextActive]}>
+              {cat}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+
       {/* Results Count */}
-      {search ? (
+      {search || selectedCategory !== 'All' ? (
         <Text style={styles.resultsText}>
-          {filteredSites.length} result{filteredSites.length !== 1 ? 's' : ''} for "{search}"
+          {filteredSites.length} result{filteredSites.length !== 1 ? 's' : ''}
+          {selectedCategory !== 'All' ? ` in ${selectedCategory}` : ''}
+          {search ? ` for "${search}"` : ''}
         </Text>
       ) : null}
 
-      {/* Featured Sites */}
+      {/* Section Title */}
       <Text style={styles.sectionTitle}>
-        {search ? 'Search Results' : 'Featured Sites'}
+        {selectedCategory === 'All' && !search ? 'Featured Sites' : 'Results'}
       </Text>
 
       {/* Empty State */}
@@ -67,12 +93,16 @@ export default function Home() {
         <View style={styles.emptyState}>
           <Text style={styles.emptyEmoji}>🔍</Text>
           <Text style={styles.emptyTitle}>No results found</Text>
-          <Text style={styles.emptyText}>Try searching for a different destination or region</Text>
+          <Text style={styles.emptyText}>Try a different category or search term</Text>
         </View>
       ) : (
         <View style={styles.sitesContainer}>
           {filteredSites.map((site) => (
-            <TouchableOpacity key={site.id} style={styles.siteCard} onPress={() => router.push('/site-details')}>
+            <TouchableOpacity
+              key={site.id}
+              style={styles.siteCard}
+              onPress={() => router.push('/site-details')}
+            >
               <Text style={styles.siteEmoji}>{site.emoji}</Text>
               <View style={styles.siteInfo}>
                 <Text style={styles.siteName}>{site.name}</Text>
@@ -144,11 +174,35 @@ const styles = StyleSheet.create({
     color: '#999',
     paddingLeft: 8,
   },
+  categoriesContainer: {
+    paddingHorizontal: 16,
+    marginBottom: 8,
+  },
+  categoryButton: {
+    backgroundColor: '#e8f5e9',
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginRight: 10,
+    borderWidth: 1,
+    borderColor: '#006B3F',
+  },
+  categoryButtonActive: {
+    backgroundColor: '#006B3F',
+  },
+  categoryText: {
+    color: '#006B3F',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  categoryTextActive: {
+    color: '#FCD20F',
+  },
   resultsText: {
     fontSize: 13,
     color: '#006B3F',
     marginHorizontal: 16,
-    marginBottom: 4,
+    marginTop: 8,
     fontWeight: 'bold',
   },
   sectionTitle: {
