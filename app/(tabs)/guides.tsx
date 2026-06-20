@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 
 const guides = [
   {
@@ -58,6 +59,20 @@ const guides = [
 
 export default function Guides() {
   const router = useRouter();
+  const [search, setSearch] = useState('');
+  const [showAvailableOnly, setShowAvailableOnly] = useState(false);
+
+  const filteredGuides = guides.filter(guide => {
+    const matchesSearch =
+      guide.name.toLowerCase().includes(search.toLowerCase()) ||
+      guide.specialization.toLowerCase().includes(search.toLowerCase()) ||
+      guide.regions.toLowerCase().includes(search.toLowerCase()) ||
+      guide.languages.toLowerCase().includes(search.toLowerCase());
+
+    const matchesAvailability = showAvailableOnly ? guide.available : true;
+
+    return matchesSearch && matchesAvailability;
+  });
 
   return (
     <View style={styles.container}>
@@ -74,9 +89,31 @@ export default function Guides() {
           <Text style={styles.searchIcon}>🔍</Text>
           <TextInput
             style={styles.searchInput}
-            placeholder="Search by region or specialty..."
+            placeholder="Search by name, region or specialty..."
             placeholderTextColor="#999"
+            value={search}
+            onChangeText={setSearch}
           />
+          {search ? (
+            <TouchableOpacity onPress={() => setSearch('')}>
+              <Text style={styles.clearText}>✕</Text>
+            </TouchableOpacity>
+          ) : null}
+        </View>
+
+        {/* Filter Button */}
+        <View style={styles.filterRow}>
+          <TouchableOpacity
+            style={[styles.filterButton, showAvailableOnly && styles.filterButtonActive]}
+            onPress={() => setShowAvailableOnly(!showAvailableOnly)}
+          >
+            <Text style={[styles.filterText, showAvailableOnly && styles.filterTextActive]}>
+              ✅ Available Only
+            </Text>
+          </TouchableOpacity>
+          <Text style={styles.countText}>
+            {filteredGuides.length} guide{filteredGuides.length !== 1 ? 's' : ''} found
+          </Text>
         </View>
 
         {/* Banner */}
@@ -86,38 +123,47 @@ export default function Guides() {
 
         {/* Guides */}
         <View style={styles.guidesList}>
-          <Text style={styles.sectionTitle}>{guides.length} Guides Available</Text>
-          {guides.map((guide) => (
-            <View key={guide.id} style={styles.guideCard}>
-              <View style={styles.guideTop}>
-                <View style={styles.guideAvatar}>
-                  <Text style={styles.guideAvatarText}>{guide.emoji}</Text>
-                </View>
-                <View style={styles.guideHeader}>
-                  <Text style={styles.guideName}>{guide.name}</Text>
-                  <Text style={styles.guideSpecialization}>🎯 {guide.specialization}</Text>
-                  <Text style={styles.guideRating}>⭐ {guide.rating} ({guide.reviews} reviews)</Text>
-                </View>
-                <View style={[styles.availabilityBadge, { backgroundColor: guide.available ? '#006B3F' : '#999' }]}>
-                  <Text style={styles.availabilityText}>{guide.available ? 'Available' : 'Busy'}</Text>
-                </View>
-              </View>
-              <View style={styles.guideDetails}>
-                <Text style={styles.detailText}>📍 {guide.regions}</Text>
-                <Text style={styles.detailText}>🗣️ {guide.languages}</Text>
-                <Text style={styles.detailText}>⏳ {guide.experience} experience</Text>
-              </View>
-              <View style={styles.guideBottom}>
-                <Text style={styles.guidePrice}>💰 {guide.price}</Text>
-                <TouchableOpacity
-                  style={[styles.bookButton, { backgroundColor: guide.available ? '#006B3F' : '#ccc' }]}
-                  disabled={!guide.available}
-                >
-                  <Text style={styles.bookButtonText}>{guide.available ? 'Book Now' : 'Unavailable'}</Text>
-                </TouchableOpacity>
-              </View>
+
+          {/* Empty State */}
+          {filteredGuides.length === 0 ? (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyEmoji}>🔍</Text>
+              <Text style={styles.emptyTitle}>No guides found</Text>
+              <Text style={styles.emptyText}>Try a different name, region or specialty</Text>
             </View>
-          ))}
+          ) : (
+            filteredGuides.map((guide) => (
+              <View key={guide.id} style={styles.guideCard}>
+                <View style={styles.guideTop}>
+                  <View style={styles.guideAvatar}>
+                    <Text style={styles.guideAvatarText}>{guide.emoji}</Text>
+                  </View>
+                  <View style={styles.guideHeader}>
+                    <Text style={styles.guideName}>{guide.name}</Text>
+                    <Text style={styles.guideSpecialization}>🎯 {guide.specialization}</Text>
+                    <Text style={styles.guideRating}>⭐ {guide.rating} ({guide.reviews} reviews)</Text>
+                  </View>
+                  <View style={[styles.availabilityBadge, { backgroundColor: guide.available ? '#006B3F' : '#999' }]}>
+                    <Text style={styles.availabilityText}>{guide.available ? 'Available' : 'Busy'}</Text>
+                  </View>
+                </View>
+                <View style={styles.guideDetails}>
+                  <Text style={styles.detailText}>📍 {guide.regions}</Text>
+                  <Text style={styles.detailText}>🗣️ {guide.languages}</Text>
+                  <Text style={styles.detailText}>⏳ {guide.experience} experience</Text>
+                </View>
+                <View style={styles.guideBottom}>
+                  <Text style={styles.guidePrice}>💰 {guide.price}</Text>
+                  <TouchableOpacity
+                    style={[styles.bookButton, { backgroundColor: guide.available ? '#006B3F' : '#ccc' }]}
+                    disabled={!guide.available}
+                  >
+                    <Text style={styles.bookButtonText}>{guide.available ? 'Book Now' : 'Unavailable'}</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ))
+          )}
         </View>
       </ScrollView>
     </View>
@@ -167,6 +213,42 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
   },
+  clearText: {
+    fontSize: 16,
+    color: '#999',
+    paddingLeft: 8,
+  },
+  filterRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    marginBottom: 12,
+  },
+  filterButton: {
+    backgroundColor: '#e8f5e9',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#006B3F',
+  },
+  filterButtonActive: {
+    backgroundColor: '#006B3F',
+  },
+  filterText: {
+    color: '#006B3F',
+    fontWeight: 'bold',
+    fontSize: 13,
+  },
+  filterTextActive: {
+    color: '#FCD20F',
+  },
+  countText: {
+    fontSize: 13,
+    color: '#666',
+    fontWeight: 'bold',
+  },
   banner: {
     backgroundColor: '#e8f5e9',
     padding: 14,
@@ -182,12 +264,6 @@ const styles = StyleSheet.create({
   },
   guidesList: {
     paddingHorizontal: 16,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 12,
   },
   guideCard: {
     backgroundColor: '#ffffff',
@@ -275,5 +351,26 @@ const styles = StyleSheet.create({
     color: '#FCD20F',
     fontWeight: 'bold',
     fontSize: 13,
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: 60,
+    paddingHorizontal: 32,
+  },
+  emptyEmoji: {
+    fontSize: 60,
+    marginBottom: 16,
+  },
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 8,
+  },
+  emptyText: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    lineHeight: 22,
   },
 });

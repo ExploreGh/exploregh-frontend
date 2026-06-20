@@ -1,5 +1,8 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
+
+const categories = ['All', 'Food', 'Crafts', 'Culture', 'Fashion'];
 
 const vendors = [
   {
@@ -57,10 +60,35 @@ const vendors = [
     emoji: '👗',
     price: 'GHS 120 — 500',
   },
+  {
+    id: '6',
+    name: 'Kofi\'s Fresh Coconuts',
+    category: 'Food',
+    location: 'Labadi Beach, Accra',
+    rating: '4.9',
+    reviews: 312,
+    description: 'Fresh coconuts, tropical fruits and local snacks right on the beach.',
+    emoji: '🥥',
+    price: 'GHS 5 — 20',
+  },
 ];
 
 export default function Vendors() {
   const router = useRouter();
+  const [search, setSearch] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
+
+  const filteredVendors = vendors.filter(vendor => {
+    const matchesSearch =
+      vendor.name.toLowerCase().includes(search.toLowerCase()) ||
+      vendor.location.toLowerCase().includes(search.toLowerCase()) ||
+      vendor.category.toLowerCase().includes(search.toLowerCase());
+
+    const matchesCategory =
+      selectedCategory === 'All' || vendor.category === selectedCategory;
+
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <View style={styles.container}>
@@ -79,36 +107,79 @@ export default function Vendors() {
             style={styles.searchInput}
             placeholder="Search vendors..."
             placeholderTextColor="#999"
+            value={search}
+            onChangeText={setSearch}
           />
+          {search ? (
+            <TouchableOpacity onPress={() => setSearch('')}>
+              <Text style={styles.clearText}>✕</Text>
+            </TouchableOpacity>
+          ) : null}
         </View>
+
+        {/* Categories */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoriesContainer}>
+          {categories.map((cat) => (
+            <TouchableOpacity
+              key={cat}
+              style={[styles.categoryButton, selectedCategory === cat && styles.categoryButtonActive]}
+              onPress={() => setSelectedCategory(cat)}
+            >
+              <Text style={[styles.categoryText, selectedCategory === cat && styles.categoryTextActive]}>
+                {cat}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+
+        {/* Results Count */}
+        {search || selectedCategory !== 'All' ? (
+          <Text style={styles.resultsText}>
+            {filteredVendors.length} vendor{filteredVendors.length !== 1 ? 's' : ''}
+            {selectedCategory !== 'All' ? ` in ${selectedCategory}` : ''}
+            {search ? ` for "${search}"` : ''}
+          </Text>
+        ) : null}
 
         {/* Vendors */}
         <View style={styles.vendorsList}>
-          <Text style={styles.sectionTitle}>{vendors.length} Vendors Found</Text>
-          {vendors.map((vendor) => (
-            <TouchableOpacity key={vendor.id} style={styles.vendorCard}>
-              <View style={styles.vendorTop}>
-                <View style={styles.vendorEmoji}>
-                  <Text style={styles.vendorEmojiText}>{vendor.emoji}</Text>
+          <Text style={styles.sectionTitle}>
+            {selectedCategory === 'All' && !search ? `${vendors.length} Vendors Found` : 'Results'}
+          </Text>
+
+          {/* Empty State */}
+          {filteredVendors.length === 0 ? (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyEmoji}>🔍</Text>
+              <Text style={styles.emptyTitle}>No vendors found</Text>
+              <Text style={styles.emptyText}>Try a different category or search term</Text>
+            </View>
+          ) : (
+            filteredVendors.map((vendor) => (
+              <TouchableOpacity key={vendor.id} style={styles.vendorCard}>
+                <View style={styles.vendorTop}>
+                  <View style={styles.vendorEmoji}>
+                    <Text style={styles.vendorEmojiText}>{vendor.emoji}</Text>
+                  </View>
+                  <View style={styles.vendorHeader}>
+                    <Text style={styles.vendorName}>{vendor.name}</Text>
+                    <Text style={styles.vendorLocation}>📍 {vendor.location}</Text>
+                    <Text style={styles.vendorRating}>⭐ {vendor.rating} ({vendor.reviews} reviews)</Text>
+                  </View>
+                  <View style={styles.categoryBadge}>
+                    <Text style={styles.categoryBadgeText}>{vendor.category}</Text>
+                  </View>
                 </View>
-                <View style={styles.vendorHeader}>
-                  <Text style={styles.vendorName}>{vendor.name}</Text>
-                  <Text style={styles.vendorLocation}>📍 {vendor.location}</Text>
-                  <Text style={styles.vendorRating}>⭐ {vendor.rating} ({vendor.reviews} reviews)</Text>
+                <Text style={styles.vendorDescription}>{vendor.description}</Text>
+                <View style={styles.vendorBottom}>
+                  <Text style={styles.vendorPrice}>💰 {vendor.price}</Text>
+                  <TouchableOpacity style={styles.contactButton}>
+                    <Text style={styles.contactButtonText}>Message</Text>
+                  </TouchableOpacity>
                 </View>
-                <View style={styles.categoryBadge}>
-                  <Text style={styles.categoryBadgeText}>{vendor.category}</Text>
-                </View>
-              </View>
-              <Text style={styles.vendorDescription}>{vendor.description}</Text>
-              <View style={styles.vendorBottom}>
-                <Text style={styles.vendorPrice}>💰 {vendor.price}</Text>
-                <TouchableOpacity style={styles.contactButton}>
-                  <Text style={styles.contactButtonText}>Message</Text>
-                </TouchableOpacity>
-              </View>
-            </TouchableOpacity>
-          ))}
+              </TouchableOpacity>
+            ))
+          )}
         </View>
       </ScrollView>
     </View>
@@ -158,6 +229,42 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
   },
+  clearText: {
+    fontSize: 16,
+    color: '#999',
+    paddingLeft: 8,
+  },
+  categoriesContainer: {
+    paddingHorizontal: 16,
+    marginBottom: 8,
+  },
+  categoryButton: {
+    backgroundColor: '#e8f5e9',
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginRight: 10,
+    borderWidth: 1,
+    borderColor: '#006B3F',
+  },
+  categoryButtonActive: {
+    backgroundColor: '#006B3F',
+  },
+  categoryText: {
+    color: '#006B3F',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  categoryTextActive: {
+    color: '#FCD20F',
+  },
+  resultsText: {
+    fontSize: 13,
+    color: '#006B3F',
+    marginHorizontal: 16,
+    marginTop: 4,
+    fontWeight: 'bold',
+  },
   vendorsList: {
     paddingHorizontal: 16,
   },
@@ -166,6 +273,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
     marginBottom: 12,
+    marginTop: 8,
   },
   vendorCard: {
     backgroundColor: '#ffffff',
@@ -249,5 +357,26 @@ const styles = StyleSheet.create({
     color: '#FCD20F',
     fontWeight: 'bold',
     fontSize: 13,
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: 60,
+    paddingHorizontal: 32,
+  },
+  emptyEmoji: {
+    fontSize: 60,
+    marginBottom: 16,
+  },
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 8,
+  },
+  emptyText: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    lineHeight: 22,
   },
 });
