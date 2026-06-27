@@ -6,7 +6,7 @@
 
 ## 📱 About The App
 
-ExploreGH is a mobile tourism app built for the **CodeQuest 2026** competition at **Kwame Nkrumah University of Science and Technology (KNUST)**, Department of Computer Science.
+ExploreGH is a mobile tourism app built for the CodeQuest 2026 competition at Kwame Nkrumah University of Science and Technology (KNUST), Department of Computer Science.
 
 The app connects foreign and local tourists with verified local guides, vendors, and real-time information about tourist sites across all regions of Ghana — all in one place.
 
@@ -26,17 +26,17 @@ The app connects foreign and local tourists with verified local guides, vendors,
 
 ## 🚀 Features
 
-- 🏛️ **Tourist Site Discovery** — Browse and search tourist sites across all regions of Ghana
-- 👥 **Real-Time Crowd Meter** — See how busy a location is before visiting
-- 🛍️ **Vendor Marketplace** — Connect with local vendors, artisans and cultural practitioners
-- 🎖️ **Tour Guide Booking** — Find and book verified local tour guides
-- 📅 **Trip Planner** — Build a day-by-day itinerary for your Ghana trip
-- ⚠️ **Safety Alerts** — Real-time community safety reports and warnings
-- 🤝 **Cultural Etiquette Guide** — Learn customs, dress codes and taboos by region
-- 🗣️ **Language Phrasebook** — Essential phrases in Twi, Ga, Ewe and Hausa
-- 🎉 **Festivals & Events Calendar** — Upcoming Ghanaian festivals and cultural events
-- 🚨 **Emergency Contacts** — Police, hospitals and embassies across Ghana
-- 🔔 **Push Notifications** — Real-time alerts for safety, bookings and trip reminders
+- 🏛️ Tourist Site Discovery — Browse and search tourist sites across all regions of Ghana
+- 👥 Real-Time Crowd Meter — See how busy a location is before visiting
+- 🛍️ Vendor Marketplace — Connect with local vendors, artisans and cultural practitioners
+- 🎖️ Tour Guide Booking — Find and book verified local tour guides
+- 📅 Trip Planner** — Build a day-by-day itinerary for your Ghana trip
+- ⚠️ Safety Alerts** — Real-time community safety reports and warnings
+- 🤝 Cultural Etiquette Guide** — Learn customs, dress codes and taboos by region
+- 🗣️ Language Phrasebook** — Essential phrases in Twi, Ga, Ewe and Hausa
+- 🎉 Festivals & Events Calendar** — Upcoming Ghanaian festivals and cultural events
+- 🚨 Emergency Contacts** — Police, hospitals and embassies across Ghana
+- 🔔 Push Notifications** — Real-time alerts for safety, bookings and trip reminders
 
 ---
 
@@ -91,27 +91,27 @@ Make sure you have the following installed:
 
 ### Steps
 
-1. **Clone the repository**
+1. Clone the repository
 ```bash
 git clone https://github.com/ExploreGh/exploregh-frontend.git
 ```
 
-2. **Navigate into the project folder**
+2. Navigate into the project folder
 ```bash
 cd exploregh-frontend
 ```
 
-3. **Install dependencies**
+3. Install dependencies
 ```bash
 npm install
 ```
 
-4. **Start the development server**
+4. Start the development server
 ```bash
 npx expo start
 ```
 
-5. **View the app**
+5. View the app
 - Press `w` to open in web browser
 - Scan the QR code with Expo Go app on your phone
 
@@ -175,12 +175,12 @@ exploregh-frontend/
 
 ## 🎨 Design
 
-- **Primary Color:** Ghana Green `#006B3F`
-- **Secondary Color:** Ghana Gold `#FCD20F`
-- **Background:** Light Gray `#f5f5f5`
-- **Typography:** System default fonts
+- Primary Color: Ghana Green `#006B3F`
+- Secondary Color: Ghana Gold `#FCD20F`
+- Background: Light Gray `#f5f5f5`
+- Typography: System default fonts
 
-The design is inspired by the **colors of the Ghana flag** 🇬🇭
+The design is inspired by the colors of the Ghana flag 🇬🇭
 
 ---
 
@@ -200,12 +200,12 @@ The design is inspired by the **colors of the Ghana flag** 🇬🇭
 
 ## 🏫 Academic Information
 
-- **University:** Kwame Nkrumah University of Science and Technology (KNUST)
-- **Faculty:** Physical and Computational Sciences
-- **Department:** Computer Science
-- **Competition:** CodeQuest 2026
-- **Group Number:** 122
+- University: Kwame Nkrumah University of Science and Technology (KNUST)
+- Faculty: Physical and Computational Sciences
+- Department: Computer Science
+- Competition: CodeQuest 2026
+- Group Number: 122
 
 ---
 
-*Built with ❤️ for Ghana 🇬🇭*
+Built with ❤️ for Ghana 🇬🇭

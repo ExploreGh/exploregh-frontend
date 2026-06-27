@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import Button from '@/components/Button';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 
@@ -68,9 +69,7 @@ export default function Login() {
         />
         {errors.password ? <Text style={styles.errorText}>⚠️ {errors.password}</Text> : null}
 
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Log In</Text>
-        </TouchableOpacity>
+        <Button title="Log In" onPress={handleLogin} />
 
         <TouchableOpacity onPress={() => router.push('/register')}>
           <Text style={styles.registerText}>Don't have an account? Register</Text>
