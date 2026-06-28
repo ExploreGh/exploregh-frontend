@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
 
@@ -17,11 +17,15 @@ export default function Splash() {
     <View style={styles.container}>
 
       {/* Logo */}
-      <View style={styles.logoContainer}>
-        <Text style={styles.logoEmoji}>🌍</Text>
-        <Text style={styles.logoText}>ExploreGH</Text>
-        <Text style={styles.tagline}>Discover the beauty of Ghana</Text>
-      </View>
+<View style={styles.logoContainer}>
+  <Image
+    source={require('../assets/images/explore_main_no_bg.png')}
+    style={styles.logo}
+    resizeMode="contain"
+  />
+  <Text style={styles.logoText}>ExploreGH</Text>
+  <Text style={styles.tagline}>Discover the beauty of Ghana</Text>
+</View>
 
       {/* Loading Indicator */}
       <View style={styles.bottomContainer}>
@@ -48,10 +52,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 80,
   },
-  logoEmoji: {
-    fontSize: 100,
-    marginBottom: 20,
-  },
+  logo: {
+  width: 150,
+  height: 150,
+  marginBottom: 20,
+},
   logoText: {
     fontSize: 48,
     fontWeight: 'bold',

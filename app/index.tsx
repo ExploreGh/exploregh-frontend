@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 
 export default function Index() {
@@ -8,7 +8,11 @@ export default function Index() {
     <View style={styles.container}>
       {/* Logo Area */}
       <View style={styles.logoContainer}>
-        <Text style={styles.logoIcon}>🌍</Text>
+        <Image
+  source={require('../assets/images/explore_main_no_bg.png')}
+  style={styles.logo}
+  resizeMode="contain"
+/>
         <Text style={styles.logoText}>ExploreGH</Text>
         <Text style={styles.tagline}>Discover the beauty of Ghana</Text>
       </View>
@@ -43,10 +47,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 60,
   },
-  logoIcon: {
-    fontSize: 80,
-    marginBottom: 16,
-  },
+  logo: {
+  width: 150,
+  height: 150,
+  marginBottom: 16,
+},
   logoText: {
     fontSize: 48,
     fontWeight: 'bold',
