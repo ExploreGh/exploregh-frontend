@@ -16,6 +16,7 @@ export default function RootLayout() {
       <Stack.Screen name="coming-soon" />
       <Stack.Screen name="emergency-contacts" />
       <Stack.Screen name="festivals" />
+      <Stack.Screen name="application-submitted" />
     </Stack>
   );
 }
