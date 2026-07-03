@@ -1,16 +1,58 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 
 const categories = ['All', 'Nature', 'History', 'Culture', 'Beach'];
 
 const sites = [
-  { id: '1', name: 'Cape Coast Castle', region: 'Central Region', category: 'History', emoji: '🏰' },
-  { id: '2', name: 'Kakum National Park', region: 'Central Region', category: 'Nature', emoji: '🌿' },
-  { id: '3', name: 'Labadi Beach', region: 'Greater Accra', category: 'Beach', emoji: '🏖️' },
-  { id: '4', name: 'Kejetia Market', region: 'Ashanti Region', category: 'Culture', emoji: '🛍️' },
-  { id: '5', name: 'Mole National Park', region: 'Savannah Region', category: 'Nature', emoji: '🐘' },
-  { id: '6', name: 'Elmina Castle', region: 'Central Region', category: 'History', emoji: '🏯' },
+  {
+    id: '1',
+    name: 'Cape Coast Castle',
+    region: 'Central Region',
+    category: 'History',
+    emoji: '🏰',
+    image: 'https://images.unsplash.com/photo-1591825729269-caeb344f6df2?w=400',
+  },
+  {
+    id: '2',
+    name: 'Kakum National Park',
+    region: 'Central Region',
+    category: 'Nature',
+    emoji: '🌿',
+    image: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=400',
+  },
+  {
+    id: '3',
+    name: 'Labadi Beach',
+    region: 'Greater Accra',
+    category: 'Beach',
+    emoji: '🏖️',
+    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400',
+  },
+  {
+    id: '4',
+    name: 'Kejetia Market',
+    region: 'Ashanti Region',
+    category: 'Culture',
+    emoji: '🛍️',
+    image: 'https://images.unsplash.com/photo-1555529771-835f59fc5efe?w=400',
+  },
+  {
+    id: '5',
+    name: 'Mole National Park',
+    region: 'Savannah Region',
+    category: 'Nature',
+    emoji: '🐘',
+    image: 'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=400',
+  },
+  {
+    id: '6',
+    name: 'Elmina Castle',
+    region: 'Central Region',
+    category: 'History',
+    emoji: '🏯',
+    image: 'https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=400',
+  },
 ];
 
 export default function Home() {
@@ -126,7 +168,7 @@ export default function Home() {
               style={styles.siteCard}
               onPress={() => router.push('/site-details')}
             >
-              <Text style={styles.siteEmoji}>{site.emoji}</Text>
+              <Image source={{ uri: site.image }} style={styles.siteImage} />
               <View style={styles.siteInfo}>
                 <Text style={styles.siteName}>{site.name}</Text>
                 <Text style={styles.siteRegion}>📍 {site.region}</Text>
@@ -295,10 +337,12 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
-  siteEmoji: {
-    fontSize: 40,
-    marginRight: 16,
-  },
+  siteImage: {
+  width: 70,
+  height: 70,
+  borderRadius: 12,
+  marginRight: 16,
+},
   siteInfo: {
     flex: 1,
   },
