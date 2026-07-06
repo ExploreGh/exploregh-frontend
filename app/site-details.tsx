@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   ScrollView,
   ImageBackground,
+  Linking,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -24,7 +25,12 @@ export default function SiteDetails() {
   const { id } = useLocalSearchParams();
 
   // Find the site by id; fall back to the first site
-  const site = sites.find((s) => s.id === id) || sites[0];
+  const site = sites.find((s) => s.id === id) ?? sites[0];
+
+  const openDirections = () => {
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${site.latitude},${site.longitude}`;
+    Linking.openURL(url);
+  };
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -104,7 +110,7 @@ export default function SiteDetails() {
         {/* Actions */}
         <View style={styles.actions}>
           <Button title="Add to trip plan" icon="calendar-outline" onPress={() => router.push('/trip-planner')} />
-          <Button title="Get directions" icon="navigate-outline" variant="secondary" onPress={() => {}} />
+          <Button title="Get directions" icon="navigate-outline" variant="secondary" onPress={openDirections} />
           <Button title="Report safety issue" icon="warning-outline" variant="danger" onPress={() => router.push('/safety-alerts')} />
         </View>
       </View>

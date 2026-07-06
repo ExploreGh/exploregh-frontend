@@ -11,6 +11,8 @@ export type Site = {
   name: string;
   region: string;
   category: string;
+  latitude: number;
+  longitude: number;
   image: string;
   rating: number;
   reviews: number;
@@ -28,6 +30,8 @@ export const sites: Site[] = [
     name: 'Cape Coast Castle',
     region: 'Central Region',
     category: 'History',
+    latitude: 5.1053,
+    longitude: -1.2466,
     image: 'https://images.unsplash.com/photo-1591825729269-caeb344f6df2?w=800&q=60',
     rating: 4.8,
     reviews: 1240,
@@ -45,6 +49,8 @@ export const sites: Site[] = [
     name: 'Kakum National Park',
     region: 'Central Region',
     category: 'Nature',
+    latitude: 5.389,
+    longitude: -1.3919,
     image: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=800&q=60',
     rating: 4.7,
     reviews: 986,
@@ -61,6 +67,8 @@ export const sites: Site[] = [
     name: 'Labadi Beach',
     region: 'Greater Accra',
     category: 'Beach',
+    latitude: 5.5622,
+    longitude: -0.1615,
     image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=60',
     rating: 4.4,
     reviews: 2103,
@@ -77,6 +85,8 @@ export const sites: Site[] = [
     name: 'Kejetia Market',
     region: 'Ashanti Region',
     category: 'Culture',
+    latitude: 6.7047,
+    longitude: -1.6163,
     image: 'https://images.unsplash.com/photo-1555529771-835f59fc5efe?w=800&q=60',
     rating: 4.5,
     reviews: 764,
@@ -93,6 +103,8 @@ export const sites: Site[] = [
     name: 'Mole National Park',
     region: 'Savannah Region',
     category: 'Nature',
+    latitude: 9.266,
+    longitude: -1.848,
     image: 'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=800&q=60',
     rating: 4.9,
     reviews: 654,
@@ -109,6 +121,8 @@ export const sites: Site[] = [
     name: 'Elmina Castle',
     region: 'Central Region',
     category: 'History',
+    latitude: 5.0847,
+    longitude: -1.3509,
     image: 'https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=800&q=60',
     rating: 4.7,
     reviews: 890,
@@ -125,6 +139,8 @@ export const sites: Site[] = [
     name: 'Wli Waterfalls',
     region: 'Volta Region',
     category: 'Nature',
+    latitude: 7.1436,
+    longitude: 0.585,
     image: 'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?w=800&q=60',
     rating: 4.8,
     reviews: 512,
@@ -141,6 +157,8 @@ export const sites: Site[] = [
     name: 'Aburi Botanical Gardens',
     region: 'Eastern Region',
     category: 'Nature',
+    latitude: 5.8486,
+    longitude: -0.1731,
     image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=60',
     rating: 4.5,
     reviews: 693,
