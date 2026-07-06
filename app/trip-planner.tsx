@@ -1,89 +1,70 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import { useRouter } from 'expo-router';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  ImageBackground,
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { Colors, Radius, Shadow } from '@/constants/theme';
+import { ScreenHeader } from '@/components';
+import { trips } from '@/data/mockData';
 
-const trips = [
-  {
-    id: '1',
-    title: 'Central Region Explorer',
-    startDate: 'May 15, 2026',
-    endDate: 'May 18, 2026',
-    stops: 4,
-    budget: 'GHS 1,200',
-    emoji: '🏰',
-  },
-  {
-    id: '2',
-    title: 'Accra City Tour',
-    startDate: 'June 1, 2026',
-    endDate: 'June 2, 2026',
-    stops: 3,
-    budget: 'GHS 450',
-    emoji: '🌆',
-  },
-  {
-    id: '3',
-    title: 'Northern Ghana Safari',
-    startDate: 'July 10, 2026',
-    endDate: 'July 15, 2026',
-    stops: 6,
-    budget: 'GHS 3,500',
-    emoji: '🐘',
-  },
-];
+// ============================================================
+// Trip Planner — trips shown as photo cards with dates,
+// stops and budget rows using icons.
+// ============================================================
 
 export default function TripPlanner() {
-  const router = useRouter();
-
   return (
     <View style={styles.container}>
+      <ScreenHeader title="Trip Planner" subtitle="Build your perfect Ghana adventure" />
 
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Text style={styles.backText}>← Back</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Trip Planner</Text>
-        <View />
-      </View>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <Text style={styles.sectionTitle}>Your trips</Text>
 
-      {/* Info Banner */}
-      <View style={styles.banner}>
-        <Text style={styles.bannerText}>
-          📅 Plan your perfect Ghana adventure. Add sites, guides, and restaurants to your itinerary!
-        </Text>
-      </View>
-
-      {/* Trips List */}
-      <ScrollView style={styles.tripsList}>
-        <Text style={styles.sectionTitle}>Your Trips</Text>
-
-        {trips.map((trip) => (
-          <TouchableOpacity key={trip.id} style={styles.tripCard}>
-            <View style={styles.tripEmoji}>
-              <Text style={styles.tripEmojiText}>{trip.emoji}</Text>
-            </View>
-            <View style={styles.tripInfo}>
-              <Text style={styles.tripTitle}>{trip.title}</Text>
-              <Text style={styles.tripDates}>📅 {trip.startDate} → {trip.endDate}</Text>
-              <View style={styles.tripMeta}>
-                <View style={styles.metaBadge}>
-                  <Text style={styles.metaBadgeText}>📍 {trip.stops} stops</Text>
+        <View style={styles.list}>
+          {trips.map((trip) => (
+            <TouchableOpacity key={trip.id} activeOpacity={0.9}>
+              <ImageBackground
+                source={{ uri: trip.image }}
+                style={styles.card}
+                imageStyle={styles.cardImage}
+              >
+                <View style={styles.overlay} />
+                <View style={styles.cardContent}>
+                  <Text style={styles.tripTitle}>{trip.title}</Text>
+                  <View style={styles.metaRow}>
+                    <Ionicons name="calendar-outline" size={13} color={Colors.gold} />
+                    <Text style={styles.metaText}>
+                      {trip.startDate} — {trip.endDate}
+                    </Text>
+                  </View>
+                  <View style={styles.badges}>
+                    <View style={styles.badge}>
+                      <Ionicons name="location-outline" size={12} color={Colors.white} />
+                      <Text style={styles.badgeText}>{trip.stops} stops</Text>
+                    </View>
+                    <View style={[styles.badge, styles.badgeGold]}>
+                      <Ionicons name="cash-outline" size={12} color={Colors.forestDark} />
+                      <Text style={[styles.badgeText, styles.badgeTextDark]}>{trip.budget}</Text>
+                    </View>
+                  </View>
                 </View>
-                <View style={styles.metaBadgeGreen}>
-                  <Text style={styles.metaBadgeGreenText}>💰 {trip.budget}</Text>
-                </View>
-              </View>
-            </View>
-          </TouchableOpacity>
-        ))}
+              </ImageBackground>
+            </TouchableOpacity>
+          ))}
+        </View>
 
+        <View style={{ height: 90 }} />
       </ScrollView>
 
-      {/* Create New Trip Button */}
-      <TouchableOpacity style={styles.createButton}>
-        <Text style={styles.createButtonText}>➕ Create New Trip</Text>
+      {/* Floating create button */}
+      <TouchableOpacity style={styles.createButton} activeOpacity={0.9}>
+        <Ionicons name="add" size={20} color={Colors.gold} />
+        <Text style={styles.createText}>Create new trip</Text>
       </TouchableOpacity>
-
     </View>
   );
 }
@@ -91,123 +72,93 @@ export default function TripPlanner() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  header: {
-    backgroundColor: '#006B3F',
-    paddingTop: 60,
-    paddingBottom: 20,
-    paddingHorizontal: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  backText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  headerTitle: {
-    color: '#FCD20F',
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  banner: {
-    backgroundColor: '#e8f5e9',
-    padding: 14,
-    margin: 16,
-    borderRadius: 12,
-    borderLeftWidth: 4,
-    borderLeftColor: '#006B3F',
-  },
-  bannerText: {
-    fontSize: 13,
-    color: '#555',
-    lineHeight: 20,
-  },
-  tripsList: {
-    paddingHorizontal: 16,
+    backgroundColor: Colors.mist,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
+    fontSize: 17,
+    fontWeight: '800',
+    color: Colors.ink,
+    marginHorizontal: 16,
+    marginTop: 18,
     marginBottom: 12,
   },
-  tripCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
+  list: {
+    paddingHorizontal: 16,
+    gap: 14,
+  },
+  card: {
+    height: 150,
+    justifyContent: 'flex-end',
+  },
+  cardImage: {
+    borderRadius: Radius.lg,
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(6, 32, 19, 0.45)',
+    borderRadius: Radius.lg,
+  },
+  cardContent: {
     padding: 16,
-    marginBottom: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  tripEmoji: {
-    width: 60,
-    height: 60,
-    backgroundColor: '#e8f5e9',
-    borderRadius: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 16,
-  },
-  tripEmojiText: {
-    fontSize: 30,
-  },
-  tripInfo: {
-    flex: 1,
   },
   tripTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#222',
-    marginBottom: 4,
+    fontSize: 18,
+    fontWeight: '800',
+    color: Colors.white,
+    marginBottom: 5,
   },
-  tripDates: {
-    fontSize: 13,
-    color: '#666',
-    marginBottom: 8,
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    marginBottom: 10,
   },
-  tripMeta: {
+  metaText: {
+    fontSize: 12,
+    color: Colors.white,
+    opacity: 0.95,
+  },
+  badges: {
     flexDirection: 'row',
     gap: 8,
   },
-  metaBadge: {
-    backgroundColor: '#f0f0f0',
+  badge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: 'rgba(255,255,255,0.22)',
     paddingVertical: 4,
     paddingHorizontal: 10,
-    borderRadius: 20,
+    borderRadius: Radius.pill,
   },
-  metaBadgeText: {
-    fontSize: 12,
-    color: '#555',
-    fontWeight: 'bold',
+  badgeGold: {
+    backgroundColor: Colors.gold,
   },
-  metaBadgeGreen: {
-    backgroundColor: '#e8f5e9',
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-    borderRadius: 20,
+  badgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: Colors.white,
   },
-  metaBadgeGreenText: {
-    fontSize: 12,
-    color: '#006B3F',
-    fontWeight: 'bold',
+  badgeTextDark: {
+    color: Colors.forestDark,
   },
   createButton: {
-    backgroundColor: '#006B3F',
-    margin: 16,
-    paddingVertical: 16,
-    borderRadius: 30,
+    position: 'absolute',
+    bottom: 20,
+    left: 16,
+    right: 16,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    backgroundColor: Colors.forest,
+    paddingVertical: 16,
+    borderRadius: Radius.pill,
+    ...Shadow.card,
   },
-  createButtonText: {
-    color: '#FCD20F',
-    fontSize: 16,
-    fontWeight: 'bold',
+  createText: {
+    color: Colors.gold,
+    fontSize: 15,
+    fontWeight: '800',
   },
 });

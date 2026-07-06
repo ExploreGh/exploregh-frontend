@@ -1,9 +1,17 @@
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import Button from '@/components/Button';
+import { Ionicons } from '@expo/vector-icons';
+import { Colors, Radius } from '@/constants/theme';
+import { Button } from '@/components';
 
 type Role = 'tourist' | 'vendor' | 'guide';
+
+const roleOptions: { key: Role; label: string; icon: keyof typeof Ionicons.glyphMap }[] = [
+  { key: 'tourist', label: 'Tourist', icon: 'person-outline' },
+  { key: 'vendor', label: 'Vendor', icon: 'storefront-outline' },
+  { key: 'guide', label: 'Tour Guide', icon: 'ribbon-outline' },
+];
 
 export default function Register() {
   const router = useRouter();
@@ -28,12 +36,16 @@ export default function Register() {
 
   const validate = () => {
     let valid = true;
-    let newErrors: Record<string, string> = {};
+    const newErrors: Record<string, string> = {};
 
     if (!fullName) {
       newErrors.fullName = 'Please enter your full name';
       valid = false;
+    } else if (fullName.length < 3) {
+      newErrors.fullName = 'Name must be at least 3 characters';
+      valid = false;
     }
+
     if (!email) {
       newErrors.email = 'Please enter your email address';
       valid = false;
@@ -41,6 +53,7 @@ export default function Register() {
       newErrors.email = 'Please enter a valid email address';
       valid = false;
     }
+
     if (!password) {
       newErrors.password = 'Please enter a password';
       valid = false;
@@ -48,6 +61,7 @@ export default function Register() {
       newErrors.password = 'Password must be at least 6 characters';
       valid = false;
     }
+
     if (!confirmPassword) {
       newErrors.confirmPassword = 'Please confirm your password';
       valid = false;
@@ -57,246 +71,183 @@ export default function Register() {
     }
 
     if (role === 'vendor') {
-  if (!businessName) {
-    newErrors.businessName = 'Please enter your business name';
-    valid = false;
-  } else if (businessName.length < 3) {
-    newErrors.businessName = 'Business name must be at least 3 characters';
-    valid = false;
-  }
-
-  if (!businessCategory) {
-    newErrors.businessCategory = 'Please enter your business category';
-    valid = false;
-  } else if (/\d/.test(businessCategory)) {
-    newErrors.businessCategory = 'Category should only contain text e.g. Food, Crafts';
-    valid = false;
-  }
-
-  if (!businessLocation) {
-    newErrors.businessLocation = 'Please enter your business location';
-    valid = false;
-  } else if (/\d/.test(businessLocation)) {
-    newErrors.businessLocation = 'Location should only contain text e.g. Kumasi, Ashanti';
-    valid = false;
-  }
-}
+      if (!businessName) {
+        newErrors.businessName = 'Please enter your business name';
+        valid = false;
+      } else if (businessName.length < 3) {
+        newErrors.businessName = 'Business name must be at least 3 characters';
+        valid = false;
+      }
+      if (!businessCategory) {
+        newErrors.businessCategory = 'Please enter your business category';
+        valid = false;
+      } else if (/\d/.test(businessCategory)) {
+        newErrors.businessCategory = 'Category should only contain text e.g. Food, Crafts';
+        valid = false;
+      }
+      if (!businessLocation) {
+        newErrors.businessLocation = 'Please enter your business location';
+        valid = false;
+      } else if (/\d/.test(businessLocation)) {
+        newErrors.businessLocation = 'Location should only contain text e.g. Kumasi';
+        valid = false;
+      }
+    }
 
     if (role === 'guide') {
-  if (!specialization) {
-    newErrors.specialization = 'Please enter your specialization';
-    valid = false;
-  } else if (/\d/.test(specialization)) {
-    newErrors.specialization = 'Specialization should only contain text e.g. History & Culture';
-    valid = false;
-  }
-
-  if (!regions) {
-    newErrors.regions = 'Please enter the regions you cover';
-    valid = false;
-  } else if (/\d/.test(regions)) {
-    newErrors.regions = 'Regions should only contain text e.g. Greater Accra, Ashanti';
-    valid = false;
-  }
-
-  if (!languages) {
-    newErrors.languages = 'Please enter languages you speak';
-    valid = false;
-  } else if (/\d/.test(languages)) {
-    newErrors.languages = 'Languages should only contain text e.g. English, Twi, French';
-    valid = false;
-  }
-
-  if (!experience) {
-    newErrors.experience = 'Please enter your years of experience';
-    valid = false;
-  } else if (isNaN(Number(experience))) {
-    newErrors.experience = 'Experience should be a number e.g. 5';
-    valid = false;
-  } else if (Number(experience) < 1) {
-    newErrors.experience = 'Experience must be at least 1 year';
-    valid = false;
-  } else if (Number(experience) > 50) {
-    newErrors.experience = 'Please enter a valid number of years';
-    valid = false;
-  }
-}
+      if (!specialization) {
+        newErrors.specialization = 'Please enter your specialization';
+        valid = false;
+      } else if (/\d/.test(specialization)) {
+        newErrors.specialization = 'Specialization should only contain text e.g. History & Culture';
+        valid = false;
+      }
+      if (!regions) {
+        newErrors.regions = 'Please enter the regions you cover';
+        valid = false;
+      } else if (/\d/.test(regions)) {
+        newErrors.regions = 'Regions should only contain text e.g. Greater Accra';
+        valid = false;
+      }
+      if (!languages) {
+        newErrors.languages = 'Please enter languages you speak';
+        valid = false;
+      } else if (/\d/.test(languages)) {
+        newErrors.languages = 'Languages should only contain text e.g. English, Twi';
+        valid = false;
+      }
+      if (!experience) {
+        newErrors.experience = 'Please enter your years of experience';
+        valid = false;
+      } else if (isNaN(Number(experience))) {
+        newErrors.experience = 'Experience should be a number e.g. 5';
+        valid = false;
+      } else if (Number(experience) < 1 || Number(experience) > 50) {
+        newErrors.experience = 'Please enter a valid number of years (1–50)';
+        valid = false;
+      }
+    }
 
     setErrors(newErrors);
     return valid;
   };
 
   const handleRegister = () => {
-  if (validate()) {
-    if (role === 'tourist') {
-      router.push('/(tabs)/home');
-    } else {
-      router.push('/application-submitted');
+    if (validate()) {
+      if (role === 'tourist') {
+        router.push('/(tabs)/home');
+      } else {
+        router.push('/application-submitted');
+      }
     }
-  }
-};
+  };
+
+  const renderInput = (
+    key: string,
+    placeholder: string,
+    value: string,
+    setValue: (t: string) => void,
+    icon: keyof typeof Ionicons.glyphMap,
+    options?: { secure?: boolean; keyboard?: 'default' | 'email-address' | 'numeric' }
+  ) => (
+    <View>
+      <View style={[styles.inputWrap, errors[key] ? styles.inputError : null]}>
+        <Ionicons name={icon} size={18} color={Colors.slate} />
+        <TextInput
+          style={styles.input}
+          placeholder={placeholder}
+          placeholderTextColor={Colors.slate}
+          value={value}
+          onChangeText={setValue}
+          secureTextEntry={options?.secure}
+          keyboardType={options?.keyboard || 'default'}
+          autoCapitalize={options?.keyboard === 'email-address' ? 'none' : 'sentences'}
+        />
+      </View>
+      {errors[key] ? <Text style={styles.errorText}>{errors[key]}</Text> : null}
+    </View>
+  );
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+        <Ionicons name="arrow-back" size={22} color={Colors.forestDark} />
+      </TouchableOpacity>
 
-      <Text style={styles.title}>Create Account</Text>
-      <Text style={styles.subtitle}>Join ExploreGH today 🇬🇭</Text>
+      <Text style={styles.title}>Create account</Text>
+      <Text style={styles.subtitle}>Join ExploreGH today</Text>
 
-      {/* Role Selector */}
+      {/* Role selector */}
       <Text style={styles.sectionLabel}>I am registering as a:</Text>
       <View style={styles.roleContainer}>
-        <TouchableOpacity
-          style={[styles.roleButton, role === 'tourist' && styles.roleButtonActive]}
-          onPress={() => setRole('tourist')}
-        >
-          <Text style={styles.roleEmoji}>👤</Text>
-          <Text style={[styles.roleText, role === 'tourist' && styles.roleTextActive]}>Tourist</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.roleButton, role === 'vendor' && styles.roleButtonActive]}
-          onPress={() => setRole('vendor')}
-        >
-          <Text style={styles.roleEmoji}>🛍️</Text>
-          <Text style={[styles.roleText, role === 'vendor' && styles.roleTextActive]}>Vendor</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.roleButton, role === 'guide' && styles.roleButtonActive]}
-          onPress={() => setRole('guide')}
-        >
-          <Text style={styles.roleEmoji}>🎖️</Text>
-          <Text style={[styles.roleText, role === 'guide' && styles.roleTextActive]}>Tour Guide</Text>
-        </TouchableOpacity>
+        {roleOptions.map((option) => {
+          const selected = role === option.key;
+          return (
+            <TouchableOpacity
+              key={option.key}
+              style={[styles.roleButton, selected && styles.roleButtonActive]}
+              onPress={() => setRole(option.key)}
+              activeOpacity={0.8}
+            >
+              <Ionicons
+                name={option.icon}
+                size={22}
+                color={selected ? Colors.forest : Colors.slate}
+              />
+              <Text style={[styles.roleText, selected && styles.roleTextActive]}>
+                {option.label}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
       </View>
 
-      {/* Common Fields */}
       <View style={styles.form}>
-        <Text style={styles.sectionLabel}>Personal Information</Text>
+        <Text style={styles.sectionLabel}>Personal information</Text>
+        {renderInput('fullName', 'Full name', fullName, setFullName, 'person-outline')}
+        {renderInput('email', 'Email address', email, setEmail, 'mail-outline', { keyboard: 'email-address' })}
+        {renderInput('password', 'Password', password, setPassword, 'lock-closed-outline', { secure: true })}
+        {renderInput('confirmPassword', 'Confirm password', confirmPassword, setConfirmPassword, 'lock-closed-outline', { secure: true })}
 
-        <TextInput
-          style={[styles.input, errors.fullName && styles.inputError]}
-          placeholder="Full Name"
-          placeholderTextColor="#999"
-          value={fullName}
-          onChangeText={setFullName}
-        />
-        {errors.fullName ? <Text style={styles.errorText}>⚠️ {errors.fullName}</Text> : null}
-
-        <TextInput
-          style={[styles.input, errors.email && styles.inputError]}
-          placeholder="Email Address"
-          placeholderTextColor="#999"
-          keyboardType="email-address"
-          value={email}
-          onChangeText={setEmail}
-        />
-        {errors.email ? <Text style={styles.errorText}>⚠️ {errors.email}</Text> : null}
-
-        <TextInput
-          style={[styles.input, errors.password && styles.inputError]}
-          placeholder="Password"
-          placeholderTextColor="#999"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-        />
-        {errors.password ? <Text style={styles.errorText}>⚠️ {errors.password}</Text> : null}
-
-        <TextInput
-          style={[styles.input, errors.confirmPassword && styles.inputError]}
-          placeholder="Confirm Password"
-          placeholderTextColor="#999"
-          secureTextEntry
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-        />
-        {errors.confirmPassword ? <Text style={styles.errorText}>⚠️ {errors.confirmPassword}</Text> : null}
-
-        {/* Vendor Extra Fields */}
         {role === 'vendor' && (
-          <View>
-            <Text style={styles.sectionLabel}>Business Information</Text>
-            <TextInput
-              style={[styles.input, errors.businessName && styles.inputError]}
-              placeholder="Business Name"
-              placeholderTextColor="#999"
-              value={businessName}
-              onChangeText={setBusinessName}
-            />
-            {errors.businessName ? <Text style={styles.errorText}>⚠️ {errors.businessName}</Text> : null}
-
-            <TextInput
-              style={[styles.input, errors.businessCategory && styles.inputError]}
-              placeholder="Business Category (e.g. Food, Crafts, Fashion)"
-              placeholderTextColor="#999"
-              value={businessCategory}
-              onChangeText={setBusinessCategory}
-            />
-            {errors.businessCategory ? <Text style={styles.errorText}>⚠️ {errors.businessCategory}</Text> : null}
-
-            <TextInput
-              style={[styles.input, errors.businessLocation && styles.inputError]}
-              placeholder="Business Location"
-              placeholderTextColor="#999"
-              value={businessLocation}
-              onChangeText={setBusinessLocation}
-            />
-            {errors.businessLocation ? <Text style={styles.errorText}>⚠️ {errors.businessLocation}</Text> : null}
+          <View style={styles.form}>
+            <Text style={styles.sectionLabel}>Business information</Text>
+            {renderInput('businessName', 'Business name', businessName, setBusinessName, 'storefront-outline')}
+            {renderInput('businessCategory', 'Category e.g. Food, Crafts, Fashion', businessCategory, setBusinessCategory, 'pricetag-outline')}
+            {renderInput('businessLocation', 'Business location', businessLocation, setBusinessLocation, 'location-outline')}
           </View>
         )}
 
-        {/* Guide Extra Fields */}
         {role === 'guide' && (
-          <View>
-            <Text style={styles.sectionLabel}>Guide Information</Text>
-            <TextInput
-              style={[styles.input, errors.specialization && styles.inputError]}
-              placeholder="Specialization (e.g. History & Culture)"
-              placeholderTextColor="#999"
-              value={specialization}
-              onChangeText={setSpecialization}
-            />
-            {errors.specialization ? <Text style={styles.errorText}>⚠️ {errors.specialization}</Text> : null}
-
-            <TextInput
-              style={[styles.input, errors.regions && styles.inputError]}
-              placeholder="Regions You Cover (e.g. Greater Accra, Ashanti)"
-              placeholderTextColor="#999"
-              value={regions}
-              onChangeText={setRegions}
-            />
-            {errors.regions ? <Text style={styles.errorText}>⚠️ {errors.regions}</Text> : null}
-
-            <TextInput
-              style={[styles.input, errors.languages && styles.inputError]}
-              placeholder="Languages Spoken (e.g. English, Twi, French)"
-              placeholderTextColor="#999"
-              value={languages}
-              onChangeText={setLanguages}
-            />
-            {errors.languages ? <Text style={styles.errorText}>⚠️ {errors.languages}</Text> : null}
-
-            <TextInput
-              style={[styles.input, errors.experience && styles.inputError]}
-              placeholder="Years of Experience (e.g. 5 years)"
-              placeholderTextColor="#999"
-              value={experience}
-              onChangeText={setExperience}
-            />
-            {errors.experience ? <Text style={styles.errorText}>⚠️ {errors.experience}</Text> : null}
+          <View style={styles.form}>
+            <Text style={styles.sectionLabel}>Guide information</Text>
+            {renderInput('specialization', 'Specialization e.g. History & Culture', specialization, setSpecialization, 'ribbon-outline')}
+            {renderInput('regions', 'Regions you cover', regions, setRegions, 'map-outline')}
+            {renderInput('languages', 'Languages spoken', languages, setLanguages, 'chatbubbles-outline')}
+            {renderInput('experience', 'Years of experience e.g. 5', experience, setExperience, 'time-outline', { keyboard: 'numeric' })}
           </View>
         )}
 
-        <Button 
-  title={role === 'tourist' ? 'Create Account' : 'Submit Application'} 
-  onPress={handleRegister} 
-/>
+        {role !== 'tourist' && (
+          <View style={styles.reviewNote}>
+            <Ionicons name="information-circle-outline" size={18} color={Colors.forest} />
+            <Text style={styles.reviewNoteText}>
+              Vendor and guide accounts are reviewed by our team before going live.
+            </Text>
+          </View>
+        )}
 
-        <TouchableOpacity onPress={() => router.push('/login')}>
-          <Text style={styles.loginText}>Already have an account? Log in</Text>
+        <Button
+          title={role === 'tourist' ? 'Create account' : 'Submit application'}
+          icon={role === 'tourist' ? 'checkmark' : 'paper-plane-outline'}
+          onPress={handleRegister}
+        />
+
+        <TouchableOpacity onPress={() => router.push('/login')} style={styles.loginLink}>
+          <Text style={styles.loginText}>
+            Already have an account? <Text style={styles.loginBold}>Log in</Text>
+          </Text>
         </TouchableOpacity>
-
       </View>
     </ScrollView>
   );
@@ -305,87 +256,123 @@ export default function Register() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: Colors.white,
+  },
+  content: {
     paddingHorizontal: 24,
-    paddingTop: 60,
+    paddingTop: 56,
+    paddingBottom: 48,
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: Colors.mist,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 18,
   },
   title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#006B3F',
-    marginBottom: 8,
+    fontSize: 30,
+    fontWeight: '800',
+    color: Colors.forestDark,
+    marginBottom: 4,
   },
   subtitle: {
-    fontSize: 16,
-    color: '#666',
+    fontSize: 15,
+    color: Colors.slate,
     marginBottom: 24,
   },
   sectionLabel: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#333',
+    fontSize: 12,
+    fontWeight: '800',
+    color: Colors.slate,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
     marginBottom: 10,
-    marginTop: 8,
+    marginTop: 6,
   },
   roleContainer: {
     flexDirection: 'row',
     gap: 10,
-    marginBottom: 24,
+    marginBottom: 22,
   },
   roleButton: {
     flex: 1,
     alignItems: 'center',
+    gap: 6,
     paddingVertical: 14,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: '#e0e0e0',
-    backgroundColor: '#f9f9f9',
+    borderRadius: Radius.md,
+    borderWidth: 1.5,
+    borderColor: Colors.line,
+    backgroundColor: Colors.mist,
   },
   roleButtonActive: {
-    borderColor: '#006B3F',
-    backgroundColor: '#e8f5e9',
-  },
-  roleEmoji: {
-    fontSize: 24,
-    marginBottom: 4,
+    borderColor: Colors.forest,
+    backgroundColor: Colors.forestSoft,
   },
   roleText: {
     fontSize: 12,
-    fontWeight: 'bold',
-    color: '#999',
+    fontWeight: '700',
+    color: Colors.slate,
   },
   roleTextActive: {
-    color: '#006B3F',
+    color: Colors.forest,
   },
   form: {
     gap: 12,
-    paddingBottom: 40,
+  },
+  inputWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: Colors.mist,
+    borderRadius: Radius.md,
+    paddingVertical: 14,
+    paddingHorizontal: 14,
+    borderWidth: 1,
+    borderColor: Colors.line,
   },
   input: {
-    backgroundColor: '#f5f5f5',
-    borderRadius: 12,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    fontSize: 16,
-    color: '#333',
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
+    flex: 1,
+    fontSize: 15,
+    color: Colors.ink,
   },
   inputError: {
-    borderColor: '#cc0000',
-    backgroundColor: '#fff5f5',
+    borderColor: Colors.red,
+    backgroundColor: Colors.redSoft,
   },
   errorText: {
-    color: '#cc0000',
+    color: Colors.red,
     fontSize: 13,
-    marginTop: -4,
+    marginTop: 4,
     marginLeft: 4,
+  },
+  reviewNote: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: Colors.forestSoft,
+    borderRadius: Radius.md,
+    padding: 12,
+  },
+  reviewNoteText: {
+    flex: 1,
+    fontSize: 13,
+    color: Colors.forestDark,
+    lineHeight: 18,
+  },
+  loginLink: {
+    alignItems: 'center',
+    padding: 6,
+    marginTop: 4,
   },
   loginText: {
     fontSize: 14,
-    color: '#006B3F',
-    textAlign: 'center',
-    marginTop: 8,
-    marginBottom: 32,
+    color: Colors.slate,
+  },
+  loginBold: {
+    fontWeight: '800',
+    color: Colors.forest,
   },
 });

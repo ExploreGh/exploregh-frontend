@@ -1,22 +1,26 @@
 import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 
 export default function RootLayout() {
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="splash" />
-      <Stack.Screen name="index" />
-      <Stack.Screen name="register" />
-      <Stack.Screen name="login" />
-      <Stack.Screen name="(tabs)" />
-      <Stack.Screen name="site-details" />
-      <Stack.Screen name="safety-alerts" />
-      <Stack.Screen name="trip-planner" />
-      <Stack.Screen name="cultural-guide" />
-      <Stack.Screen name="phrasebook" />
-      <Stack.Screen name="coming-soon" />
-      <Stack.Screen name="emergency-contacts" />
-      <Stack.Screen name="festivals" />
-      <Stack.Screen name="application-submitted" />
-    </Stack>
+    <>
+      <StatusBar style="light" />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="splash" />
+        <Stack.Screen name="index" />
+        <Stack.Screen name="register" />
+        <Stack.Screen name="login" />
+        <Stack.Screen name="application-submitted" />
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="site-details" />
+        <Stack.Screen name="safety-alerts" />
+        <Stack.Screen name="trip-planner" />
+        <Stack.Screen name="cultural-guide" />
+        <Stack.Screen name="phrasebook" />
+        <Stack.Screen name="emergency-contacts" />
+        <Stack.Screen name="festivals" />
+        <Stack.Screen name="coming-soon" />
+      </Stack>
+    </>
   );
 }

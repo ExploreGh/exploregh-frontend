@@ -1,9 +1,19 @@
-import { TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet, ActivityIndicator, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { Colors, Radius } from '@/constants/theme';
+
+// ============================================================
+// Button — one button for the whole app.
+// variant: 'primary' (green) | 'secondary' (gold) |
+//          'outline' (green border) | 'danger' (red border)
+// icon: optional Ionicons name shown before the title
+// ============================================================
 
 type ButtonProps = {
   title: string;
   onPress: () => void;
   variant?: 'primary' | 'secondary' | 'outline' | 'danger';
+  icon?: keyof typeof Ionicons.glyphMap;
   loading?: boolean;
   disabled?: boolean;
 };
@@ -12,9 +22,16 @@ export default function Button({
   title,
   onPress,
   variant = 'primary',
+  icon,
   loading = false,
   disabled = false,
 }: ButtonProps) {
+  const textColor =
+    variant === 'primary' ? Colors.gold
+    : variant === 'secondary' ? Colors.forestDark
+    : variant === 'danger' ? Colors.red
+    : Colors.forest;
+
   return (
     <TouchableOpacity
       style={[
@@ -27,21 +44,15 @@ export default function Button({
       ]}
       onPress={onPress}
       disabled={disabled || loading}
+      activeOpacity={0.85}
     >
       {loading ? (
-        <ActivityIndicator color={variant === 'primary' ? '#FCD20F' : '#006B3F'} />
+        <ActivityIndicator color={textColor} />
       ) : (
-        <Text
-          style={[
-            styles.text,
-            variant === 'primary' && styles.primaryText,
-            variant === 'secondary' && styles.secondaryText,
-            variant === 'outline' && styles.outlineText,
-            variant === 'danger' && styles.dangerText,
-          ]}
-        >
-          {title}
-        </Text>
+        <View style={styles.content}>
+          {icon ? <Ionicons name={icon} size={18} color={textColor} /> : null}
+          <Text style={[styles.text, { color: textColor }]}>{title}</Text>
+        </View>
       )}
     </TouchableOpacity>
   );
@@ -50,44 +61,32 @@ export default function Button({
 const styles = StyleSheet.create({
   button: {
     paddingVertical: 16,
-    borderRadius: 30,
+    borderRadius: Radius.pill,
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
   },
-  primary: {
-    backgroundColor: '#006B3F',
+  content: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
-  secondary: {
-    backgroundColor: '#FCD20F',
-  },
+  primary: { backgroundColor: Colors.forest },
+  secondary: { backgroundColor: Colors.gold },
   outline: {
     backgroundColor: 'transparent',
     borderWidth: 2,
-    borderColor: '#006B3F',
+    borderColor: Colors.forest,
   },
   danger: {
     backgroundColor: 'transparent',
     borderWidth: 2,
-    borderColor: '#cc0000',
+    borderColor: Colors.red,
   },
-  disabled: {
-    opacity: 0.5,
-  },
+  disabled: { opacity: 0.5 },
   text: {
     fontSize: 16,
-    fontWeight: 'bold',
-  },
-  primaryText: {
-    color: '#FCD20F',
-  },
-  secondaryText: {
-    color: '#006B3F',
-  },
-  outlineText: {
-    color: '#006B3F',
-  },
-  dangerText: {
-    color: '#cc0000',
+    fontWeight: '700',
+    letterSpacing: 0.2,
   },
 });

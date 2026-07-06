@@ -1,27 +1,27 @@
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ViewStyle } from 'react-native';
+import { Colors, Radius, Shadow } from '@/constants/theme';
+
+// ============================================================
+// Card — the standard white rounded container used everywhere.
+// ============================================================
 
 type CardProps = {
   children: React.ReactNode;
-  style?: object;
+  style?: ViewStyle;
 };
 
 export default function Card({ children, style }: CardProps) {
-  return (
-    <View style={[styles.card, style]}>
-      {children}
-    </View>
-  );
+  return <View style={[styles.card, style]}>{children}</View>;
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
+    backgroundColor: Colors.white,
+    borderRadius: Radius.lg,
     padding: 16,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 2,
+    marginBottom: 14,
+    borderWidth: 1,
+    borderColor: Colors.line,
+    ...Shadow.card,
   },
 });

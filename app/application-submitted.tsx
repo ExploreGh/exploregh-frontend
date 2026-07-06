@@ -1,104 +1,101 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { Colors, Radius } from '@/constants/theme';
+import { Button } from '@/components';
+
+const steps = [
+  'Our team reviews your application within 2–3 business days',
+  'You receive an email notification once your account is approved',
+  'Log in with your email and password to access your account',
+];
 
 export default function ApplicationSubmitted() {
   const router = useRouter();
 
   return (
-    <View style={styles.container}>
-
-      {/* Success Icon */}
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.iconContainer}>
-        <Text style={styles.icon}>🎉</Text>
+        <Ionicons name="checkmark-circle" size={64} color={Colors.forest} />
       </View>
 
-      {/* Message */}
-      <Text style={styles.title}>Application Submitted!</Text>
+      <Text style={styles.title}>Application submitted</Text>
       <Text style={styles.subtitle}>Thank you for joining ExploreGH</Text>
 
-      {/* Info Card */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>What happens next?</Text>
-        <View style={styles.step}>
-          <Text style={styles.stepNumber}>1</Text>
-          <Text style={styles.stepText}>Our team will review your application within 2-3 business days</Text>
-        </View>
-        <View style={styles.step}>
-          <Text style={styles.stepNumber}>2</Text>
-          <Text style={styles.stepText}>You will receive an email notification once your account is approved</Text>
-        </View>
-        <View style={styles.step}>
-          <Text style={styles.stepNumber}>3</Text>
-          <Text style={styles.stepText}>Once approved, log in with your email and password to access your account</Text>
-        </View>
+        {steps.map((step, index) => (
+          <View key={index} style={styles.step}>
+            <View style={styles.stepNumber}>
+              <Text style={styles.stepNumberText}>{index + 1}</Text>
+            </View>
+            <Text style={styles.stepText}>{step}</Text>
+          </View>
+        ))}
       </View>
 
-      {/* Info Banner */}
       <View style={styles.banner}>
+        <Ionicons name="mail-unread-outline" size={18} color={Colors.forestDark} />
         <Text style={styles.bannerText}>
-          📧 Make sure to check your email inbox including your spam folder for our approval notification!
+          Check your email inbox — including the spam folder — for our approval notification.
         </Text>
       </View>
 
-      {/* Button */}
-      <TouchableOpacity style={styles.button} onPress={() => router.push('/login')}>
-        <Text style={styles.buttonText}>Go To Login</Text>
-      </TouchableOpacity>
+      <Button title="Go to login" icon="log-in-outline" onPress={() => router.push('/login')} />
 
-      <TouchableOpacity onPress={() => router.push('/')}>
-        <Text style={styles.homeText}>Back to Welcome Screen</Text>
+      <TouchableOpacity onPress={() => router.push('/')} style={styles.homeLink}>
+        <Text style={styles.homeText}>Back to welcome screen</Text>
       </TouchableOpacity>
-
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: Colors.white,
+  },
+  content: {
     paddingHorizontal: 24,
     paddingTop: 80,
+    paddingBottom: 48,
     alignItems: 'center',
   },
   iconContainer: {
-    width: 100,
-    height: 100,
-    backgroundColor: '#e8f5e9',
-    borderRadius: 50,
+    width: 110,
+    height: 110,
+    backgroundColor: Colors.forestSoft,
+    borderRadius: 55,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 24,
   },
-  icon: {
-    fontSize: 50,
-  },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#006B3F',
-    marginBottom: 8,
+    fontSize: 26,
+    fontWeight: '800',
+    color: Colors.forestDark,
+    marginBottom: 6,
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 32,
+    fontSize: 15,
+    color: Colors.slate,
+    marginBottom: 30,
     textAlign: 'center',
   },
   card: {
-    backgroundColor: '#f9f9f9',
-    borderRadius: 16,
+    backgroundColor: Colors.mist,
+    borderRadius: Radius.lg,
     padding: 20,
     width: '100%',
     marginBottom: 16,
     borderLeftWidth: 4,
-    borderLeftColor: '#006B3F',
+    borderLeftColor: Colors.forest,
   },
   cardTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: '800',
+    color: Colors.ink,
     marginBottom: 16,
   },
   step: {
@@ -110,50 +107,45 @@ const styles = StyleSheet.create({
   stepNumber: {
     width: 24,
     height: 24,
-    backgroundColor: '#006B3F',
+    backgroundColor: Colors.forest,
     borderRadius: 12,
-    color: '#FCD20F',
-    fontWeight: 'bold',
-    fontSize: 13,
-    textAlign: 'center',
-    lineHeight: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  stepNumberText: {
+    color: Colors.gold,
+    fontWeight: '800',
+    fontSize: 12,
   },
   stepText: {
     flex: 1,
     fontSize: 14,
-    color: '#555',
+    color: Colors.slate,
     lineHeight: 20,
   },
   banner: {
-    backgroundColor: '#fff9e6',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: Colors.goldSoft,
     padding: 14,
-    borderRadius: 12,
-    borderLeftWidth: 4,
-    borderLeftColor: '#FCD20F',
+    borderRadius: Radius.md,
     width: '100%',
-    marginBottom: 32,
+    marginBottom: 28,
   },
   bannerText: {
+    flex: 1,
     fontSize: 13,
-    color: '#555',
-    lineHeight: 20,
+    color: Colors.ink,
+    lineHeight: 19,
   },
-  button: {
-    backgroundColor: '#006B3F',
-    paddingVertical: 16,
-    borderRadius: 30,
-    alignItems: 'center',
-    width: '100%',
-    marginBottom: 16,
-  },
-  buttonText: {
-    color: '#FCD20F',
-    fontSize: 16,
-    fontWeight: 'bold',
+  homeLink: {
+    marginTop: 16,
+    padding: 6,
   },
   homeText: {
     fontSize: 14,
-    color: '#006B3F',
-    textAlign: 'center',
+    color: Colors.forest,
+    fontWeight: '600',
   },
 });

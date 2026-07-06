@@ -1,22 +1,28 @@
 import { Tabs } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { Colors } from '@/constants/theme';
+
+// ============================================================
+// Tab bar — proper vector icons (no emojis), Ghana colours.
+// ============================================================
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#FCD20F',
-        tabBarInactiveTintColor: '#ffffff',
+        tabBarActiveTintColor: Colors.gold,
+        tabBarInactiveTintColor: 'rgba(255,255,255,0.65)',
         tabBarStyle: {
-          backgroundColor: '#006B3F',
+          backgroundColor: Colors.forestDark,
           borderTopWidth: 0,
           paddingBottom: 8,
           paddingTop: 8,
-          height: 65,
+          height: 66,
         },
         tabBarLabelStyle: {
           fontSize: 11,
-          fontWeight: 'bold',
+          fontWeight: '700',
         },
       }}
     >
@@ -24,8 +30,8 @@ export default function TabLayout() {
         name="home"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => (
-            <TabIcon emoji="🏠" color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'home' : 'home-outline'} size={22} color={color} />
           ),
         }}
       />
@@ -33,8 +39,8 @@ export default function TabLayout() {
         name="explore"
         options={{
           title: 'Explore',
-          tabBarIcon: ({ color }) => (
-            <TabIcon emoji="🗺️" color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'compass' : 'compass-outline'} size={22} color={color} />
           ),
         }}
       />
@@ -42,8 +48,8 @@ export default function TabLayout() {
         name="vendors"
         options={{
           title: 'Vendors',
-          tabBarIcon: ({ color }) => (
-            <TabIcon emoji="🛍️" color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'storefront' : 'storefront-outline'} size={22} color={color} />
           ),
         }}
       />
@@ -51,8 +57,8 @@ export default function TabLayout() {
         name="guides"
         options={{
           title: 'Guides',
-          tabBarIcon: ({ color }) => (
-            <TabIcon emoji="🎖️" color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'people' : 'people-outline'} size={22} color={color} />
           ),
         }}
       />
@@ -60,17 +66,11 @@ export default function TabLayout() {
         name="more"
         options={{
           title: 'More',
-          tabBarIcon: ({ color }) => (
-            <TabIcon emoji="☰" color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'grid' : 'grid-outline'} size={22} color={color} />
           ),
         }}
       />
     </Tabs>
-  );
-}
-
-function TabIcon({ emoji, color }: { emoji: string; color: string }) {
-  return (
-    <span style={{ fontSize: 22 }}>{emoji}</span>
   );
 }

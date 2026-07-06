@@ -1,166 +1,199 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  ImageBackground,
+} from 'react-native';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { Colors, Radius, Shadow } from '@/constants/theme';
+import { KenteStrip } from '@/components';
+import { regions, sites } from '@/data/mockData';
 
-const categories = [
-  { id: '1', name: 'History', emoji: '🏰', count: 24 },
-  { id: '2', name: 'Nature', emoji: '🌿', count: 18 },
-  { id: '3', name: 'Beaches', emoji: '🏖️', count: 12 },
-  { id: '4', name: 'Culture', emoji: '🎭', count: 31 },
-  { id: '5', name: 'Food', emoji: '🍲', count: 45 },
-  { id: '6', name: 'Markets', emoji: '🛒', count: 15 },
-  { id: '7', name: 'Wildlife', emoji: '🐘', count: 8 },
-  { id: '8', name: 'Festivals', emoji: '🎉', count: 22 },
-];
+// ============================================================
+// Explore — browse by category (icon grid) and by region
+// (photo cards). Every tile uses a real image or vector icon.
+// ============================================================
 
-const regions = [
-  { id: '1', name: 'Greater Accra', emoji: '🌆', sites: 34 },
-  { id: '2', name: 'Ashanti Region', emoji: '👑', sites: 28 },
-  { id: '3', name: 'Central Region', emoji: '🏰', sites: 19 },
-  { id: '4', name: 'Volta Region', emoji: '⛰️', sites: 22 },
-  { id: '5', name: 'Savannah Region', emoji: '🐘', sites: 11 },
-  { id: '6', name: 'Western Region', emoji: '🌊', sites: 16 },
+const exploreCategories = [
+  { id: '1', name: 'History', icon: 'business-outline' as const, count: 24 },
+  { id: '2', name: 'Nature', icon: 'leaf-outline' as const, count: 18 },
+  { id: '3', name: 'Beaches', icon: 'water-outline' as const, count: 12 },
+  { id: '4', name: 'Culture', icon: 'color-palette-outline' as const, count: 31 },
+  { id: '5', name: 'Food', icon: 'restaurant-outline' as const, count: 45 },
+  { id: '6', name: 'Markets', icon: 'cart-outline' as const, count: 15 },
+  { id: '7', name: 'Wildlife', icon: 'paw-outline' as const, count: 8 },
+  { id: '8', name: 'Festivals', icon: 'musical-notes-outline' as const, count: 22 },
 ];
 
 export default function Explore() {
   const router = useRouter();
 
   return (
-    <ScrollView style={styles.container}>
-
-      {/* Header */}
+    <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Explore Ghana 🇬🇭</Text>
+        <Text style={styles.headerTitle}>Explore Ghana</Text>
         <Text style={styles.headerSubtitle}>Find your next adventure</Text>
       </View>
+      <KenteStrip />
 
-      {/* Categories */}
-      <Text style={styles.sectionTitle}>Browse by Category</Text>
-      <View style={styles.categoriesGrid}>
-        {categories.map((cat) => (
-          <TouchableOpacity key={cat.id} style={styles.categoryCard} onPress={() => router.push('/site-details')}>
-            <Text style={styles.categoryEmoji}>{cat.emoji}</Text>
-            <Text style={styles.categoryName}>{cat.name}</Text>
-            <Text style={styles.categoryCount}>{cat.count} sites</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* Categories grid */}
+        <Text style={styles.sectionTitle}>Browse by category</Text>
+        <View style={styles.grid}>
+          {exploreCategories.map((cat) => (
+            <TouchableOpacity
+              key={cat.id}
+              style={styles.categoryCard}
+              activeOpacity={0.85}
+              onPress={() => router.push('/(tabs)/home')}
+            >
+              <View style={styles.categoryIcon}>
+                <Ionicons name={cat.icon} size={24} color={Colors.forest} />
+              </View>
+              <Text style={styles.categoryName}>{cat.name}</Text>
+              <Text style={styles.categoryCount}>{cat.count} places</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
 
-      {/* Regions */}
-      <Text style={styles.sectionTitle}>Browse by Region</Text>
-      <View style={styles.regionsList}>
-        {regions.map((region) => (
-          <TouchableOpacity key={region.id} style={styles.regionCard}>
-            <Text style={styles.regionEmoji}>{region.emoji}</Text>
-            <View style={styles.regionInfo}>
-              <Text style={styles.regionName}>{region.name}</Text>
-              <Text style={styles.regionSites}>{region.sites} tourist sites</Text>
-            </View>
-            <Text style={styles.regionArrow}>→</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+        {/* Regions with photos */}
+        <Text style={styles.sectionTitle}>Browse by region</Text>
+        <View style={styles.regionsList}>
+          {regions.map((region) => (
+            <TouchableOpacity
+              key={region.id}
+              activeOpacity={0.9}
+              onPress={() => router.push('/(tabs)/home')}
+            >
+              <ImageBackground
+                source={{ uri: region.image }}
+                style={styles.regionCard}
+                imageStyle={styles.regionImage}
+              >
+                <View style={styles.regionOverlay} />
+                <View style={styles.regionInfo}>
+                  <Text style={styles.regionName}>{region.name}</Text>
+                  <Text style={styles.regionSites}>{region.sitesCount} tourist sites</Text>
+                </View>
+                <View style={styles.regionArrow}>
+                  <Ionicons name="arrow-forward" size={18} color={Colors.forestDark} />
+                </View>
+              </ImageBackground>
+            </TouchableOpacity>
+          ))}
+        </View>
 
-    </ScrollView>
+        <View style={{ height: 24 }} />
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: Colors.mist,
   },
   header: {
-    backgroundColor: '#006B3F',
-    padding: 24,
-    paddingTop: 60,
+    backgroundColor: Colors.forest,
+    paddingTop: 58,
+    paddingBottom: 18,
+    paddingHorizontal: 20,
   },
   headerTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#FCD20F',
-    marginBottom: 4,
+    fontSize: 24,
+    fontWeight: '800',
+    color: Colors.gold,
   },
   headerSubtitle: {
-    fontSize: 14,
-    color: '#ffffff',
+    fontSize: 13,
+    color: Colors.white,
+    marginTop: 3,
     opacity: 0.9,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
+    fontSize: 17,
+    fontWeight: '800',
+    color: Colors.ink,
     marginHorizontal: 16,
     marginTop: 20,
     marginBottom: 12,
   },
-  categoriesGrid: {
+  grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     paddingHorizontal: 16,
-    gap: 12,
+    gap: 10,
   },
   categoryCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    padding: 16,
+    backgroundColor: Colors.white,
+    borderRadius: Radius.lg,
+    paddingVertical: 16,
     alignItems: 'center',
-    width: '47%',
-    shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 2,
+    width: '31%',
+    borderWidth: 1,
+    borderColor: Colors.line,
+    ...Shadow.card,
   },
-  categoryEmoji: {
-    fontSize: 36,
+  categoryIcon: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: Colors.forestSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 8,
   },
   categoryName: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 4,
+    fontSize: 13,
+    fontWeight: '800',
+    color: Colors.ink,
+    marginBottom: 2,
   },
   categoryCount: {
-    fontSize: 12,
-    color: '#006B3F',
-    fontWeight: 'bold',
+    fontSize: 11,
+    color: Colors.slate,
   },
   regionsList: {
     paddingHorizontal: 16,
-    paddingBottom: 24,
-    gap: 10,
+    gap: 12,
   },
   regionCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 14,
-    padding: 16,
+    height: 110,
     flexDirection: 'row',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 2,
+    justifyContent: 'space-between',
+    paddingHorizontal: 18,
   },
-  regionEmoji: {
-    fontSize: 30,
-    marginRight: 14,
+  regionImage: {
+    borderRadius: Radius.lg,
   },
-  regionInfo: {
-    flex: 1,
+  regionOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(6, 32, 19, 0.45)',
+    borderRadius: Radius.lg,
   },
+  regionInfo: {},
   regionName: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 2,
+    fontSize: 18,
+    fontWeight: '800',
+    color: Colors.white,
+    marginBottom: 3,
   },
   regionSites: {
-    fontSize: 13,
-    color: '#666',
+    fontSize: 12,
+    color: Colors.gold,
+    fontWeight: '600',
   },
   regionArrow: {
-    fontSize: 18,
-    color: '#006B3F',
-    fontWeight: 'bold',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: Colors.gold,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

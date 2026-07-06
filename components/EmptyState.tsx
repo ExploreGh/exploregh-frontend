@@ -1,7 +1,13 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { Colors, Radius } from '@/constants/theme';
+
+// ============================================================
+// EmptyState — friendly "nothing here" message with an icon.
+// ============================================================
 
 type EmptyStateProps = {
-  emoji?: string;
+  icon?: keyof typeof Ionicons.glyphMap;
   title: string;
   message: string;
   buttonTitle?: string;
@@ -9,7 +15,7 @@ type EmptyStateProps = {
 };
 
 export default function EmptyState({
-  emoji = '🔍',
+  icon = 'search',
   title,
   message,
   buttonTitle,
@@ -17,7 +23,9 @@ export default function EmptyState({
 }: EmptyStateProps) {
   return (
     <View style={styles.container}>
-      <Text style={styles.emoji}>{emoji}</Text>
+      <View style={styles.iconCircle}>
+        <Ionicons name={icon} size={30} color={Colors.forest} />
+      </View>
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.message}>{message}</Text>
       {buttonTitle && onButtonPress ? (
@@ -33,36 +41,41 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 60,
+    paddingVertical: 56,
     paddingHorizontal: 32,
   },
-  emoji: {
-    fontSize: 60,
+  iconCircle: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: Colors.forestSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 16,
   },
   title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
+    fontSize: 19,
+    fontWeight: '800',
+    color: Colors.ink,
+    marginBottom: 6,
     textAlign: 'center',
   },
   message: {
     fontSize: 14,
-    color: '#666',
+    color: Colors.slate,
     textAlign: 'center',
-    lineHeight: 22,
-    marginBottom: 24,
+    lineHeight: 21,
+    marginBottom: 20,
   },
   button: {
-    backgroundColor: '#006B3F',
+    backgroundColor: Colors.forest,
     paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 30,
+    paddingHorizontal: 26,
+    borderRadius: Radius.pill,
   },
   buttonText: {
-    color: '#FCD20F',
-    fontWeight: 'bold',
+    color: Colors.gold,
+    fontWeight: '700',
     fontSize: 14,
   },
 });

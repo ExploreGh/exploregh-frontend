@@ -2,3 +2,8 @@ export { default as Button } from './Button';
 export { default as Card } from './Card';
 export { default as LoadingSpinner } from './LoadingSpinner';
 export { default as EmptyState } from './EmptyState';
+export { default as KenteStrip } from './KenteStrip';
+export { default as ScreenHeader } from './ScreenHeader';
+export { default as SearchBar } from './SearchBar';
+export { default as Chip } from './Chip';
+export { default as Avatar } from './Avatar';

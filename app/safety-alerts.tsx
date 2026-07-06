@@ -1,98 +1,71 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { Colors, Radius, Shadow } from '@/constants/theme';
+import { ScreenHeader } from '@/components';
+import { safetyAlerts } from '@/data/mockData';
 
-const alerts = [
-  {
-    id: '1',
-    title: 'Pickpocket Warning',
-    region: 'Accra Central',
-    severity: 'high',
-    time: '2 hours ago',
-    description: 'Multiple tourists reported pickpockets near Makola Market. Keep your belongings secure.',
-    emoji: '⚠️',
-  },
-  {
-    id: '2',
-    title: 'Road Closure',
-    region: 'Cape Coast',
-    severity: 'medium',
-    time: '5 hours ago',
-    description: 'The main road to Cape Coast Castle is partially closed due to construction. Use alternative route via Market Road.',
-    emoji: '🚧',
-  },
-  {
-    id: '3',
-    title: 'Scam Alert',
-    region: 'Kumasi',
-    severity: 'high',
-    time: '1 day ago',
-    description: 'Fake tour guides reported near Kejetia Market. Always verify guide credentials through ExploreGH.',
-    emoji: '🚨',
-  },
-  {
-    id: '4',
-    title: 'Beach Advisory',
-    region: 'Labadi Beach',
-    severity: 'low',
-    time: '2 days ago',
-    description: 'Strong currents reported at Labadi Beach. Swimming is not recommended until further notice.',
-    emoji: '🌊',
-  },
-];
+// ============================================================
+// Safety Alerts — community-reported incidents with severity
+// badges and icons. Header uses red to signal urgency.
+// ============================================================
 
-const severityColors: Record<string, string> = {
-  high: '#cc0000',
-  medium: '#ff8800',
-  low: '#006B3F',
+const severityStyles = {
+  high: { color: Colors.red, bg: Colors.redSoft, icon: 'alert-circle' as const },
+  medium: { color: '#B96A00', bg: Colors.goldSoft, icon: 'warning' as const },
+  low: { color: Colors.forest, bg: Colors.forestSoft, icon: 'information-circle' as const },
 };
 
 export default function SafetyAlerts() {
-  const router = useRouter();
-
   return (
     <View style={styles.container}>
+      <ScreenHeader title="Safety Alerts" subtitle="Community-reported, in real time" />
 
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Text style={styles.backText}>← Back</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Safety Alerts</Text>
-        <View />
-      </View>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.banner}>
+          <Ionicons name="shield-checkmark-outline" size={18} color={Colors.forestDark} />
+          <Text style={styles.bannerText}>
+            Stay safe. Alerts are reported and confirmed by the ExploreGH community.
+          </Text>
+        </View>
 
-      {/* Info Banner */}
-      <View style={styles.banner}>
-        <Text style={styles.bannerText}>
-          🛡️ Stay safe! These alerts are reported by the ExploreGH community in real time.
-        </Text>
-      </View>
-
-      {/* Alerts List */}
-      <ScrollView style={styles.alertsList}>
-        {alerts.map((alert) => (
-          <View key={alert.id} style={styles.alertCard}>
-            <View style={styles.alertHeader}>
-              <Text style={styles.alertEmoji}>{alert.emoji}</Text>
-              <View style={styles.alertHeaderText}>
-                <Text style={styles.alertTitle}>{alert.title}</Text>
-                <Text style={styles.alertRegion}>📍 {alert.region}</Text>
+        <View style={styles.list}>
+          {safetyAlerts.map((alert) => {
+            const s = severityStyles[alert.severity];
+            return (
+              <View key={alert.id} style={styles.card}>
+                <View style={styles.cardTop}>
+                  <View style={[styles.iconCircle, { backgroundColor: s.bg }]}>
+                    <Ionicons name={s.icon} size={20} color={s.color} />
+                  </View>
+                  <View style={styles.headerInfo}>
+                    <Text style={styles.alertTitle}>{alert.title}</Text>
+                    <View style={styles.metaRow}>
+                      <Ionicons name="location-outline" size={12} color={Colors.slate} />
+                      <Text style={styles.metaText}>{alert.region}</Text>
+                    </View>
+                  </View>
+                  <View style={[styles.severityBadge, { backgroundColor: s.color }]}>
+                    <Text style={styles.severityText}>{alert.severity.toUpperCase()}</Text>
+                  </View>
+                </View>
+                <Text style={styles.description}>{alert.description}</Text>
+                <View style={styles.timeRow}>
+                  <Ionicons name="time-outline" size={12} color={Colors.slate} />
+                  <Text style={styles.timeText}>{alert.time}</Text>
+                </View>
               </View>
-              <View style={[styles.severityBadge, { backgroundColor: severityColors[alert.severity] }]}>
-                <Text style={styles.severityText}>{alert.severity.toUpperCase()}</Text>
-              </View>
-            </View>
-            <Text style={styles.alertDescription}>{alert.description}</Text>
-            <Text style={styles.alertTime}>🕐 {alert.time}</Text>
-          </View>
-        ))}
+            );
+          })}
+        </View>
+
+        <View style={{ height: 90 }} />
       </ScrollView>
 
-      {/* Report Button */}
-      <TouchableOpacity style={styles.reportButton}>
-        <Text style={styles.reportButtonText}>⚠️ Report a Safety Issue</Text>
+      {/* Floating report button */}
+      <TouchableOpacity style={styles.reportButton} activeOpacity={0.9}>
+        <Ionicons name="megaphone-outline" size={18} color={Colors.white} />
+        <Text style={styles.reportText}>Report a safety issue</Text>
       </TouchableOpacity>
-
     </View>
   );
 }
@@ -100,105 +73,111 @@ export default function SafetyAlerts() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  header: {
-    backgroundColor: '#006B3F',
-    paddingTop: 60,
-    paddingBottom: 20,
-    paddingHorizontal: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  backText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  headerTitle: {
-    color: '#FCD20F',
-    fontSize: 20,
-    fontWeight: 'bold',
+    backgroundColor: Colors.mist,
   },
   banner: {
-    backgroundColor: '#fff3cd',
-    padding: 14,
-    margin: 16,
-    borderRadius: 12,
-    borderLeftWidth: 4,
-    borderLeftColor: '#ff8800',
-  },
-  bannerText: {
-    fontSize: 13,
-    color: '#555',
-    lineHeight: 20,
-  },
-  alertsList: {
-    paddingHorizontal: 16,
-  },
-  alertCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  alertHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
     gap: 10,
+    backgroundColor: Colors.goldSoft,
+    padding: 14,
+    margin: 16,
+    borderRadius: Radius.md,
+    borderLeftWidth: 4,
+    borderLeftColor: Colors.gold,
   },
-  alertEmoji: {
-    fontSize: 28,
+  bannerText: {
+    flex: 1,
+    fontSize: 13,
+    color: Colors.ink,
+    lineHeight: 19,
   },
-  alertHeaderText: {
+  list: {
+    paddingHorizontal: 16,
+    gap: 12,
+  },
+  card: {
+    backgroundColor: Colors.white,
+    borderRadius: Radius.lg,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: Colors.line,
+    ...Shadow.card,
+  },
+  cardTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 10,
+  },
+  iconCircle: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerInfo: {
     flex: 1,
   },
   alertTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#222',
+    fontSize: 15,
+    fontWeight: '800',
+    color: Colors.ink,
+    marginBottom: 2,
   },
-  alertRegion: {
-    fontSize: 13,
-    color: '#666',
-    marginTop: 2,
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+  },
+  metaText: {
+    fontSize: 12,
+    color: Colors.slate,
   },
   severityBadge: {
     paddingVertical: 4,
-    paddingHorizontal: 10,
-    borderRadius: 20,
+    paddingHorizontal: 9,
+    borderRadius: Radius.pill,
   },
   severityText: {
-    color: '#ffffff',
-    fontSize: 11,
-    fontWeight: 'bold',
+    color: Colors.white,
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 0.5,
   },
-  alertDescription: {
-    fontSize: 14,
-    color: '#555',
-    lineHeight: 21,
+  description: {
+    fontSize: 13,
+    color: Colors.slate,
+    lineHeight: 20,
     marginBottom: 8,
   },
-  alertTime: {
+  timeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  timeText: {
     fontSize: 12,
-    color: '#999',
+    color: Colors.slate,
   },
   reportButton: {
-    backgroundColor: '#cc0000',
-    margin: 16,
-    paddingVertical: 16,
-    borderRadius: 30,
+    position: 'absolute',
+    bottom: 20,
+    left: 16,
+    right: 16,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: Colors.red,
+    paddingVertical: 16,
+    borderRadius: Radius.pill,
+    ...Shadow.card,
   },
-  reportButtonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: 'bold',
+  reportText: {
+    color: Colors.white,
+    fontSize: 15,
+    fontWeight: '800',
   },
 });

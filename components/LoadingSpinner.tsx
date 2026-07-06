@@ -1,4 +1,9 @@
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { Colors } from '@/constants/theme';
+
+// ============================================================
+// LoadingSpinner — shown while waiting for data (backend later).
+// ============================================================
 
 type LoadingSpinnerProps = {
   message?: string;
@@ -9,7 +14,7 @@ type LoadingSpinnerProps = {
 export default function LoadingSpinner({
   message = 'Loading...',
   size = 'large',
-  color = '#006B3F',
+  color = Colors.forest,
 }: LoadingSpinnerProps) {
   return (
     <View style={styles.container}>
@@ -29,7 +34,7 @@ const styles = StyleSheet.create({
   message: {
     marginTop: 12,
     fontSize: 14,
-    color: '#666',
+    color: Colors.slate,
     textAlign: 'center',
   },
 });

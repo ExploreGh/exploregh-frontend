@@ -1,170 +1,154 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput } from 'react-native';
-import { useRouter } from 'expo-router';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { Colors, Radius, Shadow } from '@/constants/theme';
+import { SearchBar, EmptyState, KenteStrip } from '@/components';
+import { guides } from '@/data/mockData';
 
-const guides = [
-  {
-    id: '1',
-    name: 'Kwame Asante',
-    specialization: 'History & Culture',
-    regions: 'Central Region, Greater Accra',
-    languages: 'English, Twi, French',
-    rating: '4.9',
-    reviews: 214,
-    experience: '8 years',
-    price: 'GHS 200/day',
-    emoji: '👨🏾‍🦱',
-    available: true,
-  },
-  {
-    id: '2',
-    name: 'Abena Mensah',
-    specialization: 'Nature & Wildlife',
-    regions: 'Savannah Region, Brong-Ahafo',
-    languages: 'English, Twi',
-    rating: '4.8',
-    reviews: 156,
-    experience: '5 years',
-    price: 'GHS 180/day',
-    emoji: '👩🏾',
-    available: true,
-  },
-  {
-    id: '3',
-    name: 'Kofi Boateng',
-    specialization: 'Food & Markets',
-    regions: 'Ashanti Region, Greater Accra',
-    languages: 'English, Twi, Ga',
-    rating: '5.0',
-    reviews: 89,
-    experience: '3 years',
-    price: 'GHS 150/day',
-    emoji: '👨🏾',
-    available: false,
-  },
-  {
-    id: '4',
-    name: 'Ama Owusu',
-    specialization: 'Festivals & Traditions',
-    regions: 'Volta Region, Oti Region',
-    languages: 'English, Ewe, Twi',
-    rating: '4.7',
-    reviews: 103,
-    experience: '6 years',
-    price: 'GHS 190/day',
-    emoji: '👩🏾‍🦱',
-    available: true,
-  },
-];
+// ============================================================
+// Guides — verified tour guides with real portrait photos,
+// availability filter, and detail rows using icons.
+// ============================================================
 
 export default function Guides() {
-  const router = useRouter();
   const [search, setSearch] = useState('');
   const [showAvailableOnly, setShowAvailableOnly] = useState(false);
 
-  const filteredGuides = guides.filter(guide => {
+  const filteredGuides = guides.filter((guide) => {
+    const q = search.toLowerCase();
     const matchesSearch =
-      guide.name.toLowerCase().includes(search.toLowerCase()) ||
-      guide.specialization.toLowerCase().includes(search.toLowerCase()) ||
-      guide.regions.toLowerCase().includes(search.toLowerCase()) ||
-      guide.languages.toLowerCase().includes(search.toLowerCase());
-
+      guide.name.toLowerCase().includes(q) ||
+      guide.specialization.toLowerCase().includes(q) ||
+      guide.regions.toLowerCase().includes(q) ||
+      guide.languages.toLowerCase().includes(q);
     const matchesAvailability = showAvailableOnly ? guide.available : true;
-
     return matchesSearch && matchesAvailability;
   });
 
   return (
     <View style={styles.container}>
-
-      {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Tour Guides 🎖️</Text>
+        <Text style={styles.headerTitle}>Tour Guides</Text>
         <Text style={styles.headerSubtitle}>Verified local experts across Ghana</Text>
       </View>
+      <KenteStrip />
 
-      <ScrollView>
-        {/* Search */}
-        <View style={styles.searchContainer}>
-          <Text style={styles.searchIcon}>🔍</Text>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search by name, region or specialty..."
-            placeholderTextColor="#999"
-            value={search}
-            onChangeText={setSearch}
-          />
-          {search ? (
-            <TouchableOpacity onPress={() => setSearch('')}>
-              <Text style={styles.clearText}>✕</Text>
-            </TouchableOpacity>
-          ) : null}
-        </View>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <SearchBar
+          value={search}
+          onChangeText={setSearch}
+          placeholder="Search by name, region or specialty..."
+        />
 
-        {/* Filter Button */}
+        {/* Filter row */}
         <View style={styles.filterRow}>
           <TouchableOpacity
             style={[styles.filterButton, showAvailableOnly && styles.filterButtonActive]}
             onPress={() => setShowAvailableOnly(!showAvailableOnly)}
+            activeOpacity={0.8}
           >
+            <Ionicons
+              name={showAvailableOnly ? 'checkmark-circle' : 'checkmark-circle-outline'}
+              size={16}
+              color={showAvailableOnly ? Colors.gold : Colors.forest}
+            />
             <Text style={[styles.filterText, showAvailableOnly && styles.filterTextActive]}>
-              ✅ Available Only
+              Available only
             </Text>
           </TouchableOpacity>
-          <Text style={styles.countText}>
+          <Text style={styles.count}>
             {filteredGuides.length} guide{filteredGuides.length !== 1 ? 's' : ''} found
           </Text>
         </View>
 
-        {/* Banner */}
+        {/* Verified banner */}
         <View style={styles.banner}>
-          <Text style={styles.bannerText}>🎖️ All guides are verified and certified by ExploreGH!</Text>
+          <Ionicons name="shield-checkmark" size={18} color={Colors.forest} />
+          <Text style={styles.bannerText}>
+            All guides are verified and certified by ExploreGH before appearing here.
+          </Text>
         </View>
 
-        {/* Guides */}
-        <View style={styles.guidesList}>
-
-          {/* Empty State */}
-          {filteredGuides.length === 0 ? (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyEmoji}>🔍</Text>
-              <Text style={styles.emptyTitle}>No guides found</Text>
-              <Text style={styles.emptyText}>Try a different name, region or specialty</Text>
-            </View>
-          ) : (
-            filteredGuides.map((guide) => (
-              <View key={guide.id} style={styles.guideCard}>
-                <View style={styles.guideTop}>
-                  <View style={styles.guideAvatar}>
-                    <Text style={styles.guideAvatarText}>{guide.emoji}</Text>
+        {filteredGuides.length === 0 ? (
+          <EmptyState
+            icon="people-outline"
+            title="No guides found"
+            message="Try a different name, region or specialty."
+          />
+        ) : (
+          <View style={styles.list}>
+            {filteredGuides.map((guide) => (
+              <View key={guide.id} style={styles.card}>
+                <View style={styles.cardTop}>
+                  <Image source={{ uri: guide.photo }} style={styles.photo} />
+                  <View style={styles.headerInfo}>
+                    <View style={styles.nameRow}>
+                      <Text style={styles.guideName}>{guide.name}</Text>
+                      <Ionicons name="checkmark-circle" size={15} color={Colors.forest} />
+                    </View>
+                    <Text style={styles.specialization}>{guide.specialization}</Text>
+                    <View style={styles.ratingRow}>
+                      <Ionicons name="star" size={13} color={Colors.gold} />
+                      <Text style={styles.ratingText}>{guide.rating}</Text>
+                      <Text style={styles.reviewsText}>({guide.reviews} reviews)</Text>
+                    </View>
                   </View>
-                  <View style={styles.guideHeader}>
-                    <Text style={styles.guideName}>{guide.name}</Text>
-                    <Text style={styles.guideSpecialization}>🎯 {guide.specialization}</Text>
-                    <Text style={styles.guideRating}>⭐ {guide.rating} ({guide.reviews} reviews)</Text>
-                  </View>
-                  <View style={[styles.availabilityBadge, { backgroundColor: guide.available ? '#006B3F' : '#999' }]}>
-                    <Text style={styles.availabilityText}>{guide.available ? 'Available' : 'Busy'}</Text>
-                  </View>
-                </View>
-                <View style={styles.guideDetails}>
-                  <Text style={styles.detailText}>📍 {guide.regions}</Text>
-                  <Text style={styles.detailText}>🗣️ {guide.languages}</Text>
-                  <Text style={styles.detailText}>⏳ {guide.experience} experience</Text>
-                </View>
-                <View style={styles.guideBottom}>
-                  <Text style={styles.guidePrice}>💰 {guide.price}</Text>
-                  <TouchableOpacity
-                    style={[styles.bookButton, { backgroundColor: guide.available ? '#006B3F' : '#ccc' }]}
-                    disabled={!guide.available}
+                  <View
+                    style={[
+                      styles.availabilityBadge,
+                      { backgroundColor: guide.available ? Colors.forest : Colors.slate },
+                    ]}
                   >
-                    <Text style={styles.bookButtonText}>{guide.available ? 'Book Now' : 'Unavailable'}</Text>
+                    <Text style={styles.availabilityText}>
+                      {guide.available ? 'Available' : 'Busy'}
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={styles.details}>
+                  <View style={styles.detailRow}>
+                    <Ionicons name="map-outline" size={14} color={Colors.slate} />
+                    <Text style={styles.detailText}>{guide.regions}</Text>
+                  </View>
+                  <View style={styles.detailRow}>
+                    <Ionicons name="chatbubbles-outline" size={14} color={Colors.slate} />
+                    <Text style={styles.detailText}>{guide.languages}</Text>
+                  </View>
+                  <View style={styles.detailRow}>
+                    <Ionicons name="time-outline" size={14} color={Colors.slate} />
+                    <Text style={styles.detailText}>{guide.experience} experience</Text>
+                  </View>
+                </View>
+
+                <View style={styles.cardBottom}>
+                  <View style={styles.priceRow}>
+                    <Ionicons name="cash-outline" size={15} color={Colors.forest} />
+                    <Text style={styles.priceText}>{guide.price}</Text>
+                  </View>
+                  <TouchableOpacity
+                    style={[
+                      styles.bookButton,
+                      { backgroundColor: guide.available ? Colors.forest : Colors.line },
+                    ]}
+                    disabled={!guide.available}
+                    activeOpacity={0.85}
+                  >
+                    <Text
+                      style={[
+                        styles.bookText,
+                        { color: guide.available ? Colors.gold : Colors.slate },
+                      ]}
+                    >
+                      {guide.available ? 'Book now' : 'Unavailable'}
+                    </Text>
                   </TouchableOpacity>
                 </View>
               </View>
-            ))
-          )}
-        </View>
+            ))}
+          </View>
+        )}
+
+        <View style={{ height: 24 }} />
       </ScrollView>
     </View>
   );
@@ -173,204 +157,184 @@ export default function Guides() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: Colors.mist,
   },
   header: {
-    backgroundColor: '#006B3F',
-    padding: 24,
-    paddingTop: 60,
+    backgroundColor: Colors.forest,
+    paddingTop: 58,
+    paddingBottom: 18,
+    paddingHorizontal: 20,
   },
   headerTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#FCD20F',
-    marginBottom: 4,
+    fontWeight: '800',
+    color: Colors.gold,
   },
   headerSubtitle: {
-    fontSize: 14,
-    color: '#ffffff',
+    fontSize: 13,
+    color: Colors.white,
+    marginTop: 3,
     opacity: 0.9,
-  },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#ffffff',
-    margin: 16,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  searchIcon: {
-    fontSize: 18,
-    marginRight: 8,
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: 16,
-    color: '#333',
-  },
-  clearText: {
-    fontSize: 16,
-    color: '#999',
-    paddingLeft: 8,
   },
   filterRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    marginBottom: 12,
+    marginTop: 14,
   },
   filterButton: {
-    backgroundColor: '#e8f5e9',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: Colors.white,
     paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
+    paddingHorizontal: 14,
+    borderRadius: Radius.pill,
     borderWidth: 1,
-    borderColor: '#006B3F',
+    borderColor: Colors.forest,
   },
   filterButtonActive: {
-    backgroundColor: '#006B3F',
+    backgroundColor: Colors.forest,
   },
   filterText: {
-    color: '#006B3F',
-    fontWeight: 'bold',
     fontSize: 13,
+    fontWeight: '700',
+    color: Colors.forest,
   },
   filterTextActive: {
-    color: '#FCD20F',
+    color: Colors.gold,
   },
-  countText: {
+  count: {
     fontSize: 13,
-    color: '#666',
-    fontWeight: 'bold',
+    fontWeight: '700',
+    color: Colors.slate,
   },
   banner: {
-    backgroundColor: '#e8f5e9',
-    padding: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: Colors.forestSoft,
+    padding: 13,
     marginHorizontal: 16,
-    marginBottom: 16,
-    borderRadius: 12,
-    borderLeftWidth: 4,
-    borderLeftColor: '#006B3F',
+    marginTop: 14,
+    borderRadius: Radius.md,
   },
   bannerText: {
+    flex: 1,
     fontSize: 13,
-    color: '#555',
+    color: Colors.forestDark,
+    lineHeight: 18,
   },
-  guidesList: {
+  list: {
     paddingHorizontal: 16,
+    paddingTop: 14,
+    gap: 14,
   },
-  guideCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 2,
+  card: {
+    backgroundColor: Colors.white,
+    borderRadius: Radius.lg,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: Colors.line,
+    ...Shadow.card,
   },
-  guideTop: {
+  cardTop: {
     flexDirection: 'row',
     alignItems: 'flex-start',
+    gap: 12,
     marginBottom: 12,
-    gap: 10,
   },
-  guideAvatar: {
-    width: 55,
-    height: 55,
-    backgroundColor: '#e8f5e9',
+  photo: {
+    width: 56,
+    height: 56,
     borderRadius: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: Colors.mist,
+    borderWidth: 2,
+    borderColor: Colors.gold,
   },
-  guideAvatarText: {
-    fontSize: 28,
-  },
-  guideHeader: {
+  headerInfo: {
     flex: 1,
+  },
+  nameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    marginBottom: 2,
   },
   guideName: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#222',
-    marginBottom: 2,
+    fontWeight: '800',
+    color: Colors.ink,
   },
-  guideSpecialization: {
+  specialization: {
     fontSize: 13,
-    color: '#666',
-    marginBottom: 2,
+    color: Colors.slate,
+    marginBottom: 4,
   },
-  guideRating: {
+  ratingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  ratingText: {
     fontSize: 12,
-    color: '#333',
+    fontWeight: '800',
+    color: Colors.ink,
+  },
+  reviewsText: {
+    fontSize: 12,
+    color: Colors.slate,
   },
   availabilityBadge: {
     paddingVertical: 4,
     paddingHorizontal: 10,
-    borderRadius: 20,
+    borderRadius: Radius.pill,
   },
   availabilityText: {
-    color: '#ffffff',
+    color: Colors.white,
     fontSize: 11,
-    fontWeight: 'bold',
+    fontWeight: '800',
   },
-  guideDetails: {
-    backgroundColor: '#f9f9f9',
-    borderRadius: 10,
-    padding: 10,
+  details: {
+    backgroundColor: Colors.mist,
+    borderRadius: Radius.md,
+    padding: 12,
+    gap: 8,
     marginBottom: 12,
-    gap: 4,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   detailText: {
+    flex: 1,
     fontSize: 13,
-    color: '#555',
-    marginBottom: 2,
+    color: Colors.slate,
   },
-  guideBottom: {
+  cardBottom: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  guidePrice: {
+  priceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
+  priceText: {
     fontSize: 14,
-    fontWeight: 'bold',
-    color: '#006B3F',
+    fontWeight: '800',
+    color: Colors.forest,
   },
   bookButton: {
-    paddingVertical: 8,
+    paddingVertical: 9,
     paddingHorizontal: 20,
-    borderRadius: 20,
+    borderRadius: Radius.pill,
   },
-  bookButtonText: {
-    color: '#FCD20F',
-    fontWeight: 'bold',
+  bookText: {
+    fontWeight: '800',
     fontSize: 13,
-  },
-  emptyState: {
-    alignItems: 'center',
-    paddingVertical: 60,
-    paddingHorizontal: 32,
-  },
-  emptyEmoji: {
-    fontSize: 60,
-    marginBottom: 16,
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
-  },
-  emptyText: {
-    fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
-    lineHeight: 22,
   },
 });

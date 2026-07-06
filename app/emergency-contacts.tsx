@@ -1,112 +1,53 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { Colors, Radius, Shadow } from '@/constants/theme';
+import { ScreenHeader } from '@/components';
+import { emergencyServices } from '@/data/mockData';
 
-const emergencyServices = [
-  {
-    id: '1',
-    category: 'Police',
-    emoji: '🚔',
-    color: '#003580',
-    contacts: [
-      { name: 'Ghana Police Service', number: '191' },
-      { name: 'Police Emergency', number: '18555' },
-      { name: 'Motor Traffic & Transport', number: '054 191 0001' },
-    ],
-  },
-  {
-    id: '2',
-    category: 'Medical',
-    emoji: '🏥',
-    color: '#cc0000',
-    contacts: [
-      { name: 'Ambulance Service', number: '193' },
-      { name: 'Korle Bu Teaching Hospital', number: '030 250 1300' },
-      { name: 'Komfo Anokye Teaching Hospital', number: '032 202 2301' },
-      { name: 'Ridge Hospital Accra', number: '030 266 1947' },
-    ],
-  },
-  {
-    id: '3',
-    category: 'Fire Service',
-    emoji: '🚒',
-    color: '#cc0000',
-    contacts: [
-      { name: 'Ghana National Fire Service', number: '192' },
-      { name: 'Fire Emergency', number: '030 222 5678' },
-    ],
-  },
-  {
-    id: '4',
-    category: 'Tourist Support',
-    emoji: '🌍',
-    color: '#006B3F',
-    contacts: [
-      { name: 'Ghana Tourism Authority', number: '030 223 3200' },
-      { name: 'Tourist Police Unit', number: '030 277 3906' },
-      { name: 'GIPC Tourist Helpline', number: '0800 900 900' },
-    ],
-  },
-  {
-    id: '5',
-    category: 'Embassies in Ghana',
-    emoji: '🏛️',
-    color: '#555',
-    contacts: [
-      { name: 'US Embassy Accra', number: '030 274 1000' },
-      { name: 'UK High Commission', number: '030 221 3250' },
-      { name: 'Nigerian High Commission', number: '030 277 4521' },
-      { name: 'French Embassy', number: '030 221 3094' },
-      { name: 'Chinese Embassy', number: '030 277 3388' },
-    ],
-  },
-];
+// ============================================================
+// Emergency Contacts — category cards with coloured icon
+// headers and tappable call rows.
+// ============================================================
 
 export default function EmergencyContacts() {
-  const router = useRouter();
-
   return (
     <View style={styles.container}>
+      <ScreenHeader title="Emergency Contacts" subtitle="Help is one tap away" color={Colors.red} />
 
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Text style={styles.backText}>← Back</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Emergency Contacts</Text>
-        <View />
-      </View>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.banner}>
+          <Ionicons name="call-outline" size={18} color={Colors.ink} />
+          <Text style={styles.bannerText}>
+            Save these numbers before travelling — networks can be slow in remote areas.
+          </Text>
+        </View>
 
-      {/* Banner */}
-      <View style={styles.banner}>
-        <Text style={styles.bannerText}>
-          🚨 Save these numbers before you travel. In an emergency, every second counts!
-        </Text>
-      </View>
-
-      <ScrollView style={styles.list}>
-        {emergencyServices.map((service) => (
-          <View key={service.id} style={styles.serviceCard}>
-
-            {/* Category Header */}
-            <View style={[styles.categoryHeader, { backgroundColor: service.color }]}>
-              <Text style={styles.categoryEmoji}>{service.emoji}</Text>
-              <Text style={styles.categoryName}>{service.category}</Text>
-            </View>
-
-            {/* Contacts */}
-            {service.contacts.map((contact, index) => (
-              <View key={index} style={styles.contactRow}>
-                <Text style={styles.contactName}>{contact.name}</Text>
-                <View style={styles.numberBadge}>
-                  <Text style={styles.contactNumber}>{contact.number}</Text>
-                </View>
+        <View style={styles.list}>
+          {emergencyServices.map((service) => (
+            <View key={service.id} style={styles.card}>
+              <View style={[styles.cardHeader, { backgroundColor: service.color }]}>
+                <Ionicons name={service.icon as any} size={18} color={Colors.white} />
+                <Text style={styles.cardHeaderText}>{service.category}</Text>
               </View>
-            ))}
+              <View style={styles.contacts}>
+                {service.contacts.map((contact, index) => (
+                  <TouchableOpacity key={index} style={styles.contactRow} activeOpacity={0.7}>
+                    <View style={styles.contactInfo}>
+                      <Text style={styles.contactName}>{contact.name}</Text>
+                    </View>
+                    <View style={styles.numberBadge}>
+                      <Ionicons name="call" size={13} color={Colors.forest} />
+                      <Text style={styles.numberText}>{contact.number}</Text>
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          ))}
+        </View>
 
-          </View>
-        ))}
+        <View style={{ height: 24 }} />
       </ScrollView>
-
     </View>
   );
 }
@@ -114,90 +55,80 @@ export default function EmergencyContacts() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  header: {
-    backgroundColor: '#cc0000',
-    paddingTop: 60,
-    paddingBottom: 20,
-    paddingHorizontal: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  backText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  headerTitle: {
-    color: '#ffffff',
-    fontSize: 20,
-    fontWeight: 'bold',
+    backgroundColor: Colors.mist,
   },
   banner: {
-    backgroundColor: '#fff3cd',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: Colors.goldSoft,
     padding: 14,
     margin: 16,
-    borderRadius: 12,
+    borderRadius: Radius.md,
     borderLeftWidth: 4,
-    borderLeftColor: '#cc0000',
+    borderLeftColor: Colors.gold,
   },
   bannerText: {
+    flex: 1,
     fontSize: 13,
-    color: '#555',
-    lineHeight: 20,
+    color: Colors.ink,
+    lineHeight: 19,
   },
   list: {
     paddingHorizontal: 16,
+    gap: 14,
   },
-  serviceCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    marginBottom: 16,
+  card: {
+    backgroundColor: Colors.white,
+    borderRadius: Radius.lg,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 2,
+    borderWidth: 1,
+    borderColor: Colors.line,
+    ...Shadow.card,
   },
-  categoryHeader: {
+  cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 14,
-    gap: 10,
+    gap: 9,
+    paddingVertical: 12,
+    paddingHorizontal: 15,
   },
-  categoryEmoji: {
-    fontSize: 24,
+  cardHeaderText: {
+    color: Colors.white,
+    fontSize: 15,
+    fontWeight: '800',
   },
-  categoryName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#ffffff',
+  contacts: {
+    padding: 6,
   },
   contactRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f5f5f5',
+    paddingVertical: 11,
+    paddingHorizontal: 10,
+    gap: 10,
+  },
+  contactInfo: {
+    flex: 1,
   },
   contactName: {
     fontSize: 14,
-    color: '#333',
-    flex: 1,
+    color: Colors.ink,
+    fontWeight: '600',
   },
   numberBadge: {
-    backgroundColor: '#006B3F',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: Colors.forestSoft,
     paddingVertical: 6,
     paddingHorizontal: 12,
-    borderRadius: 20,
+    borderRadius: Radius.pill,
   },
-  contactNumber: {
-    color: '#FCD20F',
-    fontWeight: 'bold',
+  numberText: {
     fontSize: 13,
+    fontWeight: '800',
+    color: Colors.forest,
   },
 });

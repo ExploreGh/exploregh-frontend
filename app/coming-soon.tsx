@@ -1,18 +1,23 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { Colors, Radius } from '@/constants/theme';
 
 export default function ComingSoon() {
   const router = useRouter();
 
   return (
     <View style={styles.container}>
-      <Text style={styles.emoji}>🚧</Text>
-      <Text style={styles.title}>Coming Soon!</Text>
+      <View style={styles.iconCircle}>
+        <Ionicons name="construct-outline" size={44} color={Colors.gold} />
+      </View>
+      <Text style={styles.title}>Coming soon</Text>
       <Text style={styles.subtitle}>
-        The Currency Converter will be available once our live exchange rate service is connected.
+        This feature will be available once our live services are connected. Check back shortly!
       </Text>
       <TouchableOpacity style={styles.button} onPress={() => router.back()}>
-        <Text style={styles.buttonText}>← Go Back</Text>
+        <Ionicons name="arrow-back" size={16} color={Colors.forestDark} />
+        <Text style={styles.buttonText}>Go back</Text>
       </TouchableOpacity>
     </View>
   );
@@ -21,38 +26,46 @@ export default function ComingSoon() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#006B3F',
+    backgroundColor: Colors.forest,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 32,
   },
-  emoji: {
-    fontSize: 80,
-    marginBottom: 24,
+  iconCircle: {
+    width: 110,
+    height: 110,
+    borderRadius: 55,
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 26,
   },
   title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#FCD20F',
-    marginBottom: 16,
+    fontSize: 30,
+    fontWeight: '800',
+    color: Colors.gold,
+    marginBottom: 14,
   },
   subtitle: {
-    fontSize: 16,
-    color: '#ffffff',
+    fontSize: 15,
+    color: Colors.white,
     textAlign: 'center',
-    lineHeight: 24,
+    lineHeight: 23,
     opacity: 0.9,
-    marginBottom: 40,
+    marginBottom: 38,
   },
   button: {
-    backgroundColor: '#FCD20F',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: Colors.gold,
     paddingVertical: 14,
-    paddingHorizontal: 32,
-    borderRadius: 30,
+    paddingHorizontal: 30,
+    borderRadius: Radius.pill,
   },
   buttonText: {
-    color: '#006B3F',
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: Colors.forestDark,
+    fontSize: 15,
+    fontWeight: '800',
   },
 });

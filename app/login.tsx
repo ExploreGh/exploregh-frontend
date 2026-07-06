@@ -1,17 +1,20 @@
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
-import Button from '@/components/Button';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Image, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { Colors, Radius } from '@/constants/theme';
+import { Button, KenteStrip } from '@/components';
 
 export default function Login() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({ email: '', password: '' });
 
   const validate = () => {
     let valid = true;
-    let newErrors = { email: '', password: '' };
+    const newErrors = { email: '', password: '' };
 
     if (!email) {
       newErrors.email = 'Please enter your email address';
@@ -40,103 +43,148 @@ export default function Login() {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      {/* Small logo at the top */}
+      <View style={styles.logoRow}>
+        <Image
+          source={require('../assets/images/logo.png')}
+          style={styles.logo}
+          resizeMode="contain"
+        />
+      </View>
 
-      <Text style={styles.title}>Welcome Back!</Text>
-      <Text style={styles.subtitle}>Log in to ExploreGH 🌍</Text>
+      <Text style={styles.title}>Welcome back</Text>
+      <Text style={styles.subtitle}>Log in to continue exploring Ghana</Text>
 
       <View style={styles.form}>
-
         {/* Email */}
-        <TextInput
-          style={[styles.input, errors.email ? styles.inputError : null]}
-          placeholder="Email Address"
-          placeholderTextColor="#999"
-          keyboardType="email-address"
-          value={email}
-          onChangeText={setEmail}
-        />
-        {errors.email ? <Text style={styles.errorText}>⚠️ {errors.email}</Text> : null}
+        <View style={[styles.inputWrap, errors.email ? styles.inputError : null]}>
+          <Ionicons name="mail-outline" size={18} color={Colors.slate} />
+          <TextInput
+            style={styles.input}
+            placeholder="Email address"
+            placeholderTextColor={Colors.slate}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            value={email}
+            onChangeText={setEmail}
+          />
+        </View>
+        {errors.email ? <Text style={styles.errorText}>{errors.email}</Text> : null}
 
-        {/* Password */}
-        <TextInput
-          style={[styles.input, errors.password ? styles.inputError : null]}
-          placeholder="Password"
-          placeholderTextColor="#999"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-        />
-        {errors.password ? <Text style={styles.errorText}>⚠️ {errors.password}</Text> : null}
+        {/* Password with show/hide */}
+        <View style={[styles.inputWrap, errors.password ? styles.inputError : null]}>
+          <Ionicons name="lock-closed-outline" size={18} color={Colors.slate} />
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            placeholderTextColor={Colors.slate}
+            secureTextEntry={!showPassword}
+            value={password}
+            onChangeText={setPassword}
+          />
+          <TouchableOpacity onPress={() => setShowPassword(!showPassword)} hitSlop={8}>
+            <Ionicons
+              name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+              size={18}
+              color={Colors.slate}
+            />
+          </TouchableOpacity>
+        </View>
+        {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
 
-        <Button title="Log In" onPress={handleLogin} />
+        <Button title="Log in" icon="log-in-outline" onPress={handleLogin} />
 
-        <TouchableOpacity onPress={() => router.push('/register')}>
-          <Text style={styles.registerText}>Don't have an account? Register</Text>
+        <TouchableOpacity onPress={() => router.push('/register')} style={styles.registerLink}>
+          <Text style={styles.registerText}>
+            Don't have an account? <Text style={styles.registerBold}>Register</Text>
+          </Text>
         </TouchableOpacity>
-
       </View>
-    </View>
+
+      <View style={styles.stripWrap}>
+        <KenteStrip />
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: Colors.white,
+  },
+  content: {
     paddingHorizontal: 24,
-    paddingTop: 80,
+    paddingTop: 70,
+    paddingBottom: 40,
+  },
+  logoRow: {
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  logo: {
+    width: 84,
+    height: 84,
   },
   title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#006B3F',
-    marginBottom: 8,
+    fontSize: 30,
+    fontWeight: '800',
+    color: Colors.forestDark,
+    marginBottom: 6,
+    textAlign: 'center',
   },
   subtitle: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 40,
+    fontSize: 15,
+    color: Colors.slate,
+    marginBottom: 36,
+    textAlign: 'center',
   },
   form: {
     gap: 12,
   },
-  input: {
-    backgroundColor: '#f5f5f5',
-    borderRadius: 12,
+  inputWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: Colors.mist,
+    borderRadius: Radius.md,
     paddingVertical: 14,
-    paddingHorizontal: 16,
-    fontSize: 16,
-    color: '#333',
+    paddingHorizontal: 14,
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: Colors.line,
+  },
+  input: {
+    flex: 1,
+    fontSize: 15,
+    color: Colors.ink,
   },
   inputError: {
-    borderColor: '#cc0000',
-    backgroundColor: '#fff5f5',
+    borderColor: Colors.red,
+    backgroundColor: Colors.redSoft,
   },
   errorText: {
-    color: '#cc0000',
+    color: Colors.red,
     fontSize: 13,
     marginTop: -4,
     marginLeft: 4,
   },
-  button: {
-    backgroundColor: '#006B3F',
-    paddingVertical: 16,
-    borderRadius: 30,
+  registerLink: {
+    marginTop: 12,
     alignItems: 'center',
-    marginTop: 8,
-  },
-  buttonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#FCD20F',
+    padding: 6,
   },
   registerText: {
     fontSize: 14,
-    color: '#006B3F',
-    textAlign: 'center',
-    marginTop: 16,
+    color: Colors.slate,
+  },
+  registerBold: {
+    fontWeight: '800',
+    color: Colors.forest,
+  },
+  stripWrap: {
+    marginTop: 48,
+    borderRadius: 2,
+    overflow: 'hidden',
   },
 });

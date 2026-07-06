@@ -1,186 +1,110 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput } from 'react-native';
-import { useRouter } from 'expo-router';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { Colors, Radius, Shadow } from '@/constants/theme';
+import { SearchBar, Chip, EmptyState, KenteStrip } from '@/components';
+import { vendors, vendorCategories } from '@/data/mockData';
 
-const categories = ['All', 'Food', 'Crafts', 'Culture', 'Fashion'];
-
-const vendors = [
-  {
-    id: '1',
-    name: 'Akosua Kente Weaves',
-    category: 'Crafts',
-    location: 'Bonwire, Ashanti',
-    rating: '4.9',
-    reviews: 128,
-    description: 'Authentic handwoven kente cloth directly from the source.',
-    emoji: '🧵',
-    price: 'GHS 150 — 800',
-  },
-  {
-    id: '2',
-    name: 'Mama Ama\'s Kitchen',
-    category: 'Food',
-    location: 'Cape Coast',
-    rating: '4.8',
-    reviews: 94,
-    description: 'Authentic Ghanaian cuisine. Famous fufu, light soup, and grilled tilapia.',
-    emoji: '🍲',
-    price: 'GHS 25 — 80',
-  },
-  {
-    id: '3',
-    name: 'Vume Pottery Studio',
-    category: 'Crafts',
-    location: 'Vume, Volta Region',
-    rating: '4.7',
-    reviews: 56,
-    description: 'Traditional pottery making demonstrations and handmade ceramic souvenirs.',
-    emoji: '🏺',
-    price: 'GHS 50 — 300',
-  },
-  {
-    id: '4',
-    name: 'Kojo\'s Drumming Experience',
-    category: 'Culture',
-    location: 'Accra',
-    rating: '5.0',
-    reviews: 203,
-    description: 'Learn traditional Ghanaian drumming from a master drummer.',
-    emoji: '🥁',
-    price: 'GHS 100 per session',
-  },
-  {
-    id: '5',
-    name: 'Abena African Fashion',
-    category: 'Fashion',
-    location: 'Kumasi',
-    rating: '4.6',
-    reviews: 77,
-    description: 'Beautiful African print dresses, shirts and accessories.',
-    emoji: '👗',
-    price: 'GHS 120 — 500',
-  },
-  {
-    id: '6',
-    name: 'Kofi\'s Fresh Coconuts',
-    category: 'Food',
-    location: 'Labadi Beach, Accra',
-    rating: '4.9',
-    reviews: 312,
-    description: 'Fresh coconuts, tropical fruits and local snacks right on the beach.',
-    emoji: '🥥',
-    price: 'GHS 5 — 20',
-  },
-];
+// ============================================================
+// Vendors — marketplace with photo cards, search + category
+// filter, ratings with star icons and a message button.
+// ============================================================
 
 export default function Vendors() {
-  const router = useRouter();
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
 
-  const filteredVendors = vendors.filter(vendor => {
+  const filteredVendors = vendors.filter((vendor) => {
+    const q = search.toLowerCase();
     const matchesSearch =
-      vendor.name.toLowerCase().includes(search.toLowerCase()) ||
-      vendor.location.toLowerCase().includes(search.toLowerCase()) ||
-      vendor.category.toLowerCase().includes(search.toLowerCase());
-
-    const matchesCategory =
-      selectedCategory === 'All' || vendor.category === selectedCategory;
-
+      vendor.name.toLowerCase().includes(q) ||
+      vendor.location.toLowerCase().includes(q) ||
+      vendor.category.toLowerCase().includes(q);
+    const matchesCategory = selectedCategory === 'All' || vendor.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
   return (
     <View style={styles.container}>
-
-      {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Vendor Marketplace 🛍️</Text>
+        <Text style={styles.headerTitle}>Vendor Marketplace</Text>
         <Text style={styles.headerSubtitle}>Support local Ghanaian businesses</Text>
       </View>
+      <KenteStrip />
 
-      <ScrollView>
-        {/* Search */}
-        <View style={styles.searchContainer}>
-          <Text style={styles.searchIcon}>🔍</Text>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search vendors..."
-            placeholderTextColor="#999"
-            value={search}
-            onChangeText={setSearch}
-          />
-          {search ? (
-            <TouchableOpacity onPress={() => setSearch('')}>
-              <Text style={styles.clearText}>✕</Text>
-            </TouchableOpacity>
-          ) : null}
-        </View>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <SearchBar value={search} onChangeText={setSearch} placeholder="Search vendors..." />
 
-        {/* Categories */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoriesContainer}>
-          {categories.map((cat) => (
-            <TouchableOpacity
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.chipsRow}
+          contentContainerStyle={styles.chipsContent}
+        >
+          {vendorCategories.map((cat) => (
+            <Chip
               key={cat}
-              style={[styles.categoryButton, selectedCategory === cat && styles.categoryButtonActive]}
+              label={cat}
+              selected={selectedCategory === cat}
               onPress={() => setSelectedCategory(cat)}
-            >
-              <Text style={[styles.categoryText, selectedCategory === cat && styles.categoryTextActive]}>
-                {cat}
-              </Text>
-            </TouchableOpacity>
+            />
           ))}
         </ScrollView>
 
-        {/* Results Count */}
-        {search || selectedCategory !== 'All' ? (
-          <Text style={styles.resultsText}>
-            {filteredVendors.length} vendor{filteredVendors.length !== 1 ? 's' : ''}
-            {selectedCategory !== 'All' ? ` in ${selectedCategory}` : ''}
-            {search ? ` for "${search}"` : ''}
-          </Text>
-        ) : null}
+        <Text style={styles.count}>
+          {filteredVendors.length} vendor{filteredVendors.length !== 1 ? 's' : ''} found
+        </Text>
 
-        {/* Vendors */}
-        <View style={styles.vendorsList}>
-          <Text style={styles.sectionTitle}>
-            {selectedCategory === 'All' && !search ? `${vendors.length} Vendors Found` : 'Results'}
-          </Text>
+        {filteredVendors.length === 0 ? (
+          <EmptyState
+            icon="storefront-outline"
+            title="No vendors found"
+            message="Try a different category or search term."
+          />
+        ) : (
+          <View style={styles.list}>
+            {filteredVendors.map((vendor) => (
+              <View key={vendor.id} style={styles.card}>
+                <Image source={{ uri: vendor.image }} style={styles.cardImage} />
+                <View style={styles.cardBody}>
+                  <View style={styles.cardTop}>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.vendorName}>{vendor.name}</Text>
+                      <View style={styles.metaRow}>
+                        <Ionicons name="location-outline" size={13} color={Colors.slate} />
+                        <Text style={styles.metaText}>{vendor.location}</Text>
+                      </View>
+                    </View>
+                    <View style={styles.categoryBadge}>
+                      <Text style={styles.categoryBadgeText}>{vendor.category}</Text>
+                    </View>
+                  </View>
 
-          {/* Empty State */}
-          {filteredVendors.length === 0 ? (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyEmoji}>🔍</Text>
-              <Text style={styles.emptyTitle}>No vendors found</Text>
-              <Text style={styles.emptyText}>Try a different category or search term</Text>
-            </View>
-          ) : (
-            filteredVendors.map((vendor) => (
-              <TouchableOpacity key={vendor.id} style={styles.vendorCard}>
-                <View style={styles.vendorTop}>
-                  <View style={styles.vendorEmoji}>
-                    <Text style={styles.vendorEmojiText}>{vendor.emoji}</Text>
+                  <View style={styles.ratingRow}>
+                    <Ionicons name="star" size={14} color={Colors.gold} />
+                    <Text style={styles.ratingText}>{vendor.rating}</Text>
+                    <Text style={styles.reviewsText}>({vendor.reviews} reviews)</Text>
                   </View>
-                  <View style={styles.vendorHeader}>
-                    <Text style={styles.vendorName}>{vendor.name}</Text>
-                    <Text style={styles.vendorLocation}>📍 {vendor.location}</Text>
-                    <Text style={styles.vendorRating}>⭐ {vendor.rating} ({vendor.reviews} reviews)</Text>
-                  </View>
-                  <View style={styles.categoryBadge}>
-                    <Text style={styles.categoryBadgeText}>{vendor.category}</Text>
+
+                  <Text style={styles.description}>{vendor.description}</Text>
+
+                  <View style={styles.cardBottom}>
+                    <View style={styles.priceRow}>
+                      <Ionicons name="cash-outline" size={15} color={Colors.forest} />
+                      <Text style={styles.priceText}>{vendor.price}</Text>
+                    </View>
+                    <TouchableOpacity style={styles.messageButton} activeOpacity={0.85}>
+                      <Ionicons name="chatbubble-ellipses-outline" size={15} color={Colors.gold} />
+                      <Text style={styles.messageText}>Message</Text>
+                    </TouchableOpacity>
                   </View>
                 </View>
-                <Text style={styles.vendorDescription}>{vendor.description}</Text>
-                <View style={styles.vendorBottom}>
-                  <Text style={styles.vendorPrice}>💰 {vendor.price}</Text>
-                  <TouchableOpacity style={styles.contactButton}>
-                    <Text style={styles.contactButtonText}>Message</Text>
-                  </TouchableOpacity>
-                </View>
-              </TouchableOpacity>
-            ))
-          )}
-        </View>
+              </View>
+            ))}
+          </View>
+        )}
+
+        <View style={{ height: 24 }} />
       </ScrollView>
     </View>
   );
@@ -189,194 +113,139 @@ export default function Vendors() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: Colors.mist,
   },
   header: {
-    backgroundColor: '#006B3F',
-    padding: 24,
-    paddingTop: 60,
+    backgroundColor: Colors.forest,
+    paddingTop: 58,
+    paddingBottom: 18,
+    paddingHorizontal: 20,
   },
   headerTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#FCD20F',
-    marginBottom: 4,
+    fontWeight: '800',
+    color: Colors.gold,
   },
   headerSubtitle: {
-    fontSize: 14,
-    color: '#ffffff',
+    fontSize: 13,
+    color: Colors.white,
+    marginTop: 3,
     opacity: 0.9,
   },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#ffffff',
-    margin: 16,
-    borderRadius: 12,
+  chipsRow: {
+    marginTop: 14,
+  },
+  chipsContent: {
     paddingHorizontal: 16,
-    paddingVertical: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
   },
-  searchIcon: {
-    fontSize: 18,
-    marginRight: 8,
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: 16,
-    color: '#333',
-  },
-  clearText: {
-    fontSize: 16,
-    color: '#999',
-    paddingLeft: 8,
-  },
-  categoriesContainer: {
-    paddingHorizontal: 16,
-    marginBottom: 8,
-  },
-  categoryButton: {
-    backgroundColor: '#e8f5e9',
-    paddingVertical: 8,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-    marginRight: 10,
-    borderWidth: 1,
-    borderColor: '#006B3F',
-  },
-  categoryButtonActive: {
-    backgroundColor: '#006B3F',
-  },
-  categoryText: {
-    color: '#006B3F',
-    fontWeight: 'bold',
-    fontSize: 14,
-  },
-  categoryTextActive: {
-    color: '#FCD20F',
-  },
-  resultsText: {
+  count: {
     fontSize: 13,
-    color: '#006B3F',
+    fontWeight: '700',
+    color: Colors.slate,
     marginHorizontal: 16,
-    marginTop: 4,
-    fontWeight: 'bold',
+    marginTop: 16,
+    marginBottom: 10,
   },
-  vendorsList: {
+  list: {
     paddingHorizontal: 16,
+    gap: 14,
   },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 12,
-    marginTop: 8,
+  card: {
+    backgroundColor: Colors.white,
+    borderRadius: Radius.lg,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: Colors.line,
+    ...Shadow.card,
   },
-  vendorCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 2,
+  cardImage: {
+    width: '100%',
+    height: 140,
+    backgroundColor: Colors.mist,
   },
-  vendorTop: {
+  cardBody: {
+    padding: 14,
+  },
+  cardTop: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginBottom: 10,
     gap: 10,
-  },
-  vendorEmoji: {
-    width: 50,
-    height: 50,
-    backgroundColor: '#e8f5e9',
-    borderRadius: 25,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  vendorEmojiText: {
-    fontSize: 24,
-  },
-  vendorHeader: {
-    flex: 1,
+    marginBottom: 6,
   },
   vendorName: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: '#222',
-    marginBottom: 2,
+    fontSize: 16,
+    fontWeight: '800',
+    color: Colors.ink,
+    marginBottom: 3,
   },
-  vendorLocation: {
-    fontSize: 12,
-    color: '#666',
-    marginBottom: 2,
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
   },
-  vendorRating: {
+  metaText: {
     fontSize: 12,
-    color: '#333',
+    color: Colors.slate,
   },
   categoryBadge: {
-    backgroundColor: '#e8f5e9',
+    backgroundColor: Colors.forestSoft,
     paddingVertical: 4,
     paddingHorizontal: 10,
-    borderRadius: 20,
+    borderRadius: Radius.pill,
   },
   categoryBadgeText: {
-    color: '#006B3F',
+    color: Colors.forest,
     fontSize: 11,
-    fontWeight: 'bold',
+    fontWeight: '700',
   },
-  vendorDescription: {
+  ratingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginBottom: 8,
+  },
+  ratingText: {
     fontSize: 13,
-    color: '#555',
-    lineHeight: 20,
+    fontWeight: '800',
+    color: Colors.ink,
+  },
+  reviewsText: {
+    fontSize: 12,
+    color: Colors.slate,
+  },
+  description: {
+    fontSize: 13,
+    color: Colors.slate,
+    lineHeight: 19,
     marginBottom: 12,
   },
-  vendorBottom: {
+  cardBottom: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  vendorPrice: {
-    fontSize: 13,
-    fontWeight: 'bold',
-    color: '#006B3F',
-  },
-  contactButton: {
-    backgroundColor: '#006B3F',
-    paddingVertical: 8,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-  },
-  contactButtonText: {
-    color: '#FCD20F',
-    fontWeight: 'bold',
-    fontSize: 13,
-  },
-  emptyState: {
+  priceRow: {
+    flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 60,
-    paddingHorizontal: 32,
+    gap: 5,
   },
-  emptyEmoji: {
-    fontSize: 60,
-    marginBottom: 16,
+  priceText: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: Colors.forest,
   },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
+  messageButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: Colors.forest,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: Radius.pill,
   },
-  emptyText: {
-    fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
-    lineHeight: 22,
+  messageText: {
+    color: Colors.gold,
+    fontWeight: '700',
+    fontSize: 13,
   },
 });

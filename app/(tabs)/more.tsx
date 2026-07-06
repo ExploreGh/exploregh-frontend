@@ -1,62 +1,87 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { Colors, Radius, Shadow } from '@/constants/theme';
+import { Avatar, KenteStrip } from '@/components';
 
-const menuItems = [
+// ============================================================
+// More — profile card with initials avatar, and a menu of
+// all extra features using proper icons in tinted circles.
+// ============================================================
+
+type MenuItem = {
+  id: string;
+  title: string;
+  description: string;
+  icon: keyof typeof Ionicons.glyphMap;
+  route: string;
+  color: string;
+  bg: string;
+};
+
+const menuItems: MenuItem[] = [
   {
     id: '1',
     title: 'Trip Planner',
     description: 'Plan your Ghana itinerary',
-    emoji: '📅',
+    icon: 'calendar-outline',
     route: '/trip-planner',
-    color: '#006B3F',
+    color: Colors.forest,
+    bg: Colors.forestSoft,
   },
   {
     id: '2',
     title: 'Safety Alerts',
     description: 'Real-time safety updates',
-    emoji: '⚠️',
+    icon: 'warning-outline',
     route: '/safety-alerts',
-    color: '#cc0000',
+    color: Colors.red,
+    bg: Colors.redSoft,
   },
   {
     id: '3',
     title: 'Cultural Guide',
     description: 'Customs and etiquette by region',
-    emoji: '🤝',
+    icon: 'people-circle-outline',
     route: '/cultural-guide',
-    color: '#006B3F',
+    color: Colors.forest,
+    bg: Colors.forestSoft,
   },
   {
     id: '4',
     title: 'Phrasebook',
     description: 'Essential phrases in Twi, Ga, Ewe & Hausa',
-    emoji: '🗣️',
+    icon: 'chatbubbles-outline',
     route: '/phrasebook',
-    color: '#006B3F',
+    color: Colors.forest,
+    bg: Colors.forestSoft,
   },
   {
     id: '5',
-    title: 'Emergency Contacts',
-    description: 'Police, hospitals and embassies',
-    emoji: '🚨',
-    route: '/emergency-contacts',
-    color: '#cc0000',
-  },
-{
-    id: '7',
     title: 'Festivals & Events',
-    description: 'Upcoming Ghanaian festivals and cultural events',
-    emoji: '🎉',
+    description: 'Upcoming Ghanaian festivals',
+    icon: 'musical-notes-outline',
     route: '/festivals',
-    color: '#006B3F',
+    color: Colors.forest,
+    bg: Colors.goldSoft,
   },
   {
     id: '6',
+    title: 'Emergency Contacts',
+    description: 'Police, hospitals and embassies',
+    icon: 'call-outline',
+    route: '/emergency-contacts',
+    color: Colors.red,
+    bg: Colors.redSoft,
+  },
+  {
+    id: '7',
     title: 'Currency Converter',
     description: 'Coming soon — live exchange rates',
-    emoji: '💱',
+    icon: 'swap-horizontal-outline',
     route: '/coming-soon',
-    color: '#006B3F',
+    color: Colors.slate,
+    bg: Colors.mist,
   },
 ];
 
@@ -64,180 +89,182 @@ export default function More() {
   const router = useRouter();
 
   return (
-    <ScrollView style={styles.container}>
-
-      {/* Header */}
+    <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>More ☰</Text>
+        <Text style={styles.headerTitle}>More</Text>
         <Text style={styles.headerSubtitle}>All ExploreGH features</Text>
       </View>
+      <KenteStrip />
 
-      {/* Profile Card */}
-      <View style={styles.profileCard}>
-        <Text style={styles.profileEmoji}>👤</Text>
-        <View style={styles.profileInfo}>
-          <Text style={styles.profileName}>Explorer</Text>
-          <Text style={styles.profileEmail}>tourist@exploregh.com</Text>
-        </View>
-        <TouchableOpacity style={styles.editButton}>
-          <Text style={styles.editButtonText}>Edit</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Menu Items */}
-      <View style={styles.menuList}>
-        <Text style={styles.sectionTitle}>Features</Text>
-        {menuItems.map((item) => (
-          <TouchableOpacity
-            key={item.id}
-            style={styles.menuItem}
-            onPress={() => router.push(item.route as any)}
-          >
-            <View style={[styles.menuIcon, { backgroundColor: item.color + '15' }]}>
-              <Text style={styles.menuEmoji}>{item.emoji}</Text>
-            </View>
-            <View style={styles.menuInfo}>
-              <Text style={styles.menuTitle}>{item.title}</Text>
-              <Text style={styles.menuDescription}>{item.description}</Text>
-            </View>
-            <Text style={styles.menuArrow}>→</Text>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* Profile card */}
+        <View style={styles.profileCard}>
+          <Avatar name="Explorer Guest" size={54} />
+          <View style={styles.profileInfo}>
+            <Text style={styles.profileName}>Explorer Guest</Text>
+            <Text style={styles.profileEmail}>tourist@exploregh.com</Text>
+          </View>
+          <TouchableOpacity style={styles.editButton} activeOpacity={0.85}>
+            <Ionicons name="pencil-outline" size={14} color={Colors.gold} />
+            <Text style={styles.editText}>Edit</Text>
           </TouchableOpacity>
-        ))}
-      </View>
+        </View>
 
-      {/* Logout */}
-      <TouchableOpacity style={styles.logoutButton} onPress={() => router.push('/')}>
-        <Text style={styles.logoutText}>🚪 Log Out</Text>
-      </TouchableOpacity>
+        {/* Menu */}
+        <Text style={styles.sectionTitle}>Features</Text>
+        <View style={styles.menuList}>
+          {menuItems.map((item) => (
+            <TouchableOpacity
+              key={item.id}
+              style={styles.menuItem}
+              onPress={() => router.push(item.route as any)}
+              activeOpacity={0.85}
+            >
+              <View style={[styles.menuIcon, { backgroundColor: item.bg }]}>
+                <Ionicons name={item.icon} size={20} color={item.color} />
+              </View>
+              <View style={styles.menuInfo}>
+                <Text style={styles.menuTitle}>{item.title}</Text>
+                <Text style={styles.menuDescription}>{item.description}</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={18} color={Colors.slate} />
+            </TouchableOpacity>
+          ))}
+        </View>
 
-    </ScrollView>
+        {/* Logout */}
+        <TouchableOpacity
+          style={styles.logoutButton}
+          onPress={() => router.push('/')}
+          activeOpacity={0.85}
+        >
+          <Ionicons name="log-out-outline" size={18} color={Colors.red} />
+          <Text style={styles.logoutText}>Log out</Text>
+        </TouchableOpacity>
+
+        <View style={{ height: 32 }} />
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: Colors.mist,
   },
   header: {
-    backgroundColor: '#006B3F',
-    padding: 24,
-    paddingTop: 60,
+    backgroundColor: Colors.forest,
+    paddingTop: 58,
+    paddingBottom: 18,
+    paddingHorizontal: 20,
   },
   headerTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#FCD20F',
-    marginBottom: 4,
+    fontWeight: '800',
+    color: Colors.gold,
   },
   headerSubtitle: {
-    fontSize: 14,
-    color: '#ffffff',
+    fontSize: 13,
+    color: Colors.white,
+    marginTop: 3,
     opacity: 0.9,
   },
   profileCard: {
-    backgroundColor: '#ffffff',
-    margin: 16,
-    borderRadius: 16,
-    padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 2,
-    gap: 12,
-  },
-  profileEmoji: {
-    fontSize: 40,
+    gap: 14,
+    backgroundColor: Colors.white,
+    margin: 16,
+    borderRadius: Radius.lg,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: Colors.line,
+    ...Shadow.card,
   },
   profileInfo: {
     flex: 1,
   },
   profileName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#222',
+    fontSize: 17,
+    fontWeight: '800',
+    color: Colors.ink,
     marginBottom: 2,
   },
   profileEmail: {
     fontSize: 13,
-    color: '#666',
+    color: Colors.slate,
   },
   editButton: {
-    backgroundColor: '#006B3F',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    backgroundColor: Colors.forest,
     paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
+    paddingHorizontal: 14,
+    borderRadius: Radius.pill,
   },
-  editButtonText: {
-    color: '#FCD20F',
-    fontWeight: 'bold',
+  editText: {
+    color: Colors.gold,
+    fontWeight: '700',
     fontSize: 13,
+  },
+  sectionTitle: {
+    fontSize: 17,
+    fontWeight: '800',
+    color: Colors.ink,
+    marginHorizontal: 16,
+    marginBottom: 10,
   },
   menuList: {
     paddingHorizontal: 16,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 12,
+    gap: 10,
   },
   menuItem: {
-    backgroundColor: '#ffffff',
-    borderRadius: 14,
-    padding: 14,
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 1,
     gap: 12,
+    backgroundColor: Colors.white,
+    borderRadius: Radius.md,
+    padding: 13,
+    borderWidth: 1,
+    borderColor: Colors.line,
   },
   menuIcon: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  menuEmoji: {
-    fontSize: 22,
   },
   menuInfo: {
     flex: 1,
   },
   menuTitle: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: '#222',
+    fontSize: 14,
+    fontWeight: '800',
+    color: Colors.ink,
     marginBottom: 2,
   },
   menuDescription: {
     fontSize: 12,
-    color: '#666',
-  },
-  menuArrow: {
-    fontSize: 18,
-    color: '#006B3F',
-    fontWeight: 'bold',
+    color: Colors.slate,
   },
   logoutButton: {
-    margin: 16,
-    marginTop: 8,
-    paddingVertical: 16,
-    borderRadius: 30,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    margin: 16,
+    marginTop: 20,
+    paddingVertical: 15,
+    borderRadius: Radius.pill,
     borderWidth: 2,
-    borderColor: '#cc0000',
-    marginBottom: 32,
+    borderColor: Colors.red,
   },
   logoutText: {
-    color: '#cc0000',
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: Colors.red,
+    fontSize: 15,
+    fontWeight: '800',
   },
 });
