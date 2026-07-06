@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
+import * as Speech from 'expo-speech';
 import { Colors, Radius, Shadow } from '@/constants/theme';
 import { ScreenHeader, Chip } from '@/components';
 import { languages } from '@/data/mockData';
@@ -8,11 +9,25 @@ import { languages } from '@/data/mockData';
 // ============================================================
 // Phrasebook — pick a language with chips, see phrase cards
 // with the translation prominent and phonetics beneath.
+// Tap the sound icon to hear the phrase spoken aloud using
+// the device's Text-to-Speech engine (expo-speech).
 // ============================================================
 
 export default function Phrasebook() {
   const [selectedId, setSelectedId] = useState('1');
+  const [speakingIndex, setSpeakingIndex] = useState<number | null>(null);
   const language = languages.find((l) => l.id === selectedId) ?? languages[0];
+
+  const speakPhrase = (phonetic: string, index: number) => {
+    Speech.stop(); // stop any phrase still speaking
+    setSpeakingIndex(index);
+    Speech.speak(phonetic, {
+      rate: 0.85, // slightly slower for clarity
+      onDone: () => setSpeakingIndex(null),
+      onStopped: () => setSpeakingIndex(null),
+      onError: () => setSpeakingIndex(null),
+    });
+  };
 
   return (
     <View style={styles.container}>
@@ -31,7 +46,11 @@ export default function Phrasebook() {
               key={lang.id}
               label={lang.language}
               selected={selectedId === lang.id}
-              onPress={() => setSelectedId(lang.id)}
+              onPress={() => {
+                Speech.stop();
+                setSpeakingIndex(null);
+                setSelectedId(lang.id);
+              }}
             />
           ))}
         </ScrollView>
@@ -39,6 +58,14 @@ export default function Phrasebook() {
         <View style={styles.regionRow}>
           <Ionicons name="location-outline" size={14} color={Colors.slate} />
           <Text style={styles.regionText}>Spoken in {language.region}</Text>
+        </View>
+
+        {/* Tip banner */}
+        <View style={styles.banner}>
+          <Ionicons name="volume-high-outline" size={18} color={Colors.forestDark} />
+          <Text style={styles.bannerText}>
+            Tap the speaker icon to hear each phrase read aloud. Turn your volume up!
+          </Text>
         </View>
 
         <View style={styles.list}>
@@ -52,8 +79,19 @@ export default function Phrasebook() {
                   <Text style={styles.phonetic}>{phrase.phonetic}</Text>
                 </View>
               </View>
-              <TouchableOpacity style={styles.soundButton} activeOpacity={0.8}>
-                <Ionicons name="volume-high-outline" size={18} color={Colors.forest} />
+              <TouchableOpacity
+                style={[
+                  styles.soundButton,
+                  speakingIndex === index && styles.soundButtonActive,
+                ]}
+                activeOpacity={0.8}
+                onPress={() => speakPhrase(phrase.phonetic, index)}
+              >
+                <Ionicons
+                  name={speakingIndex === index ? 'volume-high' : 'volume-high-outline'}
+                  size={18}
+                  color={speakingIndex === index ? Colors.gold : Colors.forest}
+                />
               </TouchableOpacity>
             </View>
           ))}
@@ -82,12 +120,28 @@ const styles = StyleSheet.create({
     gap: 5,
     marginHorizontal: 16,
     marginTop: 14,
-    marginBottom: 12,
+    marginBottom: 10,
   },
   regionText: {
     fontSize: 13,
     color: Colors.slate,
     fontWeight: '600',
+  },
+  banner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: Colors.forestSoft,
+    padding: 13,
+    marginHorizontal: 16,
+    marginBottom: 12,
+    borderRadius: Radius.md,
+  },
+  bannerText: {
+    flex: 1,
+    fontSize: 13,
+    color: Colors.forestDark,
+    lineHeight: 18,
   },
   list: {
     paddingHorizontal: 16,
@@ -134,5 +188,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.forestSoft,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  soundButtonActive: {
+    backgroundColor: Colors.forest,
   },
 });
