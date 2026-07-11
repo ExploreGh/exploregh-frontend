@@ -22,6 +22,7 @@ export default function RootLayout() {
         <Stack.Screen name="coming-soon" />
         <Stack.Screen name="chat" />
         <Stack.Screen name="booking" />
+        <Stack.Screen name="report" />
       </Stack>
     </>
   );

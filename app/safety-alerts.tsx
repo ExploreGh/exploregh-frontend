@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import {useRouter} from 'expo-router';
 import { Colors, Radius, Shadow } from '@/constants/theme';
 import { ScreenHeader } from '@/components';
 import { safetyAlerts } from '@/data/mockData';
@@ -16,6 +17,7 @@ const severityStyles = {
 };
 
 export default function SafetyAlerts() {
+  const router = useRouter();
   return (
     <View style={styles.container}>
       <ScreenHeader title="Safety Alerts" subtitle="Community-reported, in real time" />
@@ -62,10 +64,14 @@ export default function SafetyAlerts() {
       </ScrollView>
 
       {/* Floating report button */}
-      <TouchableOpacity style={styles.reportButton} activeOpacity={0.9}>
-        <Ionicons name="megaphone-outline" size={18} color={Colors.white} />
-        <Text style={styles.reportText}>Report a safety issue</Text>
-      </TouchableOpacity>
+      <TouchableOpacity
+  style={styles.reportButton}
+  activeOpacity={0.9}
+  onPress={() => router.push('/report')}
+>
+  <Ionicons name="megaphone-outline" size={18} color={Colors.white} />
+  <Text style={styles.reportText}>Report a safety issue</Text>
+</TouchableOpacity>
     </View>
   );
 }
