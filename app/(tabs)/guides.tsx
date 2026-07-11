@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { useState } from 'react';
+import {useRouter} from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Shadow } from '@/constants/theme';
 import { SearchBar, EmptyState, KenteStrip } from '@/components';
@@ -11,6 +12,7 @@ import { guides } from '@/data/mockData';
 // ============================================================
 
 export default function Guides() {
+  const router = useRouter();
   const [search, setSearch] = useState('');
   const [showAvailableOnly, setShowAvailableOnly] = useState(false);
 
@@ -126,22 +128,20 @@ export default function Guides() {
                     <Text style={styles.priceText}>{guide.price}</Text>
                   </View>
                   <TouchableOpacity
-                    style={[
-                      styles.bookButton,
-                      { backgroundColor: guide.available ? Colors.forest : Colors.line },
-                    ]}
-                    disabled={!guide.available}
-                    activeOpacity={0.85}
-                  >
-                    <Text
-                      style={[
-                        styles.bookText,
-                        { color: guide.available ? Colors.gold : Colors.slate },
-                      ]}
-                    >
-                      {guide.available ? 'Book now' : 'Unavailable'}
-                    </Text>
-                  </TouchableOpacity>
+  style={[styles.bookButton, { backgroundColor: guide.available ? Colors.forest : Colors.line }]}
+  disabled={!guide.available}
+  activeOpacity={0.85}
+  onPress={() =>
+    router.push({
+      pathname: '/booking',
+      params: { name: guide.name, photo: guide.photo, price: guide.price },
+    })
+  }
+>
+  <Text style={[styles.bookText, { color: guide.available ? Colors.gold : Colors.slate }]}>
+    {guide.available ? 'Book now' : 'Unavailable'}
+  </Text>
+</TouchableOpacity>
                 </View>
               </View>
             ))}

@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { useState } from 'react';
+import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Shadow } from '@/constants/theme';
 import { SearchBar, Chip, EmptyState, KenteStrip } from '@/components';
@@ -11,6 +12,7 @@ import { vendors, vendorCategories } from '@/data/mockData';
 // ============================================================
 
 export default function Vendors() {
+  const router = useRouter();
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
 
@@ -93,7 +95,16 @@ export default function Vendors() {
                       <Ionicons name="cash-outline" size={15} color={Colors.forest} />
                       <Text style={styles.priceText}>{vendor.price}</Text>
                     </View>
-                    <TouchableOpacity style={styles.messageButton} activeOpacity={0.85}>
+                    <TouchableOpacity
+  style={styles.messageButton}
+  activeOpacity={0.85}
+  onPress={() =>
+    router.push({
+      pathname: '/chat',
+      params: { name: vendor.name, photo: vendor.image, role: 'Vendor', context: vendor.category, price: vendor.price },
+    })
+  }
+>
                       <Ionicons name="chatbubble-ellipses-outline" size={15} color={Colors.gold} />
                       <Text style={styles.messageText}>Message</Text>
                     </TouchableOpacity>
