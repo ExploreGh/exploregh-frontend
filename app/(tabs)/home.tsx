@@ -7,8 +7,8 @@ import {
   Image,
   ImageBackground,
 } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useState, useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Shadow } from '@/constants/theme';
 import { SearchBar, Chip, EmptyState, KenteStrip } from '@/components';
@@ -22,7 +22,15 @@ import { sites, categories, Site } from '@/data/mockData';
 export default function Home() {
   const router = useRouter();
   const [search, setSearch] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const { category } = useLocalSearchParams();
+const [selectedCategory, setSelectedCategory] = useState(
+  typeof category === 'string' ? category : 'All'
+);
+useEffect(() => {
+  if (typeof category === 'string') {
+    setSelectedCategory(category);
+  }
+}, [category]);
   const [wishlist, setWishlist] = useState<string[]>([]);
 
   const toggleWishlist = (id: string) => {

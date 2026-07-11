@@ -24,6 +24,7 @@ export default function Booking() {
   const [groupSize, setGroupSize] = useState('1');
   const [note, setNote] = useState('');
   const [submitted, setSubmitted] = useState(false);
+const [status, setStatus] = useState<'pending' | 'accepted'>('pending');
 
   const displayName = (name as string) || 'Your guide';
 
@@ -33,49 +34,74 @@ export default function Booking() {
   };
 
   if (submitted) {
-    return (
-      <View style={styles.confirmContainer}>
-        <View style={styles.confirmIcon}>
-          <Ionicons name="checkmark-circle" size={64} color={Colors.forest} />
-        </View>
-        <Text style={styles.confirmTitle}>Booking request sent</Text>
-        <Text style={styles.confirmSubtitle}>
-          {displayName} will confirm your booking for {date}. You'll both get a notification once
-          it's accepted, you can reach each other below in the meantime.
-        </Text>
+  return (
+    <View style={styles.confirmContainer}>
+      {status === 'pending' ? (
+        <>
+          <View style={[styles.confirmIcon, { backgroundColor: Colors.goldSoft }]}>
+            <Ionicons name="time-outline" size={64} color={Colors.gold} />
+          </View>
+          <Text style={styles.confirmTitle}>Booking request sent</Text>
+          <Text style={styles.confirmSubtitle}>
+            Waiting for {displayName} to accept your request for {date}. You'll get a
+            notification the moment they respond — Message and Call unlock once accepted.
+          </Text>
 
-        <View style={styles.contactRow}>
           <TouchableOpacity
-            style={styles.contactButton}
-            onPress={() =>
-              router.push({
-                pathname: '/chat',
-                params: {
-                  name: displayName,
-                  photo: photo as string,
-                  role: 'Tour Guide',
-                  context: 'Booking confirmed',
-                  price: date as string,
-                },
-              })
-            }
+            style={styles.demoButton}
+            onPress={() => setStatus('accepted')}
           >
-            <Ionicons name="chatbubble-outline" size={18} color={Colors.forest} />
-            <Text style={styles.contactButtonText}>Message</Text>
+            <Ionicons name="play-outline" size={14} color={Colors.slate} />
+            <Text style={styles.demoButtonText}>
+              Demo only — preview what happens once accepted
+            </Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.contactButton}
-            onPress={() => Linking.openURL('tel:+233200000000')}
-          >
-            <Ionicons name="call-outline" size={18} color={Colors.forest} />
-            <Text style={styles.contactButtonText}>Call</Text>
-          </TouchableOpacity>
-        </View>
+        </>
+      ) : (
+        <>
+          <View style={styles.confirmIcon}>
+            <Ionicons name="checkmark-circle" size={64} color={Colors.forest} />
+          </View>
+          <Text style={styles.confirmTitle}>Booking accepted!</Text>
+          <Text style={styles.confirmSubtitle}>
+            {displayName} confirmed your booking for {date}. You can now message or call each
+            other directly.
+          </Text>
 
-        <Button title="Back to guides" icon="arrow-back" onPress={() => router.replace('/(tabs)/guides')} />
-      </View>
-    );
-  }
+          <View style={styles.contactRow}>
+            <TouchableOpacity
+              style={styles.contactButton}
+              onPress={() =>
+                router.push({
+                  pathname: '/chat',
+                  params: {
+                    name: displayName,
+                    photo: photo as string,
+                    role: 'Tour Guide',
+                    context: 'Booking confirmed',
+                    price: date as string,
+                  },
+                })
+              }
+            >
+              <Ionicons name="chatbubble-outline" size={18} color={Colors.forest} />
+              <Text style={styles.contactButtonText}>Message</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.contactButton}
+              onPress={() => Linking.openURL('tel:+233200000000')}
+            >
+              <Ionicons name="call-outline" size={18} color={Colors.forest} />
+              <Text style={styles.contactButtonText}>Call</Text>
+            </TouchableOpacity>
+          </View>
+        </>
+      )}
+
+      <Button title="Back to guides" icon="arrow-back" onPress={() => router.replace('/(tabs)/guides')} />
+    </View>
+  );
+}
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -209,6 +235,12 @@ const styles = StyleSheet.create({
     flex: 1, backgroundColor: Colors.white, alignItems: 'center', justifyContent: 'center',
     paddingHorizontal: 32, gap: 8,
   },
+  demoButton: {
+  flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 20,
+  paddingVertical: 8, paddingHorizontal: 14, borderRadius: Radius.pill,
+  backgroundColor: Colors.mist, borderWidth: 1, borderColor: Colors.line,
+},
+demoButtonText: { fontSize: 11, color: Colors.slate, fontWeight: '600' },
   confirmIcon: {
     width: 100, height: 100, borderRadius: 50, backgroundColor: Colors.forestSoft,
     alignItems: 'center', justifyContent: 'center', marginBottom: 20,
