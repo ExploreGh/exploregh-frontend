@@ -38,11 +38,11 @@ export const sites: Site[] = [
     entryFee: 'GHS 40 locals · USD 15 foreigners',
     description:
       'A UNESCO World Heritage Site and one of about forty slave castles built on the Gold Coast. Tour the dungeons, learn the history of the transatlantic slave trade, and walk through the Door of No Return.',
-    bestTime: 'Early morning (7–10am) or late afternoon (4–6pm). Avoid midday heat and crowds.',
+    bestTime: 'Early morning (7am–10am) or late afternoon (4am–6pm). Avoid midday heat and crowds.',
     etiquette:
       'Dress respectfully. Photography is allowed in most areas but not in the dungeons. Keep voices low out of respect for the site\'s history.',
     crowdLevel: 0.55,
-    crowdLabel: 'Moderate — good time to visit',
+    crowdLabel: 'Moderate, good time to visit',
   },
   {
     id: '2',
@@ -60,7 +60,7 @@ export const sites: Site[] = [
     bestTime: 'Arrive before 9am for the quietest canopy walk and best wildlife sightings.',
     etiquette: 'Stay on marked trails. No loud music. Do not feed or approach wildlife.',
     crowdLevel: 0.35,
-    crowdLabel: 'Quiet — perfect time to visit',
+    crowdLabel: 'Quiet, perfect time to visit',
   },
   {
     id: '3',
@@ -74,11 +74,11 @@ export const sites: Site[] = [
     reviews: 2103,
     entryFee: 'GHS 20 per person',
     description:
-      'Accra\'s most popular beach — live drumming, horse rides, beach football and fresh coconuts. Weekends feature reggae nights and cultural performances.',
+      'Accra\'s most popular beach, live drumming, horse rides, beach football and fresh coconuts. Weekends feature reggae nights and cultural performances.',
     bestTime: 'Weekday mornings for calm; Sunday afternoons for live music and full energy.',
     etiquette: 'Bargain politely with vendors. Keep valuables secure. Tip performers if you take photos.',
     crowdLevel: 0.8,
-    crowdLabel: 'Busy — lively atmosphere',
+    crowdLabel: 'Busy, lively atmosphere',
   },
   {
     id: '4',
@@ -93,10 +93,10 @@ export const sites: Site[] = [
     entryFee: 'Free entry',
     description:
       'One of the largest open-air markets in West Africa with over 10,000 stores. Kente cloth, beads, spices, crafts — if Ghana makes it, Kejetia sells it.',
-    bestTime: 'Mid-morning (9–11am) after stalls open but before peak crowds.',
+    bestTime: 'Mid-morning (9am–11am) after stalls open but before peak crowds.',
     etiquette: 'Bargaining is expected and friendly. Ask before photographing traders or their goods.',
     crowdLevel: 0.9,
-    crowdLabel: 'Very busy — hold your bag close',
+    crowdLabel: 'Very busy, hold your bag close',
   },
   {
     id: '5',
@@ -114,7 +114,7 @@ export const sites: Site[] = [
     bestTime: 'Dry season (November–April) when animals gather at waterholes.',
     etiquette: 'Always stay with your ranger. Neutral-coloured clothing recommended. No flash photography at close range.',
     crowdLevel: 0.25,
-    crowdLabel: 'Quiet — ideal for safaris',
+    crowdLabel: 'Quiet, ideal for safaris',
   },
   {
     id: '6',
@@ -129,10 +129,10 @@ export const sites: Site[] = [
     entryFee: 'GHS 40 locals · USD 15 foreigners',
     description:
       'Built by the Portuguese in 1482, Elmina is the oldest European building in sub-Saharan Africa. Guided tours cover five centuries of Gold Coast history.',
-    bestTime: 'Morning tours (8–11am) are cooler and less crowded. Pair with the nearby fishing harbour.',
+    bestTime: 'Morning tours (8am–11am) are cooler and less crowded. Pair with the nearby fishing harbour.',
     etiquette: 'Respectful silence in the dungeons. Local guides at the entrance are official — agree fees before starting.',
     crowdLevel: 0.5,
-    crowdLabel: 'Moderate — steady flow of visitors',
+    crowdLabel: 'Moderate, steady flow of visitors',
   },
   {
     id: '7',
@@ -150,7 +150,7 @@ export const sites: Site[] = [
     bestTime: 'Rainy season (June–September) for the fullest falls; the 45-minute forest hike is shaded year-round.',
     etiquette: 'Greet villagers on the trail. Swimming is allowed at the lower falls — modest swimwear appreciated.',
     crowdLevel: 0.3,
-    crowdLabel: 'Quiet — peaceful hike',
+    crowdLabel: 'Quiet, peaceful hike',
   },
   {
     id: '8',
@@ -166,9 +166,9 @@ export const sites: Site[] = [
     description:
       'Founded in 1890 in the cool Akwapim hills, 30 minutes from Accra. Century-old palms, a famous strangler ficus, and sweeping views over the plains.',
     bestTime: 'Saturday mornings before the picnic crowds. The hill air is coolest before noon.',
-    etiquette: 'Plants are protected — no picking. Picnics welcome; take your litter with you.',
+    etiquette: 'Plants are protected, no picking. Picnics welcome; take your litter with you.',
     crowdLevel: 0.45,
-    crowdLabel: 'Moderate — relaxed pace',
+    crowdLabel: 'Moderate, relaxed pace',
   },
   {
     id: '9',
@@ -186,7 +186,7 @@ export const sites: Site[] = [
     bestTime: 'Weekday mornings when the animals are most active and school crowds are smaller.',
     etiquette: 'Do not feed the animals. Keep noise low near enclosures. Follow keeper instructions at all times.',
     crowdLevel: 0.5,
-    crowdLabel: 'Moderate — busier on weekends',
+    crowdLabel: 'Moderate, busier on weekends',
   },
   {
     id: '10',
@@ -204,7 +204,7 @@ export const sites: Site[] = [
     bestTime: 'Late afternoon (3–6pm) when the campus is lively but lectures are winding down.',
     etiquette: 'This is an active university — be respectful around lecture halls and libraries. Ask before photographing students.',
     crowdLevel: 0.6,
-    crowdLabel: 'Lively — vibrant student life',
+    crowdLabel: 'Lively, vibrant student life',
   },
   {
     id: '11',
@@ -222,7 +222,7 @@ export const sites: Site[] = [
     bestTime: 'Early morning or late afternoon for the best light on the white walls. Avoid Friday prayer times.',
     etiquette: 'Non-Muslims may not enter the mosque itself but can walk the exterior with a local guide. Dress modestly and remove hats.',
     crowdLevel: 0.2,
-    crowdLabel: 'Quiet — peaceful visits',
+    crowdLabel: 'Quiet, peaceful visits',
   },
   {
     id: '12',
@@ -240,7 +240,7 @@ export const sites: Site[] = [
     bestTime: 'Combine with an Akwasidae festival date (every 6 weeks) to see the palace at its most spectacular.',
     etiquette: 'Formal, respectful dress. Photography is restricted inside some exhibit rooms — always ask your guide first.',
     crowdLevel: 0.4,
-    crowdLabel: 'Moderate — guided tours run all day',
+    crowdLabel: 'Moderate, guided tours run all day',
   },
   {
     id: '13',
@@ -254,11 +254,11 @@ export const sites: Site[] = [
     reviews: 402,
     entryFee: 'GHS 20 locals · GHS 50 foreigners',
     description:
-      'A stunning twin waterfall — locals call them the male and female falls — that merge during the rainy season in a spray said to form rainbows. Hike onward to the famous Umbrella Rock and the three-headed palm tree.',
+      'A stunning twin waterfall, locals call them the male and female falls — that merge during the rainy season in a spray said to form rainbows. Hike onward to the famous Umbrella Rock and the three-headed palm tree.',
     bestTime: 'June to September when both falls flow at full power. The 250-step descent is easiest in the cool morning.',
     etiquette: 'Hire a local guide at the entrance for the Umbrella Rock hike. Wear proper footwear — the steps get slippery.',
     crowdLevel: 0.35,
-    crowdLabel: 'Quiet — busiest on holidays',
+    crowdLabel: 'Quiet, busiest on holidays',
   },
 ];
 
@@ -286,7 +286,7 @@ export const vendors: Vendor[] = [
     reviews: 128,
     description: 'Authentic handwoven kente cloth directly from the source. Custom orders available.',
     image: 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=800&q=60',
-    price: 'GHS 150 — 800',
+    price: 'GHS 150 - 800',
   },
   {
     id: '2',
@@ -297,7 +297,7 @@ export const vendors: Vendor[] = [
     reviews: 94,
     description: 'Authentic Ghanaian cuisine — famous fufu, light soup and grilled tilapia.',
     image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&q=60',
-    price: 'GHS 25 — 80',
+    price: 'GHS 25 - 80',
   },
   {
     id: '3',
@@ -308,7 +308,7 @@ export const vendors: Vendor[] = [
     reviews: 56,
     description: 'Traditional pottery demonstrations and handmade ceramic souvenirs.',
     image: 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=800&q=60',
-    price: 'GHS 50 — 300',
+    price: 'GHS 50 - 300',
   },
   {
     id: '4',
@@ -341,7 +341,7 @@ export const vendors: Vendor[] = [
     reviews: 312,
     description: 'Fresh coconuts, tropical fruits and local snacks right on the beach.',
     image: 'https://images.unsplash.com/photo-1553279768-865429fa0078?w=800&q=60',
-    price: 'GHS 5 — 20',
+    price: 'GHS 5 - 20',
   },
 ];
 
@@ -437,10 +437,10 @@ export const festivals: Festival[] = [
     region: 'Greater Accra',
     tribe: 'Ga People',
     image: 'https://images.unsplash.com/photo-1533900298318-6b8da08a523e?w=800&q=60',
-    date: 'August — September 2026',
+    date: 'August - September 2026',
     duration: '2 weeks',
     description:
-      'Homowo — "hooting at hunger" — is the most important festival of the Ga people, celebrating the end of a historic famine with traditional food, drumming and family reunions.',
+      'Homowo  "hooting at hunger"  is the most important festival of the Ga people, celebrating the end of a historic famine with traditional food, drumming and family reunions.',
     highlights: 'Traditional kpokpoi meal, libation pouring, family gatherings, drumming and dancing',
     dresscode: 'Traditional Ga attire or smart casual. Avoid red and black.',
     status: 'upcoming',
@@ -451,7 +451,7 @@ export const festivals: Festival[] = [
     region: 'Ashanti Region',
     tribe: 'Ashanti People',
     image: 'https://images.unsplash.com/photo-1523805009345-7448845a9e53?w=800&q=60',
-    date: 'Every 6 weeks — next: August 2026',
+    date: 'Every 6 weeks - next: August 2026',
     duration: '1 day',
     description:
       'A sacred Ashanti festival held every 42 days at Manhyia Palace, Kumasi. The Asantehene receives homage from chiefs and the public in full royal regalia.',
@@ -470,7 +470,7 @@ export const festivals: Festival[] = [
     description:
       "Ghana's biggest street art and culture festival in James Town, Accra — live murals, music, fashion, skateboarding and performances from artists across Africa.",
     highlights: 'Live murals, music performances, fashion shows, food vendors, cultural exhibitions',
-    dresscode: 'Creative and expressive — this is a fashion-forward event.',
+    dresscode: 'Creative and expressive - this is a fashion-forward event.',
     status: 'upcoming',
   },
   {

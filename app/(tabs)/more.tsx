@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useProfile } from '@/context/ProfileContext';
 import { Colors, Radius, Shadow } from '@/constants/theme';
 import { Avatar, KenteStrip } from '@/components';
 
@@ -87,6 +88,7 @@ const menuItems: MenuItem[] = [
 
 export default function More() {
   const router = useRouter();
+  const { profile } = useProfile();
 
   return (
     <View style={styles.container}>
@@ -99,12 +101,15 @@ export default function More() {
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Profile card */}
         <View style={styles.profileCard}>
-          <Avatar name="Explorer Guest" size={54} />
-          <View style={styles.profileInfo}>
-            <Text style={styles.profileName}>Explorer Guest</Text>
-            <Text style={styles.profileEmail}>tourist@exploregh.com</Text>
-          </View>
-          <TouchableOpacity style={styles.editButton} activeOpacity={0.85}>
+          <Avatar name={profile.name} size={54} />
+<View style={styles.profileInfo}>
+  <Text style={styles.profileName}>{profile.name}</Text>
+  <Text style={styles.profileEmail}>{profile.email}</Text>
+</View>
+          <TouchableOpacity
+  style={styles.editButton}
+  activeOpacity={0.85}
+  onPress={() => router.push('/edit-profile')}>
             <Ionicons name="pencil-outline" size={14} color={Colors.gold} />
             <Text style={styles.editText}>Edit</Text>
           </TouchableOpacity>
