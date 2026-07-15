@@ -610,7 +610,7 @@ export const culturalRegions: CulturalRegion[] = [
     id: '2',
     region: 'Greater Accra',
     image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=60',
-    greeting: 'Ete sen? (How are you? — Twi) · Miile (Hello — Ga)',
+    greeting: 'Ete sen? (How are you? - Twi) · Miile (Hello — Ga)',
     customs:
       'Handshakes are common greetings. It is polite to ask about family. Bargaining is expected in markets.',
     dresscode:
