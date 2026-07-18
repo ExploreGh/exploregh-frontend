@@ -1,8 +1,11 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 
+export type Role = 'tourist' | 'vendor' | 'guide';
+
 type Profile = {
   name: string;
   email: string;
+  role: Role;
 };
 
 type ProfileContextType = {
@@ -13,6 +16,7 @@ type ProfileContextType = {
 const defaultProfile: Profile = {
   name: 'Explorer Guest',
   email: 'tourist@exploregh.com',
+  role: 'tourist',
 };
 
 const ProfileContext = createContext<ProfileContextType>({

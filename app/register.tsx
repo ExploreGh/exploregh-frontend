@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius } from '@/constants/theme';
 import { Button } from '@/components';
+import { useProfile } from '@/context/ProfileContext';
 
 type Role = 'tourist' | 'vendor' | 'guide';
 
@@ -15,6 +16,7 @@ const roleOptions: { key: Role; label: string; icon: keyof typeof Ionicons.glyph
 
 export default function Register() {
   const router = useRouter();
+  const { updateProfile } = useProfile();
   const [role, setRole] = useState<Role>('tourist');
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -134,6 +136,7 @@ export default function Register() {
 
   const handleRegister = () => {
     if (validate()) {
+      updateProfile({ name: fullName, email, role });
       if (role === 'tourist') {
         router.push('/(tabs)/home');
       } else {

@@ -66,11 +66,17 @@ useEffect(() => {
             <Text style={styles.subGreeting}>Where are you going today?</Text>
           </View>
           <View style={styles.headerRight}>
-            <Image
-              source={require('../../assets/images/logo.png')}
-              style={styles.headerLogo}
-              resizeMode="contain"
-            />
+            <TouchableOpacity onPress={() => router.push('/notifications')} style={styles.bellButton}>
+  <Ionicons name="notifications-outline" size={24} color={Colors.white} />
+  <View style={styles.bellBadge}>
+    <Text style={styles.bellBadgeText}>2</Text>
+  </View>
+</TouchableOpacity>
+<Image
+  source={require('../../assets/images/logo.png')}
+  style={styles.headerLogo}
+  resizeMode="contain"
+/>
             {wishlist.length > 0 && (
               <View style={styles.wishlistBadge}>
                 <Text style={styles.wishlistBadgeText}>{wishlist.length}</Text>
@@ -248,6 +254,15 @@ const styles = StyleSheet.create({
   headerRight: {
     position: 'relative',
   },
+  bellButton: {
+  width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center',
+  backgroundColor: 'rgba(255,255,255,0.15)', position: 'relative', marginRight: 8,
+},
+bellBadge: {
+  position: 'absolute', top: 2, right: 2, backgroundColor: Colors.red, width: 16, height: 16,
+  borderRadius: 8, alignItems: 'center', justifyContent: 'center',
+},
+bellBadgeText: { color: Colors.white, fontSize: 9, fontWeight: '800' },
   headerLogo: {
     width: 46,
     height: 46,

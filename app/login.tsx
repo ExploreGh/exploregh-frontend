@@ -4,9 +4,12 @@ import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius } from '@/constants/theme';
 import { Button, KenteStrip } from '@/components';
+import { useProfile } from '@/context/ProfileContext';
+import { setupNotifications } from '@/services/notificationService';
 
 export default function Login() {
   const router = useRouter();
+  const { profile } = useProfile();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -37,10 +40,17 @@ export default function Login() {
   };
 
   const handleLogin = () => {
-    if (validate()) {
+  if (validate()) {
+    setupNotifications();
+    if (profile.role === 'vendor') {
+      router.push('/(vendor)/dashboard');
+    } else if (profile.role === 'guide') {
+      router.push('/(guide)/dashboard');
+    } else {
       router.push('/(tabs)/home');
     }
-  };
+  }
+};
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
