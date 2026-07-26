@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius } from '@/constants/theme';
 import { Button, Avatar } from '@/components';
 import { useProfile } from '@/context/ProfileContext';
+import { isValidEmail, normalizeEmail } from '@/utils/validation';
 
 export default function EditProfile() {
   const router = useRouter();
@@ -23,7 +24,7 @@ export default function EditProfile() {
     }
     if (!email.trim()) {
       newErrors.email = 'Please enter your email';
-    } else if (!email.includes('@')) {
+    } else if (!isValidEmail(email)) {
       newErrors.email = 'Please enter a valid email address';
     }
     setErrors(newErrors);
@@ -32,7 +33,7 @@ export default function EditProfile() {
 
   const handleSave = () => {
     if (validate()) {
-      updateProfile({ name: name.trim(), email: email.trim() });
+      updateProfile({ name: name.trim(), email: normalizeEmail(email) });
       router.back();
     }
   };
