@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type Product = {
   id: string;
@@ -82,10 +83,39 @@ const initialProducts: Product[] = [
   },
 ];
 
+const STORAGE_KEY = '@exploregh/vendor-products';
+
 const MarketplaceContext = createContext<MarketplaceContextValue | undefined>(undefined);
 
 export function MarketplaceProvider({ children }: { children: ReactNode }) {
   const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [storageReady, setStorageReady] = useState(false);
+
+  useEffect(() => {
+    const loadSavedProducts = async () => {
+      try {
+        const saved = await AsyncStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const vendorProducts = JSON.parse(saved) as Product[];
+          setProducts([...vendorProducts, ...initialProducts]);
+        }
+      } catch {
+        // Keep the built-in catalogue available if stored data cannot be read.
+      } finally {
+        setStorageReady(true);
+      }
+    };
+
+    loadSavedProducts();
+  }, []);
+
+  useEffect(() => {
+    if (!storageReady) return;
+    const vendorProducts = products.filter((product) => product.vendorId === 'vendor-account');
+    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(vendorProducts)).catch(() => {
+      // The in-memory marketplace remains usable if saving fails.
+    });
+  }, [products, storageReady]);
 
   const addProduct = (product: NewProduct) => {
     setProducts((current) => [
