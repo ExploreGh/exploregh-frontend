@@ -83,7 +83,14 @@ export default function Explore() {
             <TouchableOpacity
               key={region.id}
               activeOpacity={0.9}
-              onPress={() => router.push('/(tabs)/home')}
+              accessibilityRole="button"
+              accessibilityLabel={`Explore destinations in ${region.name}`}
+              onPress={() =>
+                router.push({
+                  pathname: '/(tabs)/home',
+                  params: { region: region.name },
+                })
+              }
             >
               <ImageBackground
                 source={{ uri: region.image }}
