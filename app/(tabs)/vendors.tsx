@@ -66,7 +66,14 @@ export default function Vendors() {
         ) : (
           <View style={styles.list}>
             {filteredVendors.map((vendor) => (
-              <View key={vendor.id} style={styles.card}>
+              <TouchableOpacity
+                key={vendor.id}
+                style={styles.card}
+                activeOpacity={0.92}
+                accessibilityRole="button"
+                accessibilityLabel={`View ${vendor.name}`}
+                onPress={() => router.push({ pathname: '/vendor-details', params: { id: vendor.id } })}
+              >
                 <Image source={{ uri: vendor.image }} style={styles.cardImage} />
                 <View style={styles.cardBody}>
                   <View style={styles.cardTop}>
@@ -77,8 +84,11 @@ export default function Vendors() {
                         <Text style={styles.metaText}>{vendor.location}</Text>
                       </View>
                     </View>
-                    <View style={styles.categoryBadge}>
-                      <Text style={styles.categoryBadgeText}>{vendor.category}</Text>
+                    <View style={styles.cardTopRight}>
+                      <View style={styles.categoryBadge}>
+                        <Text style={styles.categoryBadgeText}>{vendor.category}</Text>
+                      </View>
+                      <Ionicons name="chevron-forward" size={17} color={Colors.slate} />
                     </View>
                   </View>
 
@@ -96,21 +106,30 @@ export default function Vendors() {
                       <Text style={styles.priceText}>{vendor.price}</Text>
                     </View>
                     <TouchableOpacity
-  style={styles.messageButton}
-  activeOpacity={0.85}
-  onPress={() =>
-    router.push({
-      pathname: '/chat',
-      params: { name: vendor.name, photo: vendor.image, role: 'Vendor', context: vendor.category, price: vendor.price },
-    })
-  }
->
+                      style={styles.messageButton}
+                      activeOpacity={0.85}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Message ${vendor.name}`}
+                      onPress={(event) => {
+                        event.stopPropagation();
+                        router.push({
+                          pathname: '/chat',
+                          params: {
+                            name: vendor.name,
+                            photo: vendor.image,
+                            role: 'Vendor',
+                            context: vendor.category,
+                            price: vendor.price,
+                          },
+                        });
+                      }}
+                    >
                       <Ionicons name="chatbubble-ellipses-outline" size={15} color={Colors.gold} />
                       <Text style={styles.messageText}>Message</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
-              </View>
+              </TouchableOpacity>
             ))}
           </View>
         )}
@@ -197,6 +216,11 @@ const styles = StyleSheet.create({
   metaText: {
     fontSize: 12,
     color: Colors.slate,
+  },
+  cardTopRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   categoryBadge: {
     backgroundColor: Colors.forestSoft,
