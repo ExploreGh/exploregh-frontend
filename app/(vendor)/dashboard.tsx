@@ -14,19 +14,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Shadow } from '@/constants/theme';
 import { Button, EmptyState, KenteStrip } from '@/components';
 import { useProfile } from '@/context/ProfileContext';
+import { useMarketplace } from '@/context/MarketplaceContext';
 
-type Listing = {
-  id: string;
-  name: string;
-  price: string;
-  category: string;
-  description: string;
-  image: string | null;
-};
 
 export default function VendorDashboard() {
   const { profile } = useProfile();
-  const [listings, setListings] = useState<Listing[]>([]);
+  const { products, addProduct, removeProduct } = useMarketplace();
+  const listings = products.filter((product) => product.vendorId === 'vendor-account');
   const [modalVisible, setModalVisible] = useState(false);
 
   const [name, setName] = useState('');
@@ -59,22 +53,23 @@ export default function VendorDashboard() {
   };
 
   const addListing = () => {
-    if (!name.trim() || !price.trim()) return;
-    const newListing: Listing = {
-      id: Date.now().toString(),
+    const numericPrice = Number(price.replace(/[^0-9.]/g, ''));
+    if (!name.trim() || !Number.isFinite(numericPrice) || numericPrice <= 0) return;
+    addProduct({
+      vendorId: 'vendor-account',
+      vendorName: profile.name,
       name: name.trim(),
-      price: price.trim(),
+      price: numericPrice,
       category: category.trim() || 'General',
       description: description.trim(),
       image,
-    };
-    setListings((prev) => [newListing, ...prev]);
+    });
     resetForm();
     setModalVisible(false);
   };
 
   const removeListing = (id: string) => {
-    setListings((prev) => prev.filter((l) => l.id !== id));
+    removeProduct(id);
   };
 
   return (
@@ -119,7 +114,7 @@ export default function VendorDashboard() {
                 <View style={styles.cardInfo}>
                   <Text style={styles.cardName}>{listing.name}</Text>
                   <Text style={styles.cardCategory}>{listing.category}</Text>
-                  <Text style={styles.cardPrice}>{listing.price}</Text>
+                  <Text style={styles.cardPrice}>GHS {listing.price.toFixed(2)}</Text>
                 </View>
                 <TouchableOpacity onPress={() => removeListing(listing.id)} hitSlop={8}>
                   <Ionicons name="trash-outline" size={18} color={Colors.red} />
