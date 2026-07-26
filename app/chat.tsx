@@ -54,7 +54,7 @@ export default function Chat() {
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
     >
       <View style={styles.header}>
@@ -126,6 +126,8 @@ export default function Chat() {
         data={messages}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.messagesList}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
         renderItem={({ item }) => (
           <View style={[styles.bubbleRow, item.fromMe ? styles.bubbleRowMe : styles.bubbleRowThem]}>
             <View style={[styles.bubble, item.fromMe ? styles.bubbleMe : styles.bubbleThem]}>
