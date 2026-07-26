@@ -13,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Shadow } from '@/constants/theme';
 import { SearchBar, Chip, EmptyState, KenteStrip } from '@/components';
 import { sites, categories, Site } from '@/data/mockData';
+import { useWishlist } from '@/context/WishlistContext';
 
 // ============================================================
 // Home — greeting header, search, category chips, a featured
@@ -37,13 +38,7 @@ export default function Home() {
   useEffect(() => {
     setSelectedRegion(typeof region === 'string' ? region : '');
   }, [region]);
-  const [wishlist, setWishlist] = useState<string[]>([]);
-
-  const toggleWishlist = (id: string) => {
-    setWishlist((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    );
-  };
+  const { wishlist, toggleWishlist } = useWishlist();
 
   const openSite = (site: Site) => {
     router.push({ pathname: '/site-details', params: { id: site.id } });
@@ -73,22 +68,39 @@ export default function Home() {
             <Text style={styles.subGreeting}>Where are you going today?</Text>
           </View>
           <View style={styles.headerRight}>
-            <TouchableOpacity onPress={() => router.push('/notifications')} style={styles.bellButton}>
-  <Ionicons name="notifications-outline" size={24} color={Colors.white} />
-  <View style={styles.bellBadge}>
-    <Text style={styles.bellBadgeText}>2</Text>
-  </View>
-</TouchableOpacity>
-<Image
-  source={require('../../assets/images/logo.png')}
-  style={styles.headerLogo}
-  resizeMode="contain"
-/>
-            {wishlist.length > 0 && (
-              <View style={styles.wishlistBadge}>
-                <Text style={styles.wishlistBadgeText}>{wishlist.length}</Text>
+            <TouchableOpacity
+              onPress={() => router.push('/notifications')}
+              style={styles.bellButton}
+              accessibilityRole="button"
+              accessibilityLabel="Open notifications"
+            >
+              <Ionicons name="notifications-outline" size={24} color={Colors.white} />
+              <View style={styles.bellBadge}>
+                <Text style={styles.bellBadgeText}>2</Text>
               </View>
-            )}
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => router.push('/wishlist')}
+              style={styles.savedButton}
+              accessibilityRole="button"
+              accessibilityLabel="Open saved destinations"
+            >
+              <Ionicons
+                name={wishlist.length > 0 ? 'heart' : 'heart-outline'}
+                size={23}
+                color={Colors.white}
+              />
+              {wishlist.length > 0 && (
+                <View style={styles.wishlistBadge}>
+                  <Text style={styles.wishlistBadgeText}>{wishlist.length}</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+            <Image
+              source={require('../../assets/images/logo.png')}
+              style={styles.headerLogo}
+              resizeMode="contain"
+            />
           </View>
         </View>
       </View>
@@ -160,7 +172,10 @@ export default function Home() {
                     <View style={styles.featureOverlay} />
                     <TouchableOpacity
                       style={styles.heartButton}
-                      onPress={() => toggleWishlist(site.id)}
+                      onPress={(event) => {
+                        event.stopPropagation();
+                        toggleWishlist(site.id);
+                      }}
                       hitSlop={8}
                     >
                       <Ionicons
@@ -227,7 +242,10 @@ export default function Home() {
                 </View>
                 <TouchableOpacity
                   style={styles.listHeart}
-                  onPress={() => toggleWishlist(site.id)}
+                  onPress={(event) => {
+                        event.stopPropagation();
+                        toggleWishlist(site.id);
+                      }}
                   hitSlop={8}
                 >
                   <Ionicons
@@ -276,7 +294,8 @@ const styles = StyleSheet.create({
     opacity: 0.9,
   },
   headerRight: {
-    position: 'relative',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   bellButton: {
   width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center',
@@ -287,6 +306,16 @@ bellBadge: {
   borderRadius: 8, alignItems: 'center', justifyContent: 'center',
 },
 bellBadgeText: { color: Colors.white, fontSize: 9, fontWeight: '800' },
+  savedButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    position: 'relative',
+    marginRight: 8,
+  },
   headerLogo: {
     width: 46,
     height: 46,
