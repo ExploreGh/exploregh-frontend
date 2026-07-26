@@ -1,15 +1,18 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, ImageBackground } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Shadow } from '@/constants/theme';
 import { Button, EmptyState } from '@/components';
 import { vendors } from '@/data/mockData';
+import { useMarketplace } from '@/context/MarketplaceContext';
 
 export default function VendorDetails() {
   const router = useRouter();
   const { id } = useLocalSearchParams();
   const vendorId = Array.isArray(id) ? id[0] : id;
   const vendor = vendors.find((item) => item.id === vendorId);
+  const { products } = useMarketplace();
+  const vendorProducts = products.filter((product) => product.vendorId === vendorId);
 
   if (!vendor) {
     return (
@@ -113,6 +116,41 @@ export default function VendorDetails() {
           </View>
         </View>
 
+        <View style={styles.productsSection}>
+          <View style={styles.cardTitleRow}>
+            <Ionicons name="bag-handle-outline" size={18} color={Colors.ink} />
+            <Text style={styles.cardTitle}>Products & experiences</Text>
+          </View>
+          {vendorProducts.length === 0 ? (
+            <Text style={styles.noProducts}>This vendor has not published any products yet. You can still message them with an enquiry.</Text>
+          ) : (
+            <View style={styles.productList}>
+              {vendorProducts.map((product) => (
+                <TouchableOpacity
+                  key={product.id}
+                  style={styles.productCard}
+                  activeOpacity={0.9}
+                  onPress={() => router.push({ pathname: '/product-details', params: { id: product.id } })}
+                >
+                  {product.image ? (
+                    <Image source={{ uri: product.image }} style={styles.productImage} />
+                  ) : (
+                    <View style={[styles.productImage, styles.productImageFallback]}>
+                      <Ionicons name="image-outline" size={22} color={Colors.slate} />
+                    </View>
+                  )}
+                  <View style={styles.productInfo}>
+                    <Text style={styles.productName}>{product.name}</Text>
+                    <Text style={styles.productCategory}>{product.category}</Text>
+                    <Text style={styles.productPrice}>GHS {product.price.toFixed(2)}</Text>
+                  </View>
+                  <Ionicons name="chevron-forward" size={18} color={Colors.slate} />
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
+        </View>
+
         <View style={styles.actions}>
           <Button title="Message vendor" icon="chatbubble-ellipses-outline" onPress={openChat} />
         </View>
@@ -183,5 +221,18 @@ const styles = StyleSheet.create({
   detailLabel: { fontSize: 11, fontWeight: '700', color: Colors.slate, marginBottom: 2 },
   detailValue: { fontSize: 14, fontWeight: '800', color: Colors.ink },
   divider: { height: 1, backgroundColor: Colors.line, marginVertical: 12 },
+  productsSection: {
+    backgroundColor: Colors.white, borderRadius: Radius.lg, padding: 16, marginBottom: 14,
+    borderWidth: 1, borderColor: Colors.line, ...Shadow.card,
+  },
+  noProducts: { fontSize: 13, lineHeight: 19, color: Colors.slate },
+  productList: { gap: 10 },
+  productCard: { flexDirection: 'row', alignItems: 'center', gap: 11 },
+  productImage: { width: 58, height: 58, borderRadius: Radius.md, backgroundColor: Colors.mist },
+  productImageFallback: { alignItems: 'center', justifyContent: 'center' },
+  productInfo: { flex: 1 },
+  productName: { fontSize: 14, fontWeight: '800', color: Colors.ink, marginBottom: 2 },
+  productCategory: { fontSize: 11, color: Colors.slate, marginBottom: 4 },
+  productPrice: { fontSize: 12, fontWeight: '800', color: Colors.forest },
   actions: { marginBottom: 32 },
 });
