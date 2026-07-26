@@ -23,7 +23,7 @@ type Message = {
 
 export default function Chat() {
   const router = useRouter();
-  const { name, photo, role, context, price } = useLocalSearchParams();
+  const { name, photo, role, context, price, message } = useLocalSearchParams();
 
   const displayName = (name as string) || 'ExploreGH Contact';
   const displayRole = (role as string) || 'Vendor';
@@ -37,7 +37,7 @@ export default function Chat() {
       time: 'Just now',
     },
   ]);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState((message as string) || '');
 
   const sendMessage = () => {
     if (!input.trim()) return;
