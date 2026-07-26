@@ -6,6 +6,7 @@ import { Colors, Radius } from '@/constants/theme';
 import { Button, KenteStrip } from '@/components';
 import { useProfile } from '@/context/ProfileContext';
 import { setupNotifications } from '@/services/notificationService';
+import { isValidEmail } from '@/utils/validation';
 
 export default function Login() {
   const router = useRouter();
@@ -22,7 +23,7 @@ export default function Login() {
     if (!email) {
       newErrors.email = 'Please enter your email address';
       valid = false;
-    } else if (!email.includes('@')) {
+    } else if (!isValidEmail(email)) {
       newErrors.email = 'Please enter a valid email address';
       valid = false;
     }
