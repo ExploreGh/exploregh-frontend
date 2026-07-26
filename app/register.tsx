@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius } from '@/constants/theme';
 import { Button } from '@/components';
 import { useProfile } from '@/context/ProfileContext';
+import { isValidEmail, normalizeEmail } from '@/utils/validation';
 
 type Role = 'tourist' | 'vendor' | 'guide';
 
@@ -51,7 +52,7 @@ export default function Register() {
     if (!email) {
       newErrors.email = 'Please enter your email address';
       valid = false;
-    } else if (!email.includes('@')) {
+    } else if (!isValidEmail(email)) {
       newErrors.email = 'Please enter a valid email address';
       valid = false;
     }
@@ -136,7 +137,7 @@ export default function Register() {
 
   const handleRegister = () => {
     if (validate()) {
-      updateProfile({ name: fullName, email, role });
+      updateProfile({ name: fullName.trim(), email: normalizeEmail(email), role });
       if (role === 'tourist') {
         router.push('/(tabs)/home');
       } else {
