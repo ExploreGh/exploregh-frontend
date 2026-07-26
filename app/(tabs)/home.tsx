@@ -22,15 +22,21 @@ import { sites, categories, Site } from '@/data/mockData';
 export default function Home() {
   const router = useRouter();
   const [search, setSearch] = useState('');
-  const { category } = useLocalSearchParams();
-const [selectedCategory, setSelectedCategory] = useState(
-  typeof category === 'string' ? category : 'All'
-);
-useEffect(() => {
-  if (typeof category === 'string') {
-    setSelectedCategory(category);
-  }
-}, [category]);
+  const { category, region } = useLocalSearchParams();
+  const [selectedCategory, setSelectedCategory] = useState(
+    typeof category === 'string' ? category : 'All'
+  );
+  const [selectedRegion, setSelectedRegion] = useState(
+    typeof region === 'string' ? region : ''
+  );
+
+  useEffect(() => {
+    setSelectedCategory(typeof category === 'string' ? category : 'All');
+  }, [category]);
+
+  useEffect(() => {
+    setSelectedRegion(typeof region === 'string' ? region : '');
+  }, [region]);
   const [wishlist, setWishlist] = useState<string[]>([]);
 
   const toggleWishlist = (id: string) => {
@@ -50,11 +56,12 @@ useEffect(() => {
       site.region.toLowerCase().includes(q) ||
       site.category.toLowerCase().includes(q);
     const matchesCategory = selectedCategory === 'All' || site.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+    const matchesRegion = !selectedRegion || site.region === selectedRegion;
+    return matchesSearch && matchesCategory && matchesRegion;
   });
 
   const featured = sites.slice(0, 4);
-  const isFiltering = search.length > 0 || selectedCategory !== 'All';
+  const isFiltering = search.length > 0 || selectedCategory !== 'All' || !!selectedRegion;
 
   return (
     <View style={styles.container}>
@@ -110,6 +117,23 @@ useEffect(() => {
             />
           ))}
         </ScrollView>
+
+        {selectedRegion ? (
+          <View style={styles.regionFilterRow}>
+            <View style={styles.regionFilter}>
+              <Ionicons name="location-sharp" size={14} color={Colors.forest} />
+              <Text style={styles.regionFilterText}>{selectedRegion}</Text>
+              <TouchableOpacity
+                onPress={() => setSelectedRegion('')}
+                hitSlop={8}
+                accessibilityRole="button"
+                accessibilityLabel={`Clear ${selectedRegion} filter`}
+              >
+                <Ionicons name="close-circle" size={18} color={Colors.slate} />
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : null}
 
         {/* Featured carousel — only when not filtering */}
         {!isFiltering && (
@@ -291,6 +315,28 @@ bellBadgeText: { color: Colors.white, fontSize: 9, fontWeight: '800' },
   },
   chipsContent: {
     paddingHorizontal: 16,
+  },
+  regionFilterRow: {
+    paddingHorizontal: 16,
+    marginTop: 12,
+  },
+  regionFilter: {
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: Colors.forestSoft,
+    borderRadius: Radius.pill,
+    paddingVertical: 7,
+    paddingLeft: 12,
+    paddingRight: 8,
+    borderWidth: 1,
+    borderColor: Colors.forest,
+  },
+  regionFilterText: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: Colors.forest,
   },
   sectionRow: {
     flexDirection: 'row',
