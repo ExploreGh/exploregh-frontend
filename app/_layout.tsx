@@ -17,6 +17,7 @@ export default function RootLayout() {
         <Stack.Screen name="(guide)" />
         <Stack.Screen name="site-details" />
         <Stack.Screen name="vendor-details" />
+        <Stack.Screen name="guide-details" />
         <Stack.Screen name="safety-alerts" />
         <Stack.Screen name="trip-planner" />
         <Stack.Screen name="cultural-guide" />
