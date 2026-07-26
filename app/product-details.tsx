@@ -44,7 +44,7 @@ export default function ProductDetails() {
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <ImageBackground
-        source={product.image ? { uri: product.image } : undefined}
+        source={{ uri: product.image || 'https://images.unsplash.com/photo-1590736969955-71cc94901144?w=800&q=60' }}
         style={styles.hero}
       >
         <View style={styles.heroOverlay} />
