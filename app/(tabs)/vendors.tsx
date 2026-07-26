@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Shadow } from '@/constants/theme';
 import { SearchBar, Chip, EmptyState, KenteStrip } from '@/components';
 import { vendors, vendorCategories } from '@/data/mockData';
+import { useMarketplace } from '@/context/MarketplaceContext';
 
 // ============================================================
 // Vendors — marketplace with photo cards, search + category
@@ -15,6 +16,7 @@ export default function Vendors() {
   const router = useRouter();
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const { products } = useMarketplace();
 
   const filteredVendors = vendors.filter((vendor) => {
     const q = search.toLowerCase();
@@ -50,6 +52,40 @@ export default function Vendors() {
               selected={selectedCategory === cat}
               onPress={() => setSelectedCategory(cat)}
             />
+          ))}
+        </ScrollView>
+
+        <View style={styles.sectionRow}>
+          <Text style={styles.sectionTitle}>Products & experiences</Text>
+          <Text style={styles.sectionCount}>{products.length} available</Text>
+        </View>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.productRow}
+        >
+          {products.map((product) => (
+            <TouchableOpacity
+              key={product.id}
+              style={styles.productCard}
+              activeOpacity={0.9}
+              onPress={() =>
+                router.push({ pathname: '/product-details', params: { id: product.id } })
+              }
+            >
+              {product.image ? (
+                <Image source={{ uri: product.image }} style={styles.productImage} />
+              ) : (
+                <View style={[styles.productImage, styles.productImageFallback]}>
+                  <Ionicons name="image-outline" size={26} color={Colors.slate} />
+                </View>
+              )}
+              <View style={styles.productBody}>
+                <Text style={styles.productName} numberOfLines={1}>{product.name}</Text>
+                <Text style={styles.productVendor} numberOfLines={1}>{product.vendorName}</Text>
+                <Text style={styles.productPrice}>GHS {product.price.toFixed(2)}</Text>
+              </View>
+            </TouchableOpacity>
           ))}
         </ScrollView>
 
@@ -168,6 +204,23 @@ const styles = StyleSheet.create({
   chipsContent: {
     paddingHorizontal: 16,
   },
+  sectionRow: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    paddingHorizontal: 16, marginTop: 18, marginBottom: 10,
+  },
+  sectionTitle: { fontSize: 17, fontWeight: '800', color: Colors.ink },
+  sectionCount: { fontSize: 12, fontWeight: '700', color: Colors.slate },
+  productRow: { paddingHorizontal: 16, gap: 12 },
+  productCard: {
+    width: 190, backgroundColor: Colors.white, borderRadius: Radius.lg, overflow: 'hidden',
+    borderWidth: 1, borderColor: Colors.line, ...Shadow.card,
+  },
+  productImage: { width: '100%', height: 116, backgroundColor: Colors.mist },
+  productImageFallback: { alignItems: 'center', justifyContent: 'center' },
+  productBody: { padding: 11 },
+  productName: { fontSize: 14, fontWeight: '800', color: Colors.ink, marginBottom: 3 },
+  productVendor: { fontSize: 11, color: Colors.slate, marginBottom: 7 },
+  productPrice: { fontSize: 13, fontWeight: '800', color: Colors.forest },
   count: {
     fontSize: 13,
     fontWeight: '700',
