@@ -15,7 +15,10 @@ const roleOptions: { key: Role; label: string; icon: keyof typeof Ionicons.glyph
   { key: 'guide', label: 'Tour Guide', icon: 'ribbon-outline' },
 ];
 
-const businessCategories = ['Food & Drinks', 'Arts & Crafts', 'Fashion', 'Accommodation', 'Transport', 'Experiences'];
+const businessCategories = [
+  'Food & Drinks', 'Arts & Crafts', 'Fashion', 'Accommodation', 'Transport',
+  'Experiences', 'Other',
+];
 const ghanaRegions = [
   'Ahafo', 'Ashanti', 'Bono', 'Bono East', 'Central', 'Eastern', 'Greater Accra',
   'North East', 'Northern', 'Oti', 'Savannah', 'Upper East', 'Upper West', 'Volta',
@@ -23,11 +26,24 @@ const ghanaRegions = [
 ];
 const guideSpecializations = [
   'History & Culture', 'Nature & Wildlife', 'Food & Markets', 'Adventure',
-  'Festivals & Events', 'City Tours',
+  'Festivals & Events', 'City Tours', 'Other',
 ];
-const languageOptions = ['English', 'Twi', 'Ga', 'Ewe', 'Fante', 'Dagbani', 'Hausa'];
+const ghanaianLanguageOptions = [
+  'None', 'Twi', 'Ga', 'Ewe', 'Fante', 'Dagbani', 'Dangme', 'Dagaare',
+  'Gonja', 'Gurene', 'Kasem', 'Nzema',
+];
+const foreignLanguageOptions = [
+  'None', 'English', 'French', 'Spanish', 'German', 'Italian', 'Portuguese',
+  'Arabic', 'Mandarin',
+];
 
-type SelectKey = 'businessCategory' | 'businessLocation' | 'specialization' | 'regions' | 'languages';
+type SelectKey =
+  | 'businessCategory'
+  | 'businessLocation'
+  | 'specialization'
+  | 'regions'
+  | 'ghanaianLanguage'
+  | 'foreignLanguage';
 
 export default function Register() {
   const router = useRouter();
@@ -46,7 +62,8 @@ export default function Register() {
   // Guide fields
   const [specialization, setSpecialization] = useState('');
   const [regions, setRegions] = useState('');
-  const [languages, setLanguages] = useState('');
+  const [ghanaianLanguage, setGhanaianLanguage] = useState('None');
+  const [foreignLanguage, setForeignLanguage] = useState('None');
   const [experience, setExperience] = useState('');
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -125,13 +142,6 @@ export default function Register() {
         valid = false;
       } else if (/\d/.test(regions)) {
         newErrors.regions = 'Regions should only contain text e.g. Greater Accra';
-        valid = false;
-      }
-      if (!languages) {
-        newErrors.languages = 'Please enter languages you speak';
-        valid = false;
-      } else if (/\d/.test(languages)) {
-        newErrors.languages = 'Languages should only contain text e.g. English, Twi';
         valid = false;
       }
       if (!experience) {
@@ -309,19 +319,26 @@ export default function Register() {
               }}
             />
             <SelectField
-              label="Primary language"
-              placeholder="Choose your main language"
-              value={languages}
-              options={languageOptions}
+              label="Ghanaian language"
+              placeholder="Choose a Ghanaian language"
+              value={ghanaianLanguage}
+              options={ghanaianLanguageOptions}
               icon="chatbubbles-outline"
-              visible={openSelect === 'languages'}
-              error={errors.languages}
-              onOpen={() => setOpenSelect('languages')}
+              visible={openSelect === 'ghanaianLanguage'}
+              onOpen={() => setOpenSelect('ghanaianLanguage')}
               onClose={() => setOpenSelect(null)}
-              onSelect={(value) => {
-                setLanguages(value);
-                setErrors((current) => ({ ...current, languages: '' }));
-              }}
+              onSelect={setGhanaianLanguage}
+            />
+            <SelectField
+              label="Foreign language"
+              placeholder="Choose a foreign language"
+              value={foreignLanguage}
+              options={foreignLanguageOptions}
+              icon="language-outline"
+              visible={openSelect === 'foreignLanguage'}
+              onOpen={() => setOpenSelect('foreignLanguage')}
+              onClose={() => setOpenSelect(null)}
+              onSelect={setForeignLanguage}
             />
             {renderInput('experience', 'Years of experience e.g. 5', experience, setExperience, 'time-outline', { keyboard: 'numeric' })}
           </View>
