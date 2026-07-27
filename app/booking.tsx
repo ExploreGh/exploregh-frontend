@@ -14,7 +14,8 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Shadow } from '@/constants/theme';
-import { Button } from '@/components';
+import { Button, CalendarField } from '@/components';
+import { formatDisplayDate } from '@/components/CalendarField';
 
 const groupSizes = ['1', '2', '3', '4', '5+'];
 
@@ -22,16 +23,18 @@ export default function Booking() {
   const router = useRouter();
   const { name, photo, price } = useLocalSearchParams();
 
-  const [date, setDate] = useState('');
+  const [date, setDate] = useState<Date | null>(null);
+  const [calendarVisible, setCalendarVisible] = useState(false);
   const [groupSize, setGroupSize] = useState('1');
   const [note, setNote] = useState('');
   const [submitted, setSubmitted] = useState(false);
 const [status, setStatus] = useState<'pending' | 'accepted'>('pending');
 
   const displayName = (name as string) || 'Your guide';
+  const displayDate = date ? formatDisplayDate(date) : '';
 
   const handleConfirm = () => {
-    if (!date.trim()) return;
+    if (!date) return;
     setSubmitted(true);
   };
 
@@ -45,7 +48,7 @@ const [status, setStatus] = useState<'pending' | 'accepted'>('pending');
           </View>
           <Text style={styles.confirmTitle}>Booking request sent</Text>
           <Text style={styles.confirmSubtitle}>
-            Waiting for {displayName} to accept your request for {date}. You'll get a
+            Waiting for {displayName} to accept your request for {displayDate}. You'll get a
             notification the moment they respond — Message and Call unlock once accepted.
           </Text>
 
@@ -66,7 +69,7 @@ const [status, setStatus] = useState<'pending' | 'accepted'>('pending');
           </View>
           <Text style={styles.confirmTitle}>Booking accepted!</Text>
           <Text style={styles.confirmSubtitle}>
-            {displayName} confirmed your booking for {date}. You can now message or call each
+            {displayName} confirmed your booking for {displayDate}. You can now message or call each
             other directly.
           </Text>
 
@@ -81,7 +84,7 @@ const [status, setStatus] = useState<'pending' | 'accepted'>('pending');
                     photo: photo as string,
                     role: 'Tour Guide',
                     context: 'Booking confirmed',
-                    price: date as string,
+                    price: displayDate,
                   },
                 })
               }
@@ -138,16 +141,13 @@ const [status, setStatus] = useState<'pending' | 'accepted'>('pending');
       </View>
 
       <Text style={styles.label}>Preferred date</Text>
-      <View style={styles.inputWrap}>
-        <Ionicons name="calendar-outline" size={18} color={Colors.slate} />
-        <TextInput
-          style={styles.input}
-          placeholder="e.g. 15 August 2026"
-          placeholderTextColor={Colors.slate}
-          value={date}
-          onChangeText={setDate}
-        />
-      </View>
+      <CalendarField
+        value={date}
+        visible={calendarVisible}
+        onOpen={() => setCalendarVisible(true)}
+        onClose={() => setCalendarVisible(false)}
+        onSelect={setDate}
+      />
 
       <Text style={styles.label}>Group size</Text>
       <View style={styles.sizeRow}>
@@ -187,7 +187,7 @@ const [status, setStatus] = useState<'pending' | 'accepted'>('pending');
         title="Confirm booking"
         icon="checkmark-circle-outline"
         onPress={handleConfirm}
-        disabled={!date.trim()}
+        disabled={!date}
       />
       </ScrollView>
     </KeyboardAvoidingView>

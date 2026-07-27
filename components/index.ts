@@ -6,6 +6,7 @@ export { default as KenteStrip } from './KenteStrip';
 export { default as ScreenHeader } from './ScreenHeader';
 export { default as SearchBar } from './SearchBar';
 export { default as SelectField } from './SelectField';
+export { default as CalendarField } from './CalendarField';
 export { default as Chip } from './Chip';
 export { default as Avatar } from './Avatar';
 export { default as AppModal } from './AppModal';
