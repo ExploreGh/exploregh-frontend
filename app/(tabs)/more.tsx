@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useProfile } from '@/context/ProfileContext';
 import { Colors, Radius, Shadow } from '@/constants/theme';
 import { AppModal, Avatar, KenteStrip } from '@/components';
+import { AkwaabaPhrasebookIcon, TrotroTripIcon } from '@/components/GhanaFeatureIcons';
 
 // ============================================================
 // More — profile card with initials avatar, and a menu of
@@ -16,6 +17,7 @@ type MenuItem = {
   title: string;
   description: string;
   icon: keyof typeof Ionicons.glyphMap;
+  customIcon?: 'trip' | 'phrasebook';
   route: string;
   color: string;
   bg: string;
@@ -27,6 +29,7 @@ const menuItems: MenuItem[] = [
     title: 'Trip Planner',
     description: 'Plan your Ghana itinerary',
     icon: 'calendar-outline',
+    customIcon: 'trip',
     route: '/trip-planner',
     color: Colors.forest,
     bg: Colors.forestSoft,
@@ -54,6 +57,7 @@ const menuItems: MenuItem[] = [
     title: 'Phrasebook',
     description: 'Essential phrases in Twi, Ga, Ewe & Hausa',
     icon: 'chatbubbles-outline',
+    customIcon: 'phrasebook',
     route: '/phrasebook',
     color: Colors.forest,
     bg: Colors.forestSoft,
@@ -133,7 +137,13 @@ export default function More() {
               activeOpacity={0.85}
             >
               <View style={[styles.menuIcon, { backgroundColor: item.bg }]}>
-                <Ionicons name={item.icon} size={20} color={item.color} />
+                {item.customIcon === 'trip' ? (
+                  <TrotroTripIcon size={22} color={item.color} />
+                ) : item.customIcon === 'phrasebook' ? (
+                  <AkwaabaPhrasebookIcon size={22} color={item.color} />
+                ) : (
+                  <Ionicons name={item.icon} size={20} color={item.color} />
+                )}
               </View>
               <View style={styles.menuInfo}>
                 <Text style={styles.menuTitle}>{item.title}</Text>
