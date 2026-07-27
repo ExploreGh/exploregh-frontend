@@ -107,7 +107,22 @@ export default function Chat() {
             ) : null}
           </View>
           {isGuide ? (
-            <TouchableOpacity style={styles.bookingButton} activeOpacity={0.85}>
+            <TouchableOpacity
+              style={styles.bookingButton}
+              activeOpacity={0.85}
+              onPress={() =>
+                router.push({
+                  pathname: '/booking',
+                  params: {
+                    name: displayName,
+                    photo: (photo as string) || '',
+                    price: (price as string) || '',
+                  },
+                })
+              }
+              accessibilityRole="button"
+              accessibilityLabel={`Request a booking with ${displayName}`}
+            >
               <Text style={styles.bookingButtonText}>Request booking</Text>
             </TouchableOpacity>
           ) : null}
