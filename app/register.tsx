@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius } from '@/constants/theme';
-import { Button } from '@/components';
+import { Button, SelectField } from '@/components';
 import { useProfile } from '@/context/ProfileContext';
 import { isValidEmail, normalizeEmail } from '@/utils/validation';
 
@@ -14,6 +14,20 @@ const roleOptions: { key: Role; label: string; icon: keyof typeof Ionicons.glyph
   { key: 'vendor', label: 'Vendor', icon: 'storefront-outline' },
   { key: 'guide', label: 'Tour Guide', icon: 'ribbon-outline' },
 ];
+
+const businessCategories = ['Food & Drinks', 'Arts & Crafts', 'Fashion', 'Accommodation', 'Transport', 'Experiences'];
+const ghanaRegions = [
+  'Ahafo', 'Ashanti', 'Bono', 'Bono East', 'Central', 'Eastern', 'Greater Accra',
+  'North East', 'Northern', 'Oti', 'Savannah', 'Upper East', 'Upper West', 'Volta',
+  'Western', 'Western North',
+];
+const guideSpecializations = [
+  'History & Culture', 'Nature & Wildlife', 'Food & Markets', 'Adventure',
+  'Festivals & Events', 'City Tours',
+];
+const languageOptions = ['English', 'Twi', 'Ga', 'Ewe', 'Fante', 'Dagbani', 'Hausa'];
+
+type SelectKey = 'businessCategory' | 'businessLocation' | 'specialization' | 'regions' | 'languages';
 
 export default function Register() {
   const router = useRouter();
@@ -36,6 +50,7 @@ export default function Register() {
   const [experience, setExperience] = useState('');
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [openSelect, setOpenSelect] = useState<SelectKey | null>(null);
 
   const validate = () => {
     let valid = true;
@@ -227,17 +242,87 @@ export default function Register() {
           <View style={styles.form}>
             <Text style={styles.sectionLabel}>Business information</Text>
             {renderInput('businessName', 'Business name', businessName, setBusinessName, 'storefront-outline')}
-            {renderInput('businessCategory', 'Category e.g. Food, Crafts, Fashion', businessCategory, setBusinessCategory, 'pricetag-outline')}
-            {renderInput('businessLocation', 'Business location', businessLocation, setBusinessLocation, 'location-outline')}
+            <SelectField
+              label="Business category"
+              placeholder="Choose a business category"
+              value={businessCategory}
+              options={businessCategories}
+              icon="pricetag-outline"
+              visible={openSelect === 'businessCategory'}
+              error={errors.businessCategory}
+              onOpen={() => setOpenSelect('businessCategory')}
+              onClose={() => setOpenSelect(null)}
+              onSelect={(value) => {
+                setBusinessCategory(value);
+                setErrors((current) => ({ ...current, businessCategory: '' }));
+              }}
+            />
+            <SelectField
+              label="Business region"
+              placeholder="Choose a region"
+              value={businessLocation}
+              options={ghanaRegions}
+              icon="location-outline"
+              visible={openSelect === 'businessLocation'}
+              error={errors.businessLocation}
+              onOpen={() => setOpenSelect('businessLocation')}
+              onClose={() => setOpenSelect(null)}
+              onSelect={(value) => {
+                setBusinessLocation(value);
+                setErrors((current) => ({ ...current, businessLocation: '' }));
+              }}
+            />
           </View>
         )}
 
         {role === 'guide' && (
           <View style={styles.form}>
             <Text style={styles.sectionLabel}>Guide information</Text>
-            {renderInput('specialization', 'Specialization e.g. History & Culture', specialization, setSpecialization, 'ribbon-outline')}
-            {renderInput('regions', 'Regions you cover', regions, setRegions, 'map-outline')}
-            {renderInput('languages', 'Languages spoken', languages, setLanguages, 'chatbubbles-outline')}
+            <SelectField
+              label="Guide specialty"
+              placeholder="Choose your main specialty"
+              value={specialization}
+              options={guideSpecializations}
+              icon="ribbon-outline"
+              visible={openSelect === 'specialization'}
+              error={errors.specialization}
+              onOpen={() => setOpenSelect('specialization')}
+              onClose={() => setOpenSelect(null)}
+              onSelect={(value) => {
+                setSpecialization(value);
+                setErrors((current) => ({ ...current, specialization: '' }));
+              }}
+            />
+            <SelectField
+              label="Primary region"
+              placeholder="Choose your main region"
+              value={regions}
+              options={ghanaRegions}
+              icon="map-outline"
+              visible={openSelect === 'regions'}
+              error={errors.regions}
+              onOpen={() => setOpenSelect('regions')}
+              onClose={() => setOpenSelect(null)}
+              onSelect={(value) => {
+                setRegions(value);
+                setErrors((current) => ({ ...current, regions: '' }));
+              }}
+            />
+            <SelectField
+              label="Primary language"
+              placeholder="Choose your main language"
+              value={languages}
+              options={languageOptions}
+              icon="chatbubbles-outline"
+              visible={openSelect === 'languages'}
+              error={errors.languages}
+              onOpen={() => setOpenSelect('languages')}
+              onClose={() => setOpenSelect(null)}
+              onSelect={(value) => {
+                setLanguages(value);
+                setErrors((current) => ({ ...current, languages: '' }));
+              }}
+            />
             {renderInput('experience', 'Years of experience e.g. 5', experience, setExperience, 'time-outline', { keyboard: 'numeric' })}
           </View>
         )}
