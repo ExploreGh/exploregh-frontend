@@ -28,8 +28,8 @@ const guideSpecializations = [
   'History & Culture', 'Nature & Wildlife', 'Food & Markets', 'Adventure',
   'Festivals & Events', 'City Tours', 'Other',
 ];
-const ghanaianLanguageOptions = [
-  'None', 'Twi', 'Ga', 'Ewe', 'Fante', 'Dagbani', 'Dangme', 'Dagaare',
+const localLanguageOptions = [
+  'English', 'Twi', 'Ga', 'Ewe', 'Fante', 'Dagbani', 'Dangme', 'Dagaare',
   'Gonja', 'Gurene', 'Kasem', 'Nzema',
 ];
 const foreignLanguageOptions = [
@@ -42,7 +42,7 @@ type SelectKey =
   | 'businessLocation'
   | 'specialization'
   | 'regions'
-  | 'ghanaianLanguage'
+  | 'localLanguage'
   | 'foreignLanguage';
 
 export default function Register() {
@@ -62,7 +62,7 @@ export default function Register() {
   // Guide fields
   const [specialization, setSpecialization] = useState('');
   const [regions, setRegions] = useState('');
-  const [ghanaianLanguage, setGhanaianLanguage] = useState('None');
+  const [localLanguage, setLocalLanguage] = useState('');
   const [foreignLanguage, setForeignLanguage] = useState('None');
   const [experience, setExperience] = useState('');
 
@@ -142,6 +142,10 @@ export default function Register() {
         valid = false;
       } else if (/\d/.test(regions)) {
         newErrors.regions = 'Regions should only contain text e.g. Greater Accra';
+        valid = false;
+      }
+      if (!localLanguage) {
+        newErrors.localLanguage = 'Please choose at least one local language';
         valid = false;
       }
       if (!experience) {
@@ -319,15 +323,19 @@ export default function Register() {
               }}
             />
             <SelectField
-              label="Ghanaian language"
-              placeholder="Choose a Ghanaian language"
-              value={ghanaianLanguage}
-              options={ghanaianLanguageOptions}
+              label="Local language"
+              placeholder="Choose a local language"
+              value={localLanguage}
+              options={localLanguageOptions}
               icon="chatbubbles-outline"
-              visible={openSelect === 'ghanaianLanguage'}
-              onOpen={() => setOpenSelect('ghanaianLanguage')}
+              visible={openSelect === 'localLanguage'}
+              error={errors.localLanguage}
+              onOpen={() => setOpenSelect('localLanguage')}
               onClose={() => setOpenSelect(null)}
-              onSelect={setGhanaianLanguage}
+              onSelect={(value) => {
+                setLocalLanguage(value);
+                setErrors((current) => ({ ...current, localLanguage: '' }));
+              }}
             />
             <SelectField
               label="Foreign language"
