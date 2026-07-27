@@ -20,7 +20,14 @@ export function IndependenceArchIcon({
   return (
     <Svg width={size} height={size} viewBox="0 0 32 32" fill="none">
       <Defs>
-        <Mask id="independenceArchStar" x="0" y="0" width="32" height="32">
+        <Mask
+          id="independenceArchStar"
+          x="0"
+          y="0"
+          width="32"
+          height="32"
+          maskUnits="userSpaceOnUse"
+        >
           <Rect width="32" height="32" fill="white" />
           <Path d={STAR_PATH} fill="black" stroke="black" strokeWidth={1.2} />
         </Mask>
