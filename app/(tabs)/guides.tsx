@@ -80,7 +80,14 @@ export default function Guides() {
         ) : (
           <View style={styles.list}>
             {filteredGuides.map((guide) => (
-              <View key={guide.id} style={styles.card}>
+              <TouchableOpacity
+                key={guide.id}
+                style={styles.card}
+                activeOpacity={0.92}
+                accessibilityRole="button"
+                accessibilityLabel={`View ${guide.name}`}
+                onPress={() => router.push({ pathname: '/guide-details', params: { id: guide.id } })}
+              >
                 <View style={styles.cardTop}>
                   <Image source={{ uri: guide.photo }} style={styles.photo} />
                   <View style={styles.headerInfo}>
@@ -95,15 +102,18 @@ export default function Guides() {
                       <Text style={styles.reviewsText}>({guide.reviews} reviews)</Text>
                     </View>
                   </View>
-                  <View
-                    style={[
-                      styles.availabilityBadge,
-                      { backgroundColor: guide.available ? Colors.forest : Colors.slate },
-                    ]}
-                  >
-                    <Text style={styles.availabilityText}>
-                      {guide.available ? 'Available' : 'Busy'}
-                    </Text>
+                  <View style={styles.cardTopRight}>
+                    <View
+                      style={[
+                        styles.availabilityBadge,
+                        { backgroundColor: guide.available ? Colors.forest : Colors.slate },
+                      ]}
+                    >
+                      <Text style={styles.availabilityText}>
+                        {guide.available ? 'Available' : 'Busy'}
+                      </Text>
+                    </View>
+                    <Ionicons name="chevron-forward" size={17} color={Colors.slate} />
                   </View>
                 </View>
 
@@ -128,22 +138,25 @@ export default function Guides() {
                     <Text style={styles.priceText}>{guide.price}</Text>
                   </View>
                   <TouchableOpacity
-  style={[styles.bookButton, { backgroundColor: guide.available ? Colors.forest : Colors.line }]}
-  disabled={!guide.available}
-  activeOpacity={0.85}
-  onPress={() =>
-    router.push({
-      pathname: '/booking',
-      params: { name: guide.name, photo: guide.photo, price: guide.price },
-    })
-  }
->
-  <Text style={[styles.bookText, { color: guide.available ? Colors.gold : Colors.slate }]}>
-    {guide.available ? 'Book now' : 'Unavailable'}
-  </Text>
-</TouchableOpacity>
+                    style={[styles.bookButton, { backgroundColor: guide.available ? Colors.forest : Colors.line }]}
+                    disabled={!guide.available}
+                    activeOpacity={0.85}
+                    accessibilityRole="button"
+                    accessibilityLabel={guide.available ? `Book ${guide.name}` : `${guide.name} is unavailable`}
+                    onPress={(event) => {
+                      event.stopPropagation();
+                      router.push({
+                        pathname: '/booking',
+                        params: { name: guide.name, photo: guide.photo, price: guide.price },
+                      });
+                    }}
+                  >
+                    <Text style={[styles.bookText, { color: guide.available ? Colors.gold : Colors.slate }]}>
+                      {guide.available ? 'Book now' : 'Unavailable'}
+                    </Text>
+                  </TouchableOpacity>
                 </View>
-              </View>
+              </TouchableOpacity>
             ))}
           </View>
         )}
@@ -285,6 +298,10 @@ const styles = StyleSheet.create({
   reviewsText: {
     fontSize: 12,
     color: Colors.slate,
+  },
+  cardTopRight: {
+    alignItems: 'flex-end',
+    gap: 8,
   },
   availabilityBadge: {
     paddingVertical: 4,

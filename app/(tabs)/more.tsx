@@ -1,9 +1,11 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { useProfile } from '@/context/ProfileContext';
 import { Colors, Radius, Shadow } from '@/constants/theme';
-import { Avatar, KenteStrip } from '@/components';
+import { AppModal, Avatar, KenteStrip } from '@/components';
+import { AkwaabaPhrasebookIcon, TrotroTripIcon } from '@/components/GhanaFeatureIcons';
 
 // ============================================================
 // More — profile card with initials avatar, and a menu of
@@ -15,6 +17,7 @@ type MenuItem = {
   title: string;
   description: string;
   icon: keyof typeof Ionicons.glyphMap;
+  customIcon?: 'trip' | 'phrasebook';
   route: string;
   color: string;
   bg: string;
@@ -26,6 +29,7 @@ const menuItems: MenuItem[] = [
     title: 'Trip Planner',
     description: 'Plan your Ghana itinerary',
     icon: 'calendar-outline',
+    customIcon: 'trip',
     route: '/trip-planner',
     color: Colors.forest,
     bg: Colors.forestSoft,
@@ -53,6 +57,7 @@ const menuItems: MenuItem[] = [
     title: 'Phrasebook',
     description: 'Essential phrases in Twi, Ga, Ewe & Hausa',
     icon: 'chatbubbles-outline',
+    customIcon: 'phrasebook',
     route: '/phrasebook',
     color: Colors.forest,
     bg: Colors.forestSoft,
@@ -89,6 +94,12 @@ const menuItems: MenuItem[] = [
 export default function More() {
   const router = useRouter();
   const { profile } = useProfile();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  const handleLogout = () => {
+    setShowLogoutModal(false);
+    router.replace('/');
+  };
 
   return (
     <View style={styles.container}>
@@ -126,7 +137,13 @@ export default function More() {
               activeOpacity={0.85}
             >
               <View style={[styles.menuIcon, { backgroundColor: item.bg }]}>
-                <Ionicons name={item.icon} size={20} color={item.color} />
+                {item.customIcon === 'trip' ? (
+                  <TrotroTripIcon size={22} color={item.color} />
+                ) : item.customIcon === 'phrasebook' ? (
+                  <AkwaabaPhrasebookIcon size={22} color={item.color} />
+                ) : (
+                  <Ionicons name={item.icon} size={20} color={item.color} />
+                )}
               </View>
               <View style={styles.menuInfo}>
                 <Text style={styles.menuTitle}>{item.title}</Text>
@@ -140,7 +157,7 @@ export default function More() {
         {/* Logout */}
         <TouchableOpacity
           style={styles.logoutButton}
-          onPress={() => router.push('/')}
+          onPress={() => setShowLogoutModal(true)}
           activeOpacity={0.85}
         >
           <Ionicons name="log-out-outline" size={18} color={Colors.red} />
@@ -149,6 +166,17 @@ export default function More() {
 
         <View style={{ height: 32 }} />
       </ScrollView>
+
+      <AppModal
+        visible={showLogoutModal}
+        title="Log out of ExploreGH?"
+        message="You will return to the welcome screen and can sign in again at any time."
+        icon="log-out-outline"
+        variant="danger"
+        confirmLabel="Log out"
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={handleLogout}
+      />
     </View>
   );
 }

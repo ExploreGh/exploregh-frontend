@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Image, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Image, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
@@ -6,6 +6,7 @@ import { Colors, Radius } from '@/constants/theme';
 import { Button, KenteStrip } from '@/components';
 import { useProfile } from '@/context/ProfileContext';
 import { setupNotifications } from '@/services/notificationService';
+import { isValidEmail } from '@/utils/validation';
 
 export default function Login() {
   const router = useRouter();
@@ -22,7 +23,7 @@ export default function Login() {
     if (!email) {
       newErrors.email = 'Please enter your email address';
       valid = false;
-    } else if (!email.includes('@')) {
+    } else if (!isValidEmail(email)) {
       newErrors.email = 'Please enter a valid email address';
       valid = false;
     }
@@ -53,7 +54,17 @@ export default function Login() {
 };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
+        showsVerticalScrollIndicator={false}
+      >
       {/* Small logo at the top */}
       <View style={styles.logoRow}>
         <Image
@@ -115,7 +126,8 @@ export default function Login() {
       <View style={styles.stripWrap}>
         <KenteStrip />
       </View>
-    </ScrollView>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 

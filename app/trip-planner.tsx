@@ -7,6 +7,7 @@ import {
   ImageBackground,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { Colors, Radius, Shadow } from '@/constants/theme';
 import { ScreenHeader } from '@/components';
 import { trips } from '@/data/mockData';
@@ -17,6 +18,8 @@ import { trips } from '@/data/mockData';
 // ============================================================
 
 export default function TripPlanner() {
+  const router = useRouter();
+
   return (
     <View style={styles.container}>
       <ScreenHeader title="Trip Planner" subtitle="Build your perfect Ghana adventure" />
@@ -26,7 +29,15 @@ export default function TripPlanner() {
 
         <View style={styles.list}>
           {trips.map((trip) => (
-            <TouchableOpacity key={trip.id} activeOpacity={0.9}>
+            <TouchableOpacity
+              key={trip.id}
+              activeOpacity={0.9}
+              onPress={() =>
+                router.push({ pathname: '/trip-details', params: { id: trip.id } })
+              }
+              accessibilityRole="button"
+              accessibilityLabel={`View ${trip.title} trip details`}
+            >
               <ImageBackground
                 source={{ uri: trip.image }}
                 style={styles.card}
@@ -61,7 +72,13 @@ export default function TripPlanner() {
       </ScrollView>
 
       {/* Floating create button */}
-      <TouchableOpacity style={styles.createButton} activeOpacity={0.9}>
+      <TouchableOpacity
+        style={styles.createButton}
+        activeOpacity={0.9}
+        onPress={() => router.push('/coming-soon')}
+        accessibilityRole="button"
+        accessibilityLabel="Create a new trip"
+      >
         <Ionicons name="add" size={20} color={Colors.gold} />
         <Text style={styles.createText}>Create new trip</Text>
       </TouchableOpacity>

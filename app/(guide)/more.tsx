@@ -1,8 +1,9 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Shadow } from '@/constants/theme';
-import { Avatar, KenteStrip } from '@/components';
+import { AppModal, Avatar, KenteStrip } from '@/components';
 import { useProfile } from '@/context/ProfileContext';
 
 const menuItems = [
@@ -29,6 +30,12 @@ const menuItems = [
 export default function GuideMore() {
   const router = useRouter();
   const { profile } = useProfile();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  const handleLogout = () => {
+    setShowLogoutModal(false);
+    router.replace('/');
+  };
 
   return (
     <View style={styles.container}>
@@ -81,7 +88,7 @@ export default function GuideMore() {
 
         <TouchableOpacity
           style={styles.logoutButton}
-          onPress={() => router.push('/')}
+          onPress={() => setShowLogoutModal(true)}
           activeOpacity={0.85}
         >
           <Ionicons name="log-out-outline" size={18} color={Colors.red} />
@@ -90,6 +97,17 @@ export default function GuideMore() {
 
         <View style={{ height: 32 }} />
       </ScrollView>
+
+      <AppModal
+        visible={showLogoutModal}
+        title="Log out of ExploreGH?"
+        message="You will return to the welcome screen and can sign in again at any time."
+        icon="log-out-outline"
+        variant="danger"
+        confirmLabel="Log out"
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={handleLogout}
+      />
     </View>
   );
 }

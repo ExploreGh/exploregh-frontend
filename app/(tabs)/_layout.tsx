@@ -1,9 +1,15 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/theme';
+import {
+  GhanaExploreIcon,
+  GhanaGuideIcon,
+  GhanaVendorIcon,
+  IndependenceArchIcon,
+} from '@/components/GhanaTabIcons';
 
 // ============================================================
-// Tab bar — proper vector icons (no emojis), Ghana colours.
+// Tab bar — Ghana-inspired vector icons and existing app colours.
 // ============================================================
 
 export default function TabLayout() {
@@ -31,7 +37,7 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? 'home' : 'home-outline'} size={22} color={color} />
+            <IndependenceArchIcon color={color} focused={focused} size={24} />
           ),
         }}
       />
@@ -40,7 +46,7 @@ export default function TabLayout() {
         options={{
           title: 'Explore',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? 'compass' : 'compass-outline'} size={22} color={color} />
+            <GhanaExploreIcon color={color} focused={focused} size={24} />
           ),
         }}
       />
@@ -49,7 +55,7 @@ export default function TabLayout() {
         options={{
           title: 'Vendors',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? 'storefront' : 'storefront-outline'} size={22} color={color} />
+            <GhanaVendorIcon color={color} focused={focused} size={24} />
           ),
         }}
       />
@@ -58,7 +64,7 @@ export default function TabLayout() {
         options={{
           title: 'Guides',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? 'people' : 'people-outline'} size={22} color={color} />
+            <GhanaGuideIcon color={color} focused={focused} size={24} />
           ),
         }}
       />

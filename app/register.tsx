@@ -1,10 +1,11 @@
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius } from '@/constants/theme';
 import { Button } from '@/components';
 import { useProfile } from '@/context/ProfileContext';
+import { isValidEmail, normalizeEmail } from '@/utils/validation';
 
 type Role = 'tourist' | 'vendor' | 'guide';
 
@@ -51,7 +52,7 @@ export default function Register() {
     if (!email) {
       newErrors.email = 'Please enter your email address';
       valid = false;
-    } else if (!email.includes('@')) {
+    } else if (!isValidEmail(email)) {
       newErrors.email = 'Please enter a valid email address';
       valid = false;
     }
@@ -136,7 +137,7 @@ export default function Register() {
 
   const handleRegister = () => {
     if (validate()) {
-      updateProfile({ name: fullName, email, role });
+      updateProfile({ name: fullName.trim(), email: normalizeEmail(email), role });
       if (role === 'tourist') {
         router.push('/(tabs)/home');
       } else {
@@ -172,7 +173,17 @@ export default function Register() {
   );
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
+        showsVerticalScrollIndicator={false}
+      >
       <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
         <Ionicons name="arrow-back" size={22} color={Colors.forestDark} />
       </TouchableOpacity>
@@ -252,7 +263,8 @@ export default function Register() {
           </Text>
         </TouchableOpacity>
       </View>
-    </ScrollView>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 

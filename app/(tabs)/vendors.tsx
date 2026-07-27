@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Shadow } from '@/constants/theme';
 import { SearchBar, Chip, EmptyState, KenteStrip } from '@/components';
 import { vendors, vendorCategories } from '@/data/mockData';
+import { useMarketplace } from '@/context/MarketplaceContext';
 
 // ============================================================
 // Vendors — marketplace with photo cards, search + category
@@ -15,6 +16,7 @@ export default function Vendors() {
   const router = useRouter();
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const { products } = useMarketplace();
 
   const filteredVendors = vendors.filter((vendor) => {
     const q = search.toLowerCase();
@@ -53,6 +55,40 @@ export default function Vendors() {
           ))}
         </ScrollView>
 
+        <View style={styles.sectionRow}>
+          <Text style={styles.sectionTitle}>Products & experiences</Text>
+          <Text style={styles.sectionCount}>{products.length} available</Text>
+        </View>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.productRow}
+        >
+          {products.map((product) => (
+            <TouchableOpacity
+              key={product.id}
+              style={styles.productCard}
+              activeOpacity={0.9}
+              onPress={() =>
+                router.push({ pathname: '/product-details', params: { id: product.id } })
+              }
+            >
+              {product.image ? (
+                <Image source={{ uri: product.image }} style={styles.productImage} />
+              ) : (
+                <View style={[styles.productImage, styles.productImageFallback]}>
+                  <Ionicons name="image-outline" size={26} color={Colors.slate} />
+                </View>
+              )}
+              <View style={styles.productBody}>
+                <Text style={styles.productName} numberOfLines={1}>{product.name}</Text>
+                <Text style={styles.productVendor} numberOfLines={1}>{product.vendorName}</Text>
+                <Text style={styles.productPrice}>GHS {product.price.toFixed(2)}</Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+
         <Text style={styles.count}>
           {filteredVendors.length} vendor{filteredVendors.length !== 1 ? 's' : ''} found
         </Text>
@@ -66,7 +102,14 @@ export default function Vendors() {
         ) : (
           <View style={styles.list}>
             {filteredVendors.map((vendor) => (
-              <View key={vendor.id} style={styles.card}>
+              <TouchableOpacity
+                key={vendor.id}
+                style={styles.card}
+                activeOpacity={0.92}
+                accessibilityRole="button"
+                accessibilityLabel={`View ${vendor.name}`}
+                onPress={() => router.push({ pathname: '/vendor-details', params: { id: vendor.id } })}
+              >
                 <Image source={{ uri: vendor.image }} style={styles.cardImage} />
                 <View style={styles.cardBody}>
                   <View style={styles.cardTop}>
@@ -77,8 +120,11 @@ export default function Vendors() {
                         <Text style={styles.metaText}>{vendor.location}</Text>
                       </View>
                     </View>
-                    <View style={styles.categoryBadge}>
-                      <Text style={styles.categoryBadgeText}>{vendor.category}</Text>
+                    <View style={styles.cardTopRight}>
+                      <View style={styles.categoryBadge}>
+                        <Text style={styles.categoryBadgeText}>{vendor.category}</Text>
+                      </View>
+                      <Ionicons name="chevron-forward" size={17} color={Colors.slate} />
                     </View>
                   </View>
 
@@ -96,21 +142,30 @@ export default function Vendors() {
                       <Text style={styles.priceText}>{vendor.price}</Text>
                     </View>
                     <TouchableOpacity
-  style={styles.messageButton}
-  activeOpacity={0.85}
-  onPress={() =>
-    router.push({
-      pathname: '/chat',
-      params: { name: vendor.name, photo: vendor.image, role: 'Vendor', context: vendor.category, price: vendor.price },
-    })
-  }
->
+                      style={styles.messageButton}
+                      activeOpacity={0.85}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Message ${vendor.name}`}
+                      onPress={(event) => {
+                        event.stopPropagation();
+                        router.push({
+                          pathname: '/chat',
+                          params: {
+                            name: vendor.name,
+                            photo: vendor.image,
+                            role: 'Vendor',
+                            context: vendor.category,
+                            price: vendor.price,
+                          },
+                        });
+                      }}
+                    >
                       <Ionicons name="chatbubble-ellipses-outline" size={15} color={Colors.gold} />
                       <Text style={styles.messageText}>Message</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
-              </View>
+              </TouchableOpacity>
             ))}
           </View>
         )}
@@ -149,6 +204,23 @@ const styles = StyleSheet.create({
   chipsContent: {
     paddingHorizontal: 16,
   },
+  sectionRow: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    paddingHorizontal: 16, marginTop: 18, marginBottom: 10,
+  },
+  sectionTitle: { fontSize: 17, fontWeight: '800', color: Colors.ink },
+  sectionCount: { fontSize: 12, fontWeight: '700', color: Colors.slate },
+  productRow: { paddingHorizontal: 16, gap: 12 },
+  productCard: {
+    width: 190, backgroundColor: Colors.white, borderRadius: Radius.lg, overflow: 'hidden',
+    borderWidth: 1, borderColor: Colors.line, ...Shadow.card,
+  },
+  productImage: { width: '100%', height: 116, backgroundColor: Colors.mist },
+  productImageFallback: { alignItems: 'center', justifyContent: 'center' },
+  productBody: { padding: 11 },
+  productName: { fontSize: 14, fontWeight: '800', color: Colors.ink, marginBottom: 3 },
+  productVendor: { fontSize: 11, color: Colors.slate, marginBottom: 7 },
+  productPrice: { fontSize: 13, fontWeight: '800', color: Colors.forest },
   count: {
     fontSize: 13,
     fontWeight: '700',
@@ -197,6 +269,11 @@ const styles = StyleSheet.create({
   metaText: {
     fontSize: 12,
     color: Colors.slate,
+  },
+  cardTopRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   categoryBadge: {
     backgroundColor: Colors.forestSoft,

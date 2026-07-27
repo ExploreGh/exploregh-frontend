@@ -12,22 +12,20 @@ import { useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Shadow } from '@/constants/theme';
-import { Button, EmptyState, KenteStrip } from '@/components';
+import { AppModal, Button, EmptyState, KenteStrip } from '@/components';
 import { useProfile } from '@/context/ProfileContext';
+import { useMarketplace } from '@/context/MarketplaceContext';
 
-type Listing = {
-  id: string;
-  name: string;
-  price: string;
-  category: string;
-  description: string;
-  image: string | null;
-};
 
 export default function VendorDashboard() {
   const { profile } = useProfile();
-  const [listings, setListings] = useState<Listing[]>([]);
+  const { products, addProduct, removeProduct } = useMarketplace();
+  const listings = products.filter((product) => product.vendorId === 'vendor-account');
   const [modalVisible, setModalVisible] = useState(false);
+  const [dialog, setDialog] = useState<{
+    type: 'permission' | 'validation' | 'delete';
+    listingId?: string;
+  } | null>(null);
 
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
@@ -38,7 +36,7 @@ export default function VendorDashboard() {
   const pickImage = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
-      alert('We need access to your photos to add a product image.');
+      setDialog({ type: 'permission' });
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -59,22 +57,33 @@ export default function VendorDashboard() {
   };
 
   const addListing = () => {
-    if (!name.trim() || !price.trim()) return;
-    const newListing: Listing = {
-      id: Date.now().toString(),
+    const numericPrice = Number(price.replace(/[^0-9.]/g, ''));
+    if (!name.trim() || !Number.isFinite(numericPrice) || numericPrice <= 0) {
+      setDialog({ type: 'validation' });
+      return;
+    }
+    addProduct({
+      vendorId: 'vendor-account',
+      vendorName: profile.name,
       name: name.trim(),
-      price: price.trim(),
+      price: numericPrice,
       category: category.trim() || 'General',
       description: description.trim(),
       image,
-    };
-    setListings((prev) => [newListing, ...prev]);
+    });
     resetForm();
     setModalVisible(false);
   };
 
-  const removeListing = (id: string) => {
-    setListings((prev) => prev.filter((l) => l.id !== id));
+  const requestRemoveListing = (id: string) => {
+    setDialog({ type: 'delete', listingId: id });
+  };
+
+  const confirmDialog = () => {
+    if (dialog?.type === 'delete' && dialog.listingId) {
+      removeProduct(dialog.listingId);
+    }
+    setDialog(null);
   };
 
   return (
@@ -119,9 +128,14 @@ export default function VendorDashboard() {
                 <View style={styles.cardInfo}>
                   <Text style={styles.cardName}>{listing.name}</Text>
                   <Text style={styles.cardCategory}>{listing.category}</Text>
-                  <Text style={styles.cardPrice}>{listing.price}</Text>
+                  <Text style={styles.cardPrice}>GHS {listing.price.toFixed(2)}</Text>
                 </View>
-                <TouchableOpacity onPress={() => removeListing(listing.id)} hitSlop={8}>
+                <TouchableOpacity
+                  onPress={() => requestRemoveListing(listing.id)}
+                  hitSlop={8}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Delete ${listing.name}`}
+                >
                   <Ionicons name="trash-outline" size={18} color={Colors.red} />
                 </TouchableOpacity>
               </View>
@@ -193,6 +207,30 @@ export default function VendorDashboard() {
           </View>
         </View>
       </Modal>
+
+      <AppModal
+        visible={dialog !== null}
+        title={
+          dialog?.type === 'delete'
+            ? 'Remove this listing?'
+            : dialog?.type === 'validation'
+              ? 'Check the listing details'
+              : 'Photo access needed'
+        }
+        message={
+          dialog?.type === 'delete'
+            ? 'This product will also be removed from the tourist marketplace.'
+            : dialog?.type === 'validation'
+              ? 'Enter a product name and a valid price greater than zero before saving.'
+              : 'Allow photo-library access in your phone settings to add a product image.'
+        }
+        icon={dialog?.type === 'delete' ? 'trash-outline' : dialog?.type === 'validation' ? 'alert-circle-outline' : 'images-outline'}
+        variant={dialog?.type === 'delete' ? 'danger' : 'default'}
+        confirmLabel={dialog?.type === 'delete' ? 'Remove' : 'Got it'}
+        cancelLabel={dialog?.type === 'delete' ? 'Keep listing' : 'Close'}
+        onConfirm={confirmDialog}
+        onClose={() => setDialog(null)}
+      />
     </View>
   );
 }

@@ -23,7 +23,7 @@ type Message = {
 
 export default function Chat() {
   const router = useRouter();
-  const { name, photo, role, context, price } = useLocalSearchParams();
+  const { name, photo, role, context, price, message } = useLocalSearchParams();
 
   const displayName = (name as string) || 'ExploreGH Contact';
   const displayRole = (role as string) || 'Vendor';
@@ -37,7 +37,7 @@ export default function Chat() {
       time: 'Just now',
     },
   ]);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState((message as string) || '');
 
   const sendMessage = () => {
     if (!input.trim()) return;
@@ -54,7 +54,7 @@ export default function Chat() {
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
     >
       <View style={styles.header}>
@@ -107,7 +107,22 @@ export default function Chat() {
             ) : null}
           </View>
           {isGuide ? (
-            <TouchableOpacity style={styles.bookingButton} activeOpacity={0.85}>
+            <TouchableOpacity
+              style={styles.bookingButton}
+              activeOpacity={0.85}
+              onPress={() =>
+                router.push({
+                  pathname: '/booking',
+                  params: {
+                    name: displayName,
+                    photo: (photo as string) || '',
+                    price: (price as string) || '',
+                  },
+                })
+              }
+              accessibilityRole="button"
+              accessibilityLabel={`Request a booking with ${displayName}`}
+            >
               <Text style={styles.bookingButtonText}>Request booking</Text>
             </TouchableOpacity>
           ) : null}
@@ -126,6 +141,8 @@ export default function Chat() {
         data={messages}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.messagesList}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
         renderItem={({ item }) => (
           <View style={[styles.bubbleRow, item.fromMe ? styles.bubbleRowMe : styles.bubbleRowThem]}>
             <View style={[styles.bubble, item.fromMe ? styles.bubbleMe : styles.bubbleThem]}>
