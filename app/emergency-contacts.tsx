@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Linking } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Shadow } from '@/constants/theme';
 import { ScreenHeader } from '@/components';
@@ -31,7 +31,14 @@ export default function EmergencyContacts() {
               </View>
               <View style={styles.contacts}>
                 {service.contacts.map((contact, index) => (
-                  <TouchableOpacity key={index} style={styles.contactRow} activeOpacity={0.7}>
+                  <TouchableOpacity
+                    key={index}
+                    style={styles.contactRow}
+                    activeOpacity={0.7}
+                    onPress={() => Linking.openURL(`tel:${contact.number.replace(/\D/g, '')}`)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Call ${contact.name} at ${contact.number}`}
+                  >
                     <View style={styles.contactInfo}>
                       <Text style={styles.contactName}>{contact.name}</Text>
                     </View>
