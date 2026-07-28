@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius } from '@/constants/theme';
 import { Button, SelectField } from '@/components';
@@ -57,6 +57,8 @@ type SelectKey =
 export default function Register() {
   const router = useRouter();
   const { updateProfile } = useProfile();
+  const scrollRef = useRef<ScrollView>(null);
+  const submittingRef = useRef(false);
   const [role, setRole] = useState<Role>('tourist');
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -82,6 +84,7 @@ export default function Register() {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [openSelect, setOpenSelect] = useState<SelectKey | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validate = () => {
     let valid = true;
@@ -201,11 +204,21 @@ export default function Register() {
     }
 
     setErrors(newErrors);
+    if (!valid) {
+      requestAnimationFrame(() => {
+        scrollRef.current?.scrollTo({ y: 120, animated: true });
+      });
+    }
     return valid;
   };
 
-  const handleRegister = () => {
-    if (validate()) {
+  const handleRegister = async () => {
+    if (submittingRef.current || !validate()) return;
+
+    submittingRef.current = true;
+    setIsSubmitting(true);
+
+    try {
       updateProfile({
         name: fullName.trim(),
         email: normalizeEmail(email),
@@ -217,8 +230,36 @@ export default function Register() {
       } else {
         router.push('/application-submitted');
       }
+    } finally {
+      submittingRef.current = false;
+      setIsSubmitting(false);
     }
   };
+
+  const commonFieldsComplete =
+    Boolean(fullName.trim()) &&
+    isValidEmail(email) &&
+    isValidGhanaMobile(phone) &&
+    isStrongPassword(password) &&
+    Boolean(confirmPassword) &&
+    password === confirmPassword;
+
+  const vendorFieldsComplete =
+    role !== 'vendor' ||
+    (Boolean(businessName.trim()) &&
+      Boolean(businessCategory) &&
+      Boolean(businessLocation) &&
+      (businessCategory !== 'Other' || Boolean(otherBusinessCategory.trim())));
+
+  const guideFieldsComplete =
+    role !== 'guide' ||
+    (Boolean(specialization) &&
+      Boolean(regions) &&
+      Boolean(localLanguage) &&
+      Boolean(experience) &&
+      (specialization !== 'Other' || Boolean(otherSpecialization.trim())));
+
+  const formReady = commonFieldsComplete && vendorFieldsComplete && guideFieldsComplete;
 
   const renderInput = (
     key: string,
@@ -311,6 +352,7 @@ export default function Register() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView
+        ref={scrollRef}
         style={styles.container}
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
@@ -571,6 +613,8 @@ export default function Register() {
           title={role === 'tourist' ? 'Create account' : 'Submit application'}
           icon={role === 'tourist' ? 'checkmark' : 'paper-plane-outline'}
           onPress={handleRegister}
+          loading={isSubmitting}
+          disabled={!formReady}
         />
 
         <TouchableOpacity onPress={() => router.push('/login')} style={styles.loginLink}>
