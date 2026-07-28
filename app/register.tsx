@@ -5,7 +5,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius } from '@/constants/theme';
 import { Button, SelectField } from '@/components';
 import { useProfile } from '@/context/ProfileContext';
-import { isValidEmail, normalizeEmail } from '@/utils/validation';
+import {
+  formatGhanaPhone,
+  isValidEmail,
+  isValidGhanaMobile,
+  normalizeEmail,
+  normalizeGhanaPhone,
+  toInternationalGhanaPhone,
+} from '@/utils/validation';
 
 type Role = 'tourist' | 'vendor' | 'guide';
 
@@ -51,6 +58,7 @@ export default function Register() {
   const [role, setRole] = useState<Role>('tourist');
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
@@ -86,6 +94,14 @@ export default function Register() {
       valid = false;
     } else if (!isValidEmail(email)) {
       newErrors.email = 'Please enter a valid email address';
+      valid = false;
+    }
+
+    if (!phone) {
+      newErrors.phone = 'Please enter your mobile number';
+      valid = false;
+    } else if (!isValidGhanaMobile(phone)) {
+      newErrors.phone = 'Enter a valid 9-digit Ghana mobile number';
       valid = false;
     }
 
@@ -166,7 +182,12 @@ export default function Register() {
 
   const handleRegister = () => {
     if (validate()) {
-      updateProfile({ name: fullName.trim(), email: normalizeEmail(email), role });
+      updateProfile({
+        name: fullName.trim(),
+        email: normalizeEmail(email),
+        phone: toInternationalGhanaPhone(phone),
+        role,
+      });
       if (role === 'tourist') {
         router.push('/(tabs)/home');
       } else {
@@ -249,6 +270,33 @@ export default function Register() {
         <Text style={styles.sectionLabel}>Personal information</Text>
         {renderInput('fullName', 'Full name', fullName, setFullName, 'person-outline')}
         {renderInput('email', 'Email address', email, setEmail, 'mail-outline', { keyboard: 'email-address' })}
+        <View>
+          <View style={[styles.inputWrap, errors.phone ? styles.inputError : null]}>
+            <Ionicons name="call-outline" size={18} color={Colors.slate} />
+            <View style={styles.phonePrefix}>
+              <Text style={styles.phoneFlag}>🇬🇭</Text>
+              <Text style={styles.phonePrefixText}>+233</Text>
+            </View>
+            <View style={styles.phoneDivider} />
+            <TextInput
+              style={styles.input}
+              placeholder="24 123 4567"
+              placeholderTextColor={Colors.slate}
+              value={formatGhanaPhone(phone)}
+              onChangeText={(value) => {
+                setPhone(normalizeGhanaPhone(value));
+                if (errors.phone) {
+                  setErrors((current) => ({ ...current, phone: '' }));
+                }
+              }}
+              keyboardType="phone-pad"
+              textContentType="telephoneNumber"
+              autoComplete="tel"
+              maxLength={11}
+            />
+          </View>
+          {errors.phone ? <Text style={styles.errorText}>{errors.phone}</Text> : null}
+        </View>
         {renderInput('password', 'Password', password, setPassword, 'lock-closed-outline', { secure: true })}
         {renderInput('confirmPassword', 'Confirm password', confirmPassword, setConfirmPassword, 'lock-closed-outline', { secure: true })}
 
@@ -462,6 +510,22 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 15,
     color: Colors.ink,
+  },
+  phonePrefix: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
+  phoneFlag: { fontSize: 16 },
+  phonePrefixText: {
+    color: Colors.ink,
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  phoneDivider: {
+    width: 1,
+    height: 24,
+    backgroundColor: Colors.line,
   },
   inputError: {
     borderColor: Colors.red,

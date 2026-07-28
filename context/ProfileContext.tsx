@@ -5,12 +5,13 @@ export type Role = 'tourist' | 'vendor' | 'guide';
 type Profile = {
   name: string;
   email: string;
+  phone?: string;
   role: Role;
 };
 
 type ProfileContextType = {
   profile: Profile;
-  updateProfile: (profile: Profile) => void;
+  updateProfile: (profile: Partial<Profile>) => void;
 };
 
 const defaultProfile: Profile = {
@@ -27,8 +28,8 @@ const ProfileContext = createContext<ProfileContextType>({
 export function ProfileProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile>(defaultProfile);
 
-  const updateProfile = (newProfile: Profile) => {
-    setProfile(newProfile);
+  const updateProfile = (newProfile: Partial<Profile>) => {
+    setProfile((currentProfile) => ({ ...currentProfile, ...newProfile }));
   };
 
   return (
