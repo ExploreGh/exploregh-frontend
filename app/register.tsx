@@ -69,10 +69,12 @@ export default function Register() {
   // Vendor fields
   const [businessName, setBusinessName] = useState('');
   const [businessCategory, setBusinessCategory] = useState('');
+  const [otherBusinessCategory, setOtherBusinessCategory] = useState('');
   const [businessLocation, setBusinessLocation] = useState('');
 
   // Guide fields
   const [specialization, setSpecialization] = useState('');
+  const [otherSpecialization, setOtherSpecialization] = useState('');
   const [regions, setRegions] = useState('');
   const [localLanguage, setLocalLanguage] = useState('');
   const [foreignLanguage, setForeignLanguage] = useState('None');
@@ -140,6 +142,15 @@ export default function Register() {
         newErrors.businessCategory = 'Category should only contain text e.g. Food, Crafts';
         valid = false;
       }
+      if (businessCategory === 'Other') {
+        if (!otherBusinessCategory.trim()) {
+          newErrors.otherBusinessCategory = 'Please specify your business category';
+          valid = false;
+        } else if (otherBusinessCategory.trim().length < 3) {
+          newErrors.otherBusinessCategory = 'Please enter at least 3 characters';
+          valid = false;
+        }
+      }
       if (!businessLocation) {
         newErrors.businessLocation = 'Please enter your business location';
         valid = false;
@@ -156,6 +167,15 @@ export default function Register() {
       } else if (/\d/.test(specialization)) {
         newErrors.specialization = 'Specialization should only contain text e.g. History & Culture';
         valid = false;
+      }
+      if (specialization === 'Other') {
+        if (!otherSpecialization.trim()) {
+          newErrors.otherSpecialization = 'Please specify your guide specialty';
+          valid = false;
+        } else if (otherSpecialization.trim().length < 3) {
+          newErrors.otherSpecialization = 'Please enter at least 3 characters';
+          valid = false;
+        }
       }
       if (!regions) {
         newErrors.regions = 'Please enter the regions you cover';
@@ -216,7 +236,12 @@ export default function Register() {
           placeholder={placeholder}
           placeholderTextColor={Colors.slate}
           value={value}
-          onChangeText={setValue}
+          onChangeText={(text) => {
+            setValue(text);
+            if (errors[key]) {
+              setErrors((current) => ({ ...current, [key]: '' }));
+            }
+          }}
           secureTextEntry={options?.secure}
           keyboardType={options?.keyboard || 'default'}
           autoCapitalize={options?.keyboard === 'email-address' ? 'none' : 'sentences'}
@@ -428,6 +453,15 @@ export default function Register() {
               }}
               onClear={() => setBusinessCategory('')}
             />
+            {businessCategory === 'Other'
+              ? renderInput(
+                  'otherBusinessCategory',
+                  'Specify your business category',
+                  otherBusinessCategory,
+                  setOtherBusinessCategory,
+                  'create-outline'
+                )
+              : null}
             <SelectField
               label="Business region"
               placeholder="Choose a region"
@@ -467,6 +501,15 @@ export default function Register() {
               }}
               onClear={() => setSpecialization('')}
             />
+            {specialization === 'Other'
+              ? renderInput(
+                  'otherSpecialization',
+                  'Specify your guide specialty',
+                  otherSpecialization,
+                  setOtherSpecialization,
+                  'create-outline'
+                )
+              : null}
             <SelectField
               label="Primary region"
               placeholder="Choose your main region"
