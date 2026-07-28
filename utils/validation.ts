@@ -24,3 +24,13 @@ export const isValidGhanaMobile = (phone: string) =>
 
 export const toInternationalGhanaPhone = (phone: string) =>
   `+233${normalizeGhanaPhone(phone)}`;
+
+export const getPasswordChecks = (password: string) => ({
+  length: password.length >= 8,
+  uppercase: /[A-Z]/.test(password),
+  lowercase: /[a-z]/.test(password),
+  number: /\d/.test(password),
+});
+
+export const isStrongPassword = (password: string) =>
+  Object.values(getPasswordChecks(password)).every(Boolean);

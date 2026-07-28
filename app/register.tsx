@@ -7,8 +7,10 @@ import { Button, SelectField } from '@/components';
 import { useProfile } from '@/context/ProfileContext';
 import {
   formatGhanaPhone,
+  getPasswordChecks,
   isValidEmail,
   isValidGhanaMobile,
+  isStrongPassword,
   normalizeEmail,
   normalizeGhanaPhone,
   toInternationalGhanaPhone,
@@ -61,6 +63,8 @@ export default function Register() {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Vendor fields
   const [businessName, setBusinessName] = useState('');
@@ -108,8 +112,8 @@ export default function Register() {
     if (!password) {
       newErrors.password = 'Please enter a password';
       valid = false;
-    } else if (password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
+    } else if (!isStrongPassword(password)) {
+      newErrors.password = 'Please meet all password requirements';
       valid = false;
     }
 
@@ -222,6 +226,60 @@ export default function Register() {
     </View>
   );
 
+  const renderPasswordInput = (
+    key: 'password' | 'confirmPassword',
+    placeholder: string,
+    value: string,
+    setValue: (text: string) => void,
+    visible: boolean,
+    setVisible: (visible: boolean) => void,
+    contentType: 'newPassword' | 'password'
+  ) => (
+    <View>
+      <View style={[styles.inputWrap, errors[key] ? styles.inputError : null]}>
+        <Ionicons name="lock-closed-outline" size={18} color={Colors.slate} />
+        <TextInput
+          style={styles.input}
+          placeholder={placeholder}
+          placeholderTextColor={Colors.slate}
+          value={value}
+          onChangeText={(text) => {
+            setValue(text);
+            if (errors[key]) {
+              setErrors((current) => ({ ...current, [key]: '' }));
+            }
+          }}
+          secureTextEntry={!visible}
+          textContentType={contentType}
+          autoComplete={contentType === 'newPassword' ? 'new-password' : 'password'}
+          autoCapitalize="none"
+          autoCorrect={false}
+        />
+        <TouchableOpacity
+          onPress={() => setVisible(!visible)}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel={visible ? 'Hide password' : 'Show password'}
+        >
+          <Ionicons
+            name={visible ? 'eye-off-outline' : 'eye-outline'}
+            size={19}
+            color={Colors.slate}
+          />
+        </TouchableOpacity>
+      </View>
+      {errors[key] ? <Text style={styles.errorText}>{errors[key]}</Text> : null}
+    </View>
+  );
+
+  const passwordChecks = getPasswordChecks(password);
+  const passwordRequirements = [
+    { label: '8+ characters', met: passwordChecks.length },
+    { label: 'Uppercase', met: passwordChecks.uppercase },
+    { label: 'Lowercase', met: passwordChecks.lowercase },
+    { label: 'Number', met: passwordChecks.number },
+  ];
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -297,8 +355,58 @@ export default function Register() {
           </View>
           {errors.phone ? <Text style={styles.errorText}>{errors.phone}</Text> : null}
         </View>
-        {renderInput('password', 'Password', password, setPassword, 'lock-closed-outline', { secure: true })}
-        {renderInput('confirmPassword', 'Confirm password', confirmPassword, setConfirmPassword, 'lock-closed-outline', { secure: true })}
+        {renderPasswordInput(
+          'password',
+          'Password',
+          password,
+          setPassword,
+          showPassword,
+          setShowPassword,
+          'newPassword'
+        )}
+        {password ? (
+          <View style={styles.passwordGuide}>
+            <View style={styles.passwordGuideHeader}>
+              <Text style={styles.passwordGuideTitle}>Password strength</Text>
+              <Text
+                style={[
+                  styles.passwordStrength,
+                  isStrongPassword(password) && styles.passwordStrengthComplete,
+                ]}
+              >
+                {isStrongPassword(password) ? 'Strong' : 'Keep going'}
+              </Text>
+            </View>
+            <View style={styles.requirementsRow}>
+              {passwordRequirements.map((requirement) => (
+                <View key={requirement.label} style={styles.requirement}>
+                  <Ionicons
+                    name={requirement.met ? 'checkmark-circle' : 'ellipse-outline'}
+                    size={14}
+                    color={requirement.met ? Colors.forest : Colors.slate}
+                  />
+                  <Text
+                    style={[
+                      styles.requirementText,
+                      requirement.met && styles.requirementTextMet,
+                    ]}
+                  >
+                    {requirement.label}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        ) : null}
+        {renderPasswordInput(
+          'confirmPassword',
+          'Confirm password',
+          confirmPassword,
+          setConfirmPassword,
+          showConfirmPassword,
+          setShowConfirmPassword,
+          'password'
+        )}
 
         {role === 'vendor' && (
           <View style={styles.form}>
@@ -527,6 +635,42 @@ const styles = StyleSheet.create({
     height: 24,
     backgroundColor: Colors.line,
   },
+  passwordGuide: {
+    backgroundColor: Colors.forestSoft,
+    borderRadius: Radius.md,
+    padding: 12,
+    marginTop: -4,
+  },
+  passwordGuideHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 9,
+  },
+  passwordGuideTitle: {
+    color: Colors.forestDark,
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  passwordStrength: {
+    color: Colors.slate,
+    fontSize: 11,
+    fontWeight: '800',
+  },
+  passwordStrengthComplete: { color: Colors.forest },
+  requirementsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    rowGap: 7,
+  },
+  requirement: {
+    width: '50%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
+  requirementText: { color: Colors.slate, fontSize: 11, fontWeight: '600' },
+  requirementTextMet: { color: Colors.forestDark },
   inputError: {
     borderColor: Colors.red,
     backgroundColor: Colors.redSoft,
