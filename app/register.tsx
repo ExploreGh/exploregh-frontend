@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius } from '@/constants/theme';
 import { Button, SelectField } from '@/components';
 import { useProfile } from '@/context/ProfileContext';
+import { ghanaRegions } from '@/data/ghana';
 import {
   formatGhanaPhone,
   getPasswordChecks,
@@ -27,11 +28,6 @@ const roleOptions: { key: Role; label: string; icon: keyof typeof Ionicons.glyph
 const businessCategories = [
   'Food & Drinks', 'Arts & Crafts', 'Fashion', 'Accommodation', 'Transport',
   'Experiences', 'Other',
-];
-const ghanaRegions = [
-  'Ahafo', 'Ashanti', 'Bono', 'Bono East', 'Central', 'Eastern', 'Greater Accra',
-  'North East', 'Northern', 'Oti', 'Savannah', 'Upper East', 'Upper West', 'Volta',
-  'Western', 'Western North',
 ];
 const guideSpecializations = [
   'History & Culture', 'Nature & Wildlife', 'Food & Markets', 'Adventure',

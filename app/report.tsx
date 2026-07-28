@@ -12,7 +12,8 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Shadow } from '@/constants/theme';
-import { Button } from '@/components';
+import { Button, SelectField } from '@/components';
+import { ghanaRegions } from '@/data/ghana';
 
 type ReportType = 'safety' | 'listing';
 
@@ -27,6 +28,8 @@ export default function Report() {
   const [type, setType] = useState<ReportType>('safety');
 
   const [region, setRegion] = useState('');
+  const [specificLocation, setSpecificLocation] = useState('');
+  const [regionVisible, setRegionVisible] = useState(false);
   const [severity, setSeverity] = useState<'low' | 'medium' | 'high'>('medium');
 
   const [listingName, setListingName] = useState('');
@@ -38,8 +41,8 @@ export default function Report() {
   const validate = () => {
     const newErrors: Record<string, string> = {};
 
-    if (type === 'safety' && !region.trim()) {
-      newErrors.region = 'Please enter a region or location';
+    if (type === 'safety' && !region) {
+      newErrors.region = 'Please choose the region where this happened';
     }
     if (type === 'listing' && !listingName.trim()) {
       newErrors.listingName = 'Please enter the vendor or guide name';
@@ -126,18 +129,39 @@ export default function Report() {
 
       {type === 'safety' ? (
         <>
-          <Text style={styles.label}>Region or location</Text>
-          <View style={[styles.inputWrap, errors.region && styles.inputError]}>
+          <Text style={styles.label}>Region</Text>
+          <View style={styles.selectSpacing}>
+            <SelectField
+              label="Report region"
+              placeholder="Choose a Ghana region"
+              value={region}
+              options={ghanaRegions}
+              icon="map-outline"
+              visible={regionVisible}
+              searchable
+              error={errors.region}
+              onOpen={() => setRegionVisible(true)}
+              onClose={() => setRegionVisible(false)}
+              onSelect={(value) => {
+                setRegion(value);
+                setErrors((current) => ({ ...current, region: '' }));
+              }}
+              onClear={() => setRegion('')}
+            />
+          </View>
+
+          <Text style={styles.label}>Specific location (optional)</Text>
+          <View style={styles.inputWrap}>
             <Ionicons name="location-outline" size={18} color={Colors.slate} />
             <TextInput
               style={styles.input}
               placeholder="e.g. Kejetia Market, Kumasi"
               placeholderTextColor={Colors.slate}
-              value={region}
-              onChangeText={setRegion}
+              value={specificLocation}
+              onChangeText={setSpecificLocation}
+              autoCapitalize="words"
             />
           </View>
-          {errors.region ? <Text style={styles.errorText}>{errors.region}</Text> : null}
 
           <Text style={styles.label}>Severity</Text>
           <View style={styles.severityRow}>
@@ -236,6 +260,7 @@ const styles = StyleSheet.create({
   },
   input: { flex: 1, fontSize: 15, color: Colors.ink },
   inputError: { borderColor: Colors.red, backgroundColor: Colors.redSoft },
+  selectSpacing: { marginBottom: 14 },
   errorText: { color: Colors.red, fontSize: 13, marginBottom: 16, marginLeft: 4 },
   severityRow: { flexDirection: 'row', gap: 8, marginBottom: 20 },
   severityChip: {
