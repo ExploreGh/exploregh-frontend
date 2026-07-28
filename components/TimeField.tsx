@@ -1,4 +1,4 @@
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Keyboard, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Shadow } from '@/constants/theme';
 
@@ -9,6 +9,7 @@ type TimeFieldProps = {
   onOpen: () => void;
   onClose: () => void;
   onSelect: (time: string) => void;
+  onClear?: () => void;
 };
 
 const timeSlots = Array.from({ length: 21 }, (_, index) => {
@@ -35,6 +36,7 @@ export default function TimeField({
   onOpen,
   onClose,
   onSelect,
+  onClear,
 }: TimeFieldProps) {
   const now = new Date();
   const isToday =
@@ -50,7 +52,10 @@ export default function TimeField({
           !selectedDate && styles.fieldDisabled,
           pressed && selectedDate && styles.pressed,
         ]}
-        onPress={onOpen}
+        onPress={() => {
+          Keyboard.dismiss();
+          onOpen();
+        }}
         disabled={!selectedDate}
         accessibilityRole="button"
         accessibilityState={{ disabled: !selectedDate }}
@@ -79,11 +84,26 @@ export default function TimeField({
               ? 'Choose a time'
               : 'Choose a date first'}
         </Text>
-        <Ionicons
-          name="chevron-down"
-          size={18}
-          color={selectedDate ? Colors.slate : Colors.line}
-        />
+        {value && onClear ? (
+          <Pressable
+            style={styles.clearButton}
+            onPress={(event) => {
+              event.stopPropagation();
+              onClear();
+            }}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel="Clear preferred time"
+          >
+            <Ionicons name="close-circle" size={19} color={Colors.slate} />
+          </Pressable>
+        ) : (
+          <Ionicons
+            name="chevron-down"
+            size={18}
+            color={selectedDate ? Colors.slate : Colors.line}
+          />
+        )}
       </Pressable>
 
       <Modal
@@ -192,6 +212,7 @@ const styles = StyleSheet.create({
   fieldText: { flex: 1, fontSize: 15, color: Colors.ink },
   placeholder: { color: Colors.slate },
   disabledText: { color: Colors.line },
+  clearButton: { padding: 2 },
   pressed: { opacity: 0.78 },
   backdrop: {
     flex: 1,

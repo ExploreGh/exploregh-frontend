@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Keyboard, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Shadow } from '@/constants/theme';
 
@@ -10,6 +10,7 @@ type CalendarFieldProps = {
   onOpen: () => void;
   onClose: () => void;
   onSelect: (date: Date) => void;
+  onClear?: () => void;
 };
 
 const weekDays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
@@ -31,6 +32,7 @@ export default function CalendarField({
   onOpen,
   onClose,
   onSelect,
+  onClear,
 }: CalendarFieldProps) {
   const minimum = startOfDay(minimumDate);
   const [shownMonth, setShownMonth] = useState(
@@ -72,7 +74,10 @@ export default function CalendarField({
     <>
       <Pressable
         style={({ pressed }) => [styles.field, pressed && styles.pressed]}
-        onPress={onOpen}
+        onPress={() => {
+          Keyboard.dismiss();
+          onOpen();
+        }}
         accessibilityRole="button"
         accessibilityLabel={
           value ? `Preferred date, ${formatDisplayDate(value)}` : 'Choose preferred date'
@@ -83,7 +88,22 @@ export default function CalendarField({
         <Text style={[styles.fieldText, !value && styles.placeholder]}>
           {value ? formatDisplayDate(value) : 'Choose a date'}
         </Text>
-        <Ionicons name="chevron-down" size={18} color={Colors.slate} />
+        {value && onClear ? (
+          <Pressable
+            style={styles.clearButton}
+            onPress={(event) => {
+              event.stopPropagation();
+              onClear();
+            }}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel="Clear preferred date"
+          >
+            <Ionicons name="close-circle" size={19} color={Colors.slate} />
+          </Pressable>
+        ) : (
+          <Ionicons name="chevron-down" size={18} color={Colors.slate} />
+        )}
       </Pressable>
 
       <Modal
@@ -224,6 +244,7 @@ const styles = StyleSheet.create({
   },
   fieldText: { flex: 1, fontSize: 15, color: Colors.ink },
   placeholder: { color: Colors.slate },
+  clearButton: { padding: 2 },
   pressed: { opacity: 0.78 },
   backdrop: {
     flex: 1,

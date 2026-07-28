@@ -156,6 +156,10 @@ const [status, setStatus] = useState<'pending' | 'accepted'>('pending');
           setDate(selectedDate);
           setTime('');
         }}
+        onClear={() => {
+          setDate(null);
+          setTime('');
+        }}
       />
 
       <Text style={styles.label}>Preferred time</Text>
@@ -166,6 +170,7 @@ const [status, setStatus] = useState<'pending' | 'accepted'>('pending');
         onOpen={() => setTimeVisible(true)}
         onClose={() => setTimeVisible(false)}
         onSelect={setTime}
+        onClear={() => setTime('')}
       />
 
       <Text style={styles.label}>Group size</Text>

@@ -426,6 +426,7 @@ export default function Register() {
                 setBusinessCategory(value);
                 setErrors((current) => ({ ...current, businessCategory: '' }));
               }}
+              onClear={() => setBusinessCategory('')}
             />
             <SelectField
               label="Business region"
@@ -441,6 +442,7 @@ export default function Register() {
                 setBusinessLocation(value);
                 setErrors((current) => ({ ...current, businessLocation: '' }));
               }}
+              onClear={() => setBusinessLocation('')}
             />
           </View>
         )}
@@ -462,6 +464,7 @@ export default function Register() {
                 setSpecialization(value);
                 setErrors((current) => ({ ...current, specialization: '' }));
               }}
+              onClear={() => setSpecialization('')}
             />
             <SelectField
               label="Primary region"
@@ -477,6 +480,7 @@ export default function Register() {
                 setRegions(value);
                 setErrors((current) => ({ ...current, regions: '' }));
               }}
+              onClear={() => setRegions('')}
             />
             <SelectField
               label="Local language"
@@ -492,6 +496,7 @@ export default function Register() {
                 setLocalLanguage(value);
                 setErrors((current) => ({ ...current, localLanguage: '' }));
               }}
+              onClear={() => setLocalLanguage('')}
             />
             <SelectField
               label="Foreign language"

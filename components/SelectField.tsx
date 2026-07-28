@@ -1,4 +1,4 @@
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Keyboard, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Shadow } from '@/constants/theme';
 
@@ -13,6 +13,7 @@ type SelectFieldProps = {
   onOpen: () => void;
   onClose: () => void;
   onSelect: (value: string) => void;
+  onClear?: () => void;
 };
 
 export default function SelectField({
@@ -26,6 +27,7 @@ export default function SelectField({
   onOpen,
   onClose,
   onSelect,
+  onClear,
 }: SelectFieldProps) {
   return (
     <View>
@@ -35,7 +37,10 @@ export default function SelectField({
           error ? styles.fieldError : null,
           pressed ? styles.pressed : null,
         ]}
-        onPress={onOpen}
+        onPress={() => {
+          Keyboard.dismiss();
+          onOpen();
+        }}
         accessibilityRole="button"
         accessibilityLabel={`${label}. ${value || placeholder}`}
         accessibilityHint="Opens a list of choices"
@@ -44,7 +49,22 @@ export default function SelectField({
         <Text style={[styles.value, !value && styles.placeholder]} numberOfLines={1}>
           {value || placeholder}
         </Text>
-        <Ionicons name="chevron-down" size={18} color={Colors.slate} />
+        {value && onClear ? (
+          <Pressable
+            style={styles.clearButton}
+            onPress={(event) => {
+              event.stopPropagation();
+              onClear();
+            }}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={`Clear ${label}`}
+          >
+            <Ionicons name="close-circle" size={19} color={Colors.slate} />
+          </Pressable>
+        ) : (
+          <Ionicons name="chevron-down" size={18} color={Colors.slate} />
+        )}
       </Pressable>
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
@@ -132,6 +152,7 @@ const styles = StyleSheet.create({
   },
   value: { flex: 1, fontSize: 15, color: Colors.ink },
   placeholder: { color: Colors.slate },
+  clearButton: { padding: 2 },
   errorText: { color: Colors.red, fontSize: 13, marginTop: 4, marginLeft: 4 },
   pressed: { opacity: 0.78 },
   backdrop: {
