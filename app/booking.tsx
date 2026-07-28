@@ -11,7 +11,7 @@ import {
   Platform,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Shadow } from '@/constants/theme';
 import { Button, CalendarField, TimeField } from '@/components';
@@ -31,7 +31,9 @@ export default function Booking() {
   const [groupSize, setGroupSize] = useState('1');
   const [note, setNote] = useState('');
   const [submitted, setSubmitted] = useState(false);
-const [status, setStatus] = useState<'pending' | 'accepted'>('pending');
+  const [status, setStatus] = useState<'pending' | 'accepted'>('pending');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const submittingRef = useRef(false);
 
   const displayName = (name as string) || 'Your guide';
   const displayDate = date ? formatDisplayDate(date) : '';
@@ -39,9 +41,16 @@ const [status, setStatus] = useState<'pending' | 'accepted'>('pending');
     ? `${displayDate} at ${formatDisplayTime(time)}`
     : displayDate;
 
-  const handleConfirm = () => {
-    if (!date || !time) return;
-    setSubmitted(true);
+  const handleConfirm = async () => {
+    if (submittingRef.current || !date || !time) return;
+    submittingRef.current = true;
+    setIsSubmitting(true);
+    try {
+      setSubmitted(true);
+    } finally {
+      submittingRef.current = false;
+      setIsSubmitting(false);
+    }
   };
 
   if (submitted) {
@@ -197,6 +206,7 @@ const [status, setStatus] = useState<'pending' | 'accepted'>('pending');
           value={note}
           onChangeText={setNote}
           multiline
+          maxLength={500}
         />
       </View>
 
@@ -211,6 +221,7 @@ const [status, setStatus] = useState<'pending' | 'accepted'>('pending');
         title="Confirm booking"
         icon="checkmark-circle-outline"
         onPress={handleConfirm}
+        loading={isSubmitting}
         disabled={!date || !time}
       />
       </ScrollView>

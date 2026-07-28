@@ -9,7 +9,7 @@ import {
   Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Shadow } from '@/constants/theme';
 import { Button, SelectField } from '@/components';
@@ -37,6 +37,8 @@ export default function Report() {
   const [description, setDescription] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const submittingRef = useRef(false);
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
@@ -57,11 +59,21 @@ export default function Report() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = () => {
-    if (validate()) {
+  const handleSubmit = async () => {
+    if (submittingRef.current || !validate()) return;
+    submittingRef.current = true;
+    setIsSubmitting(true);
+    try {
       setSubmitted(true);
+    } finally {
+      submittingRef.current = false;
+      setIsSubmitting(false);
     }
   };
+
+  const formReady =
+    description.trim().length >= 15 &&
+    (type === 'safety' ? Boolean(region) : Boolean(listingName.trim()));
 
   if (submitted) {
     return (
@@ -101,7 +113,10 @@ export default function Report() {
       <View style={styles.typeRow}>
         <TouchableOpacity
           style={[styles.typeButton, type === 'safety' && styles.typeButtonActive]}
-          onPress={() => setType('safety')}
+          onPress={() => {
+            setType('safety');
+            setErrors({});
+          }}
         >
           <Ionicons
             name="warning-outline"
@@ -114,7 +129,10 @@ export default function Report() {
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.typeButton, type === 'listing' && styles.typeButtonActive]}
-          onPress={() => setType('listing')}
+          onPress={() => {
+            setType('listing');
+            setErrors({});
+          }}
         >
           <Ionicons
             name="flag-outline"
@@ -160,6 +178,7 @@ export default function Report() {
               value={specificLocation}
               onChangeText={setSpecificLocation}
               autoCapitalize="words"
+              maxLength={120}
             />
           </View>
 
@@ -196,7 +215,12 @@ export default function Report() {
               placeholder="e.g. Kwame Asante"
               placeholderTextColor={Colors.slate}
               value={listingName}
-              onChangeText={setListingName}
+              onChangeText={(value) => {
+                setListingName(value);
+                if (errors.listingName) {
+                  setErrors((current) => ({ ...current, listingName: '' }));
+                }
+              }}
             />
           </View>
           {errors.listingName ? <Text style={styles.errorText}>{errors.listingName}</Text> : null}
@@ -210,8 +234,14 @@ export default function Report() {
           placeholder="Describe what happened in as much detail as you can..."
           placeholderTextColor={Colors.slate}
           value={description}
-          onChangeText={setDescription}
+          onChangeText={(value) => {
+            setDescription(value);
+            if (errors.description) {
+              setErrors((current) => ({ ...current, description: '' }));
+            }
+          }}
           multiline
+          maxLength={1000}
         />
       </View>
       {errors.description ? <Text style={styles.errorText}>{errors.description}</Text> : null}
@@ -223,7 +253,14 @@ export default function Report() {
         </Text>
       </View>
 
-      <Button title="Submit report" icon="paper-plane-outline" variant="danger" onPress={handleSubmit} />
+      <Button
+        title="Submit report"
+        icon="paper-plane-outline"
+        variant="danger"
+        onPress={handleSubmit}
+        loading={isSubmitting}
+        disabled={!formReady}
+      />
 
       <View style={{ height: 24 }} />
       </ScrollView>

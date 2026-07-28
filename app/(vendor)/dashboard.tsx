@@ -7,15 +7,26 @@ import {
   Image,
   TextInput,
   Modal,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Shadow } from '@/constants/theme';
-import { AppModal, Button, EmptyState, KenteStrip } from '@/components';
+import { AppModal, Button, EmptyState, KenteStrip, SelectField } from '@/components';
 import { useProfile } from '@/context/ProfileContext';
 import { useMarketplace } from '@/context/MarketplaceContext';
 
+const listingCategories = [
+  'Arts & Crafts',
+  'Food & Drinks',
+  'Fashion',
+  'Beauty & Wellness',
+  'Home & Decor',
+  'Experiences',
+  'Other',
+];
 
 export default function VendorDashboard() {
   const { profile } = useProfile();
@@ -30,8 +41,13 @@ export default function VendorDashboard() {
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [category, setCategory] = useState('');
+  const [otherCategory, setOtherCategory] = useState('');
+  const [categoryVisible, setCategoryVisible] = useState(false);
   const [description, setDescription] = useState('');
   const [image, setImage] = useState<string | null>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSaving, setIsSaving] = useState(false);
+  const savingRef = useRef(false);
 
   const pickImage = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -52,28 +68,66 @@ export default function VendorDashboard() {
     setName('');
     setPrice('');
     setCategory('');
+    setOtherCategory('');
     setDescription('');
     setImage(null);
+    setErrors({});
   };
 
-  const addListing = () => {
+  const addListing = async () => {
+    if (savingRef.current) return;
+
     const numericPrice = Number(price.replace(/[^0-9.]/g, ''));
-    if (!name.trim() || !Number.isFinite(numericPrice) || numericPrice <= 0) {
+    const newErrors: Record<string, string> = {};
+
+    if (name.trim().length < 3) {
+      newErrors.name = 'Enter a product name with at least 3 characters';
+    }
+    if (!Number.isFinite(numericPrice) || numericPrice <= 0) {
+      newErrors.price = 'Enter a valid price greater than zero';
+    } else if (numericPrice > 100000) {
+      newErrors.price = 'Price cannot be more than GHS 100,000';
+    }
+    if (!category) newErrors.category = 'Choose a product category';
+    if (category === 'Other' && otherCategory.trim().length < 3) {
+      newErrors.otherCategory = 'Please specify the category';
+    }
+    if (description.trim().length < 10) {
+      newErrors.description = 'Add a description with at least 10 characters';
+    }
+
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
       setDialog({ type: 'validation' });
       return;
     }
-    addProduct({
-      vendorId: 'vendor-account',
-      vendorName: profile.name,
-      name: name.trim(),
-      price: numericPrice,
-      category: category.trim() || 'General',
-      description: description.trim(),
-      image,
-    });
-    resetForm();
-    setModalVisible(false);
+
+    savingRef.current = true;
+    setIsSaving(true);
+    try {
+      addProduct({
+        vendorId: 'vendor-account',
+        vendorName: profile.name,
+        name: name.trim(),
+        price: numericPrice,
+        category: category === 'Other' ? otherCategory.trim() : category,
+        description: description.trim(),
+        image,
+      });
+      resetForm();
+      setModalVisible(false);
+    } finally {
+      savingRef.current = false;
+      setIsSaving(false);
+    }
   };
+
+  const listingReady =
+    name.trim().length >= 3 &&
+    Boolean(price) &&
+    Boolean(category) &&
+    description.trim().length >= 10 &&
+    (category !== 'Other' || otherCategory.trim().length >= 3);
 
   const requestRemoveListing = (id: string) => {
     setDialog({ type: 'delete', listingId: id });
@@ -145,22 +199,47 @@ export default function VendorDashboard() {
       </ScrollView>
 
       {listings.length > 0 && (
-        <TouchableOpacity style={styles.fab} onPress={() => setModalVisible(true)}>
+        <TouchableOpacity
+          style={styles.fab}
+          onPress={() => setModalVisible(true)}
+          accessibilityRole="button"
+          accessibilityLabel="Add a listing"
+        >
           <Ionicons name="add" size={24} color={Colors.gold} />
         </TouchableOpacity>
       )}
 
-      <Modal visible={modalVisible} animationType="slide" transparent>
-        <View style={styles.modalOverlay}>
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
+        transparent
+        onRequestClose={() => {
+          setModalVisible(false);
+          resetForm();
+        }}
+      >
+        <KeyboardAvoidingView
+          style={styles.modalOverlay}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
           <View style={styles.modalCard}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Add a listing</Text>
-              <TouchableOpacity onPress={() => { setModalVisible(false); resetForm(); }}>
+              <TouchableOpacity
+                onPress={() => { setModalVisible(false); resetForm(); }}
+                accessibilityRole="button"
+                accessibilityLabel="Close add listing form"
+              >
                 <Ionicons name="close" size={22} color={Colors.slate} />
               </TouchableOpacity>
             </View>
 
-            <ScrollView>
+            <ScrollView
+              keyboardShouldPersistTaps="handled"
+              keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={styles.modalContent}
+            >
               <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
                 {image ? (
                   <Image source={{ uri: image }} style={styles.pickedImage} />
@@ -173,39 +252,98 @@ export default function VendorDashboard() {
               </TouchableOpacity>
 
               <TextInput
-                style={styles.input}
+                style={[styles.input, errors.name && styles.inputError]}
                 placeholder="Product name"
                 placeholderTextColor={Colors.slate}
                 value={name}
-                onChangeText={setName}
+                onChangeText={(value) => {
+                  setName(value);
+                  if (errors.name) setErrors((current) => ({ ...current, name: '' }));
+                }}
+                autoCapitalize="words"
               />
+              {errors.name ? <Text style={styles.errorText}>{errors.name}</Text> : null}
               <TextInput
-                style={styles.input}
-                placeholder="Price (e.g. GHS 150 — 800)"
+                style={[styles.input, errors.price && styles.inputError]}
+                placeholder="Price in GHS"
                 placeholderTextColor={Colors.slate}
                 value={price}
-                onChangeText={setPrice}
+                onChangeText={(value) => {
+                  const cleaned = value.replace(/[^0-9.]/g, '');
+                  const [whole, ...decimals] = cleaned.split('.');
+                  setPrice(decimals.length ? `${whole}.${decimals.join('').slice(0, 2)}` : whole);
+                  if (errors.price) setErrors((current) => ({ ...current, price: '' }));
+                }}
+                keyboardType="decimal-pad"
+                maxLength={9}
               />
+              {errors.price ? <Text style={styles.errorText}>{errors.price}</Text> : null}
+              <View style={styles.selectSpacing}>
+                <SelectField
+                  label="Product category"
+                  placeholder="Choose a category"
+                  value={category}
+                  options={listingCategories}
+                  icon="pricetag-outline"
+                  visible={categoryVisible}
+                  error={errors.category}
+                  onOpen={() => setCategoryVisible(true)}
+                  onClose={() => setCategoryVisible(false)}
+                  onSelect={(value) => {
+                    setCategory(value);
+                    setErrors((current) => ({ ...current, category: '' }));
+                  }}
+                  onClear={() => setCategory('')}
+                />
+              </View>
+              {category === 'Other' ? (
+                <>
+                  <TextInput
+                    style={[styles.input, errors.otherCategory && styles.inputError]}
+                    placeholder="Specify the category"
+                    placeholderTextColor={Colors.slate}
+                    value={otherCategory}
+                    onChangeText={(value) => {
+                      setOtherCategory(value);
+                      if (errors.otherCategory) {
+                        setErrors((current) => ({ ...current, otherCategory: '' }));
+                      }
+                    }}
+                    autoCapitalize="words"
+                  />
+                  {errors.otherCategory ? (
+                    <Text style={styles.errorText}>{errors.otherCategory}</Text>
+                  ) : null}
+                </>
+              ) : null}
               <TextInput
-                style={styles.input}
-                placeholder="Category (e.g. Crafts, Food)"
-                placeholderTextColor={Colors.slate}
-                value={category}
-                onChangeText={setCategory}
-              />
-              <TextInput
-                style={[styles.input, styles.textArea]}
-                placeholder="Description"
+                style={[styles.input, styles.textArea, errors.description && styles.inputError]}
+                placeholder="Description (at least 10 characters)"
                 placeholderTextColor={Colors.slate}
                 value={description}
-                onChangeText={setDescription}
+                onChangeText={(value) => {
+                  setDescription(value);
+                  if (errors.description) {
+                    setErrors((current) => ({ ...current, description: '' }));
+                  }
+                }}
                 multiline
+                maxLength={500}
               />
+              {errors.description ? (
+                <Text style={styles.errorText}>{errors.description}</Text>
+              ) : null}
 
-              <Button title="Save listing" icon="checkmark-circle-outline" onPress={addListing} />
+              <Button
+                title="Save listing"
+                icon="checkmark-circle-outline"
+                onPress={addListing}
+                loading={isSaving}
+                disabled={!listingReady}
+              />
             </ScrollView>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
 
       <AppModal
@@ -221,7 +359,7 @@ export default function VendorDashboard() {
           dialog?.type === 'delete'
             ? 'This product will also be removed from the tourist marketplace.'
             : dialog?.type === 'validation'
-              ? 'Enter a product name and a valid price greater than zero before saving.'
+              ? 'Check the highlighted fields, choose a category, and add a useful description before saving.'
               : 'Allow photo-library access in your phone settings to add a product image.'
         }
         icon={dialog?.type === 'delete' ? 'trash-outline' : dialog?.type === 'validation' ? 'alert-circle-outline' : 'images-outline'}
@@ -274,6 +412,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16,
   },
   modalTitle: { fontSize: 18, fontWeight: '800', color: Colors.ink },
+  modalContent: { paddingBottom: 24 },
   imagePicker: { marginBottom: 14, alignSelf: 'center' },
   imagePickerEmpty: {
     width: 100, height: 100, borderRadius: Radius.md, backgroundColor: Colors.mist,
@@ -286,5 +425,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14, fontSize: 14, color: Colors.ink, marginBottom: 12,
     borderWidth: 1, borderColor: Colors.line,
   },
+  inputError: { borderColor: Colors.red, backgroundColor: Colors.redSoft },
+  errorText: {
+    color: Colors.red, fontSize: 12, marginTop: -7, marginBottom: 10, marginLeft: 4,
+  },
+  selectSpacing: { marginBottom: 12 },
   textArea: { minHeight: 70 },
 });
