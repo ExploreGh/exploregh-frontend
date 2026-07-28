@@ -1,4 +1,14 @@
-import { Keyboard, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useMemo, useState } from 'react';
+import {
+  Keyboard,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Shadow } from '@/constants/theme';
 
@@ -10,6 +20,7 @@ type SelectFieldProps = {
   icon: keyof typeof Ionicons.glyphMap;
   visible: boolean;
   error?: string;
+  searchable?: boolean;
   onOpen: () => void;
   onClose: () => void;
   onSelect: (value: string) => void;
@@ -24,11 +35,24 @@ export default function SelectField({
   icon,
   visible,
   error,
+  searchable = false,
   onOpen,
   onClose,
   onSelect,
   onClear,
 }: SelectFieldProps) {
+  const [query, setQuery] = useState('');
+
+  useEffect(() => {
+    if (!visible) setQuery('');
+  }, [visible]);
+
+  const filteredOptions = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+    if (!normalizedQuery) return options;
+    return options.filter((option) => option.toLowerCase().includes(normalizedQuery));
+  }, [options, query]);
+
   return (
     <View>
       <Pressable
@@ -97,8 +121,38 @@ export default function SelectField({
               </Pressable>
             </View>
 
-            <ScrollView style={styles.options} showsVerticalScrollIndicator={false}>
-              {options.map((option) => {
+            {searchable ? (
+              <View style={styles.searchWrap}>
+                <Ionicons name="search-outline" size={18} color={Colors.slate} />
+                <TextInput
+                  style={styles.searchInput}
+                  placeholder={`Search ${label.toLowerCase()}...`}
+                  placeholderTextColor={Colors.slate}
+                  value={query}
+                  onChangeText={setQuery}
+                  autoCapitalize="words"
+                  autoCorrect={false}
+                  accessibilityLabel={`Search ${label}`}
+                />
+                {query ? (
+                  <Pressable
+                    onPress={() => setQuery('')}
+                    hitSlop={8}
+                    accessibilityRole="button"
+                    accessibilityLabel="Clear search"
+                  >
+                    <Ionicons name="close-circle" size={18} color={Colors.slate} />
+                  </Pressable>
+                ) : null}
+              </View>
+            ) : null}
+
+            <ScrollView
+              style={styles.options}
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+            >
+              {filteredOptions.map((option) => {
                 const selected = option === value;
                 return (
                   <Pressable
@@ -124,6 +178,13 @@ export default function SelectField({
                   </Pressable>
                 );
               })}
+              {filteredOptions.length === 0 ? (
+                <View style={styles.emptyState}>
+                  <Ionicons name="search-outline" size={24} color={Colors.slate} />
+                  <Text style={styles.emptyTitle}>No region found</Text>
+                  <Text style={styles.emptyText}>Try another spelling.</Text>
+                </View>
+              ) : null}
               <View style={styles.bottomSpace} />
             </ScrollView>
           </Pressable>
@@ -199,6 +260,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: Colors.mist,
   },
+  searchWrap: {
+    minHeight: 48,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 9,
+    backgroundColor: Colors.mist,
+    borderRadius: Radius.md,
+    borderWidth: 1,
+    borderColor: Colors.line,
+    paddingHorizontal: 13,
+    marginBottom: 10,
+  },
+  searchInput: { flex: 1, color: Colors.ink, fontSize: 14 },
   options: { flexGrow: 0 },
   option: {
     minHeight: 50,
@@ -213,5 +287,8 @@ const styles = StyleSheet.create({
   optionSelected: { backgroundColor: Colors.forestSoft, borderBottomColor: Colors.forestSoft },
   optionText: { flex: 1, color: Colors.ink, fontSize: 15, fontWeight: '600' },
   optionTextSelected: { color: Colors.forestDark, fontWeight: '800' },
+  emptyState: { alignItems: 'center', paddingVertical: 30 },
+  emptyTitle: { color: Colors.ink, fontSize: 14, fontWeight: '800', marginTop: 8 },
+  emptyText: { color: Colors.slate, fontSize: 12, marginTop: 3 },
   bottomSpace: { height: 24 },
 });

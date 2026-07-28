@@ -433,6 +433,7 @@ export default function Register() {
               placeholder="Choose a region"
               value={businessLocation}
               options={ghanaRegions}
+              searchable
               icon="location-outline"
               visible={openSelect === 'businessLocation'}
               error={errors.businessLocation}
@@ -471,6 +472,7 @@ export default function Register() {
               placeholder="Choose your main region"
               value={regions}
               options={ghanaRegions}
+              searchable
               icon="map-outline"
               visible={openSelect === 'regions'}
               error={errors.regions}
