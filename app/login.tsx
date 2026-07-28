@@ -1,12 +1,15 @@
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Image, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors, Radius } from '@/constants/theme';
-import { Button, KenteStrip } from '@/components';
+import { AppModal, Button, KenteStrip } from '@/components';
 import { useProfile } from '@/context/ProfileContext';
 import { setupNotifications } from '@/services/notificationService';
-import { isValidEmail } from '@/utils/validation';
+import { isValidEmail, normalizeEmail } from '@/utils/validation';
+
+const REMEMBERED_EMAIL_KEY = 'exploregh.rememberedEmail';
 
 export default function Login() {
   const router = useRouter();
@@ -14,7 +17,23 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [forgotPasswordVisible, setForgotPasswordVisible] = useState(false);
   const [errors, setErrors] = useState({ email: '', password: '' });
+
+  useEffect(() => {
+    AsyncStorage.getItem(REMEMBERED_EMAIL_KEY)
+      .then((savedEmail) => {
+        if (savedEmail) {
+          setEmail(savedEmail);
+          setRememberMe(true);
+        }
+      })
+      .catch(() => {
+        // Remembering an email is optional, so login still works if storage is unavailable.
+      });
+  }, []);
 
   const validate = () => {
     let valid = true;
@@ -40,18 +59,34 @@ export default function Login() {
     return valid;
   };
 
-  const handleLogin = () => {
-  if (validate()) {
-    setupNotifications();
-    if (profile.role === 'vendor') {
-      router.push('/(vendor)/dashboard');
-    } else if (profile.role === 'guide') {
-      router.push('/(guide)/dashboard');
-    } else {
-      router.push('/(tabs)/home');
+  const handleLogin = async () => {
+    if (isLoggingIn || !validate()) return;
+
+    setIsLoggingIn(true);
+    const normalizedEmail = normalizeEmail(email);
+    setEmail(normalizedEmail);
+
+    try {
+      if (rememberMe) {
+        await AsyncStorage.setItem(REMEMBERED_EMAIL_KEY, normalizedEmail);
+      } else {
+        await AsyncStorage.removeItem(REMEMBERED_EMAIL_KEY);
+      }
+
+      await setupNotifications();
+      if (profile.role === 'vendor') {
+        router.push('/(vendor)/dashboard');
+      } else if (profile.role === 'guide') {
+        router.push('/(guide)/dashboard');
+      } else {
+        router.push('/(tabs)/home');
+      }
+    } finally {
+      setIsLoggingIn(false);
     }
-  }
-};
+  };
+
+  const formReady = isValidEmail(email) && password.length >= 6;
 
   return (
     <KeyboardAvoidingView
@@ -87,8 +122,14 @@ export default function Login() {
             placeholderTextColor={Colors.slate}
             keyboardType="email-address"
             autoCapitalize="none"
+            autoCorrect={false}
+            textContentType="emailAddress"
+            autoComplete="email"
             value={email}
-            onChangeText={setEmail}
+            onChangeText={(value) => {
+              setEmail(value);
+              if (errors.email) setErrors((current) => ({ ...current, email: '' }));
+            }}
           />
         </View>
         {errors.email ? <Text style={styles.errorText}>{errors.email}</Text> : null}
@@ -101,8 +142,15 @@ export default function Login() {
             placeholder="Password"
             placeholderTextColor={Colors.slate}
             secureTextEntry={!showPassword}
+            textContentType="password"
+            autoComplete="current-password"
+            autoCapitalize="none"
+            autoCorrect={false}
             value={password}
-            onChangeText={setPassword}
+            onChangeText={(value) => {
+              setPassword(value);
+              if (errors.password) setErrors((current) => ({ ...current, password: '' }));
+            }}
           />
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)} hitSlop={8}>
             <Ionicons
@@ -114,7 +162,36 @@ export default function Login() {
         </View>
         {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
 
-        <Button title="Log in" icon="log-in-outline" onPress={handleLogin} />
+        <View style={styles.loginOptions}>
+          <TouchableOpacity
+            style={styles.rememberButton}
+            onPress={() => setRememberMe((current) => !current)}
+            accessibilityRole="checkbox"
+            accessibilityState={{ checked: rememberMe }}
+          >
+            <Ionicons
+              name={rememberMe ? 'checkbox' : 'square-outline'}
+              size={20}
+              color={rememberMe ? Colors.forest : Colors.slate}
+            />
+            <Text style={styles.rememberText}>Remember me</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => setForgotPasswordVisible(true)}
+            accessibilityRole="button"
+          >
+            <Text style={styles.forgotText}>Forgot password?</Text>
+          </TouchableOpacity>
+        </View>
+
+        <Button
+          title="Log in"
+          icon="log-in-outline"
+          onPress={handleLogin}
+          loading={isLoggingIn}
+          disabled={!formReady}
+        />
 
         <TouchableOpacity onPress={() => router.push('/register')} style={styles.registerLink}>
           <Text style={styles.registerText}>
@@ -127,6 +204,21 @@ export default function Login() {
         <KenteStrip />
       </View>
       </ScrollView>
+
+      <AppModal
+        visible={forgotPasswordVisible}
+        title="Password reset"
+        message={
+          email && isValidEmail(email)
+            ? `Password reset is not connected to the server yet. Once it is ready, reset instructions will be sent to ${normalizeEmail(email)}.`
+            : 'Enter your account email first. Password reset will send instructions there once the authentication server is connected.'
+        }
+        icon="key-outline"
+        confirmLabel="Got it"
+        cancelLabel="Close"
+        onConfirm={() => setForgotPasswordVisible(false)}
+        onClose={() => setForgotPasswordVisible(false)}
+      />
     </KeyboardAvoidingView>
   );
 }
@@ -191,6 +283,21 @@ const styles = StyleSheet.create({
     marginTop: -4,
     marginLeft: 4,
   },
+  loginOptions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 2,
+    marginBottom: 4,
+  },
+  rememberButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+    paddingVertical: 4,
+  },
+  rememberText: { color: Colors.slate, fontSize: 13, fontWeight: '600' },
+  forgotText: { color: Colors.forest, fontSize: 13, fontWeight: '800' },
   registerLink: {
     marginTop: 12,
     alignItems: 'center',
