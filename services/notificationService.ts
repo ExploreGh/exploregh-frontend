@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
 
 // ============================================================
 // notificationService — asks the phone for permission to send
@@ -19,9 +20,15 @@ export async function setupNotifications() {
     return;
   }
 
-  const messaging = require('@react-native-firebase/messaging').default;
+  // Expo Go does not contain React Native Firebase's native modules.
+  // A development or production build still uses Firebase normally.
+  if (Constants.executionEnvironment === ExecutionEnvironment.StoreClient) {
+    console.log('Firebase notifications are unavailable in Expo Go - skipping notification setup.');
+    return;
+  }
 
   try {
+    const messaging = require('@react-native-firebase/messaging').default;
     const authStatus = await messaging().requestPermission();
     const enabled =
       authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
