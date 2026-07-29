@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius } from '@/constants/theme';
 import { Button, SelectField } from '@/components';
 import { useProfile } from '@/context/ProfileContext';
+import { createLocalAccount } from '@/services/authService';
 import { ghanaRegions } from '@/data/ghana';
 import {
   formatGhanaPhone,
@@ -215,17 +216,29 @@ export default function Register() {
     setIsSubmitting(true);
 
     try {
-      updateProfile({
+      const accountProfile = {
         name: fullName.trim(),
         email: normalizeEmail(email),
         phone: toInternationalGhanaPhone(phone),
         role,
+      };
+      await createLocalAccount({
+        ...accountProfile,
+        password,
+        status: role === 'tourist' ? 'active' : 'pending',
       });
+      updateProfile(accountProfile);
       if (role === 'tourist') {
-        router.push('/(tabs)/home');
+        router.replace('/(tabs)/home');
       } else {
-        router.push('/application-submitted');
+        router.replace('/application-submitted');
       }
+    } catch (error) {
+      setErrors((current) => ({
+        ...current,
+        email: error instanceof Error ? error.message : 'Unable to create account. Please try again.',
+      }));
+      requestAnimationFrame(() => scrollRef.current?.scrollTo({ y: 120, animated: true }));
     } finally {
       submittingRef.current = false;
       setIsSubmitting(false);

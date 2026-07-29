@@ -29,11 +29,12 @@ const menuItems = [
 
 export default function VendorMore() {
   const router = useRouter();
-  const { profile } = useProfile();
+  const { profile, clearProfile } = useProfile();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const handleLogout = () => {
     setShowLogoutModal(false);
+    clearProfile();
     router.replace('/');
   };
 

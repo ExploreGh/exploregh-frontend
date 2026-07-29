@@ -7,13 +7,14 @@ import { Colors, Radius } from '@/constants/theme';
 import { AppModal, Button, KenteStrip } from '@/components';
 import { useProfile } from '@/context/ProfileContext';
 import { setupNotifications } from '@/services/notificationService';
+import { authenticateLocalAccount } from '@/services/authService';
 import { isValidEmail, normalizeEmail } from '@/utils/validation';
 
 const REMEMBERED_EMAIL_KEY = 'exploregh.rememberedEmail';
 
 export default function Login() {
   const router = useRouter();
-  const { profile } = useProfile();
+  const { updateProfile } = useProfile();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -21,6 +22,7 @@ export default function Login() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [forgotPasswordVisible, setForgotPasswordVisible] = useState(false);
   const [errors, setErrors] = useState({ email: '', password: '' });
+  const [authError, setAuthError] = useState('');
 
   useEffect(() => {
     AsyncStorage.getItem(REMEMBERED_EMAIL_KEY)
@@ -67,6 +69,15 @@ export default function Login() {
     setEmail(normalizedEmail);
 
     try {
+      setAuthError('');
+      const account = await authenticateLocalAccount(normalizedEmail, password);
+      updateProfile({
+        name: account.name,
+        email: account.email,
+        phone: account.phone,
+        role: account.role,
+      });
+
       if (rememberMe) {
         await AsyncStorage.setItem(REMEMBERED_EMAIL_KEY, normalizedEmail);
       } else {
@@ -74,13 +85,15 @@ export default function Login() {
       }
 
       await setupNotifications();
-      if (profile.role === 'vendor') {
+      if (account.role === 'vendor') {
         router.push('/(vendor)/dashboard');
-      } else if (profile.role === 'guide') {
+      } else if (account.role === 'guide') {
         router.push('/(guide)/dashboard');
       } else {
         router.push('/(tabs)/home');
       }
+    } catch (error) {
+      setAuthError(error instanceof Error ? error.message : 'Unable to log in. Please try again.');
     } finally {
       setIsLoggingIn(false);
     }
@@ -161,6 +174,12 @@ export default function Login() {
           </TouchableOpacity>
         </View>
         {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
+        {authError ? (
+          <View style={styles.authError}>
+            <Ionicons name="alert-circle-outline" size={17} color={Colors.red} />
+            <Text style={styles.authErrorText}>{authError}</Text>
+          </View>
+        ) : null}
 
         <View style={styles.loginOptions}>
           <TouchableOpacity
@@ -283,6 +302,15 @@ const styles = StyleSheet.create({
     marginTop: -4,
     marginLeft: 4,
   },
+  authError: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 7,
+    backgroundColor: Colors.redSoft,
+    borderRadius: Radius.md,
+    padding: 11,
+  },
+  authErrorText: { flex: 1, color: Colors.red, fontSize: 12, lineHeight: 17 },
   loginOptions: {
     flexDirection: 'row',
     alignItems: 'center',

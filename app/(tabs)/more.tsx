@@ -69,11 +69,12 @@ const supportTools: MenuItem[] = [
 
 export default function More() {
   const router = useRouter();
-  const { profile } = useProfile();
+  const { profile, clearProfile } = useProfile();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const handleLogout = () => {
     setShowLogoutModal(false);
+    clearProfile();
     router.replace('/');
   };
 
