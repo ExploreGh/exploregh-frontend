@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { useProfile } from '@/context/ProfileContext';
 import { Colors, Radius, Shadow } from '@/constants/theme';
-import { AppModal, Avatar, KenteStrip } from '@/components';
+import { AppModal, Avatar } from '@/components';
 import { AkwaabaPhrasebookIcon, TrotroTripIcon } from '@/components/GhanaFeatureIcons';
 
 // ============================================================
@@ -104,10 +104,10 @@ export default function More() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>More</Text>
+        <Text style={styles.eyebrow}>YOUR GHANA COMPANION</Text>
+        <Text style={styles.headerTitle}>More to explore</Text>
         <Text style={styles.headerSubtitle}>All ExploreGH features</Text>
       </View>
-      <KenteStrip />
 
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Profile card */}
@@ -164,7 +164,7 @@ export default function More() {
           <Text style={styles.logoutText}>Log out</Text>
         </TouchableOpacity>
 
-        <View style={{ height: 32 }} />
+        <View style={{ height: 108 }} />
       </ScrollView>
 
       <AppModal
@@ -187,21 +187,27 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.mist,
   },
   header: {
-    backgroundColor: Colors.forest,
+    backgroundColor: Colors.mist,
     paddingTop: 58,
-    paddingBottom: 18,
+    paddingBottom: 10,
     paddingHorizontal: 20,
   },
-  headerTitle: {
-    fontSize: 24,
+  eyebrow: {
+    color: Colors.forest,
+    fontSize: 10,
     fontWeight: '800',
-    color: Colors.gold,
+    letterSpacing: 1.2,
+    marginBottom: 5,
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: Colors.ink,
   },
   headerSubtitle: {
     fontSize: 13,
-    color: Colors.white,
+    color: Colors.slate,
     marginTop: 3,
-    opacity: 0.9,
   },
   profileCard: {
     flexDirection: 'row',

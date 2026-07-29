@@ -5,15 +5,15 @@ import {
   TouchableOpacity,
   ScrollView,
   Image,
-  ImageBackground,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useState, useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Shadow } from '@/constants/theme';
-import { SearchBar, Chip, EmptyState, KenteStrip } from '@/components';
+import { SearchBar, Chip, EmptyState } from '@/components';
 import { sites, categories, Site } from '@/data/mockData';
 import { useWishlist } from '@/context/WishlistContext';
+import { useProfile } from '@/context/ProfileContext';
 
 // ============================================================
 // Home — greeting header, search, category chips, a featured
@@ -22,6 +22,7 @@ import { useWishlist } from '@/context/WishlistContext';
 
 export default function Home() {
   const router = useRouter();
+  const { profile } = useProfile();
   const [search, setSearch] = useState('');
   const { category, region } = useLocalSearchParams();
   const [selectedCategory, setSelectedCategory] = useState(
@@ -56,6 +57,7 @@ export default function Home() {
   });
 
   const featured = sites.slice(0, 4);
+  const popular = sites.slice(4, 8);
   const isFiltering = search.length > 0 || selectedCategory !== 'All' || !!selectedRegion;
 
   return (
@@ -64,8 +66,9 @@ export default function Home() {
       <View style={styles.header}>
         <View style={styles.headerRow}>
           <View>
-            <Text style={styles.greeting}>Akwaaba, Explorer</Text>
-            <Text style={styles.subGreeting}>Where are you going today?</Text>
+            <Text style={styles.welcomeLabel}>Akwaaba</Text>
+            <Text style={styles.greeting}>{profile.name}</Text>
+            <Text style={styles.subGreeting}>Discover somewhere unforgettable</Text>
           </View>
           <View style={styles.headerRight}>
             <TouchableOpacity
@@ -74,13 +77,13 @@ export default function Home() {
               accessibilityRole="button"
               accessibilityLabel="Open notifications"
             >
-              <Ionicons name="notifications-outline" size={24} color={Colors.white} />
+              <Ionicons name="notifications-outline" size={22} color={Colors.forestDark} />
               <View style={styles.bellBadge}>
                 <Text style={styles.bellBadgeText}>2</Text>
               </View>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => router.push('/wishlist')}
+          onPress={() => router.push('/wishlist' as any)}
               style={styles.savedButton}
               accessibilityRole="button"
               accessibilityLabel="Open saved destinations"
@@ -88,7 +91,7 @@ export default function Home() {
               <Ionicons
                 name={wishlist.length > 0 ? 'heart' : 'heart-outline'}
                 size={23}
-                color={Colors.white}
+                color={wishlist.length > 0 ? Colors.red : Colors.forestDark}
               />
               {wishlist.length > 0 && (
                 <View style={styles.wishlistBadge}>
@@ -104,13 +107,16 @@ export default function Home() {
           </View>
         </View>
       </View>
-      <KenteStrip />
 
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
         <SearchBar
           value={search}
           onChangeText={setSearch}
           placeholder="Search destinations, regions..."
+          onFilterPress={() => router.push('/(tabs)/explore')}
         />
 
         {/* Category chips */}
@@ -151,25 +157,49 @@ export default function Home() {
         {!isFiltering && (
           <>
             <View style={styles.sectionRow}>
-              <Text style={styles.sectionTitle}>Featured this week</Text>
+              <Text style={styles.sectionTitle}>Popular</Text>
+              <TouchableOpacity onPress={() => router.push('/(tabs)/explore')}>
+                <Text style={styles.seeAll}>See all</Text>
+              </TouchableOpacity>
+            </View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.popularRow}
+            >
+              {popular.map((site) => (
+                <TouchableOpacity
+                  key={site.id}
+                  style={styles.popularItem}
+                  onPress={() => openSite(site)}
+                  activeOpacity={0.85}
+                >
+                  <Image source={{ uri: site.image }} style={styles.popularImage} />
+                  <Text style={styles.popularName} numberOfLines={1}>{site.name}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+
+            <View style={styles.sectionRow}>
+              <Text style={styles.sectionTitle}>Recommended</Text>
+              <Text style={styles.sectionHint}>For your next trip</Text>
             </View>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.carousel}
+              snapToInterval={280}
+              decelerationRate="fast"
+              snapToAlignment="start"
             >
               {featured.map((site) => (
                 <TouchableOpacity
                   key={site.id}
+                  style={styles.featureCard}
                   activeOpacity={0.9}
                   onPress={() => openSite(site)}
                 >
-                  <ImageBackground
-                    source={{ uri: site.image }}
-                    style={styles.featureCard}
-                    imageStyle={styles.featureImage}
-                  >
-                    <View style={styles.featureOverlay} />
+                    <Image source={{ uri: site.image }} style={styles.featureImage} />
                     <TouchableOpacity
                       style={styles.heartButton}
                       onPress={(event) => {
@@ -185,16 +215,16 @@ export default function Home() {
                       />
                     </TouchableOpacity>
                     <View style={styles.featureInfo}>
-                      <View style={styles.featureBadge}>
-                        <Text style={styles.featureBadgeText}>{site.category}</Text>
-                      </View>
                       <Text style={styles.featureName}>{site.name}</Text>
                       <View style={styles.featureMeta}>
-                        <Ionicons name="location-sharp" size={12} color={Colors.gold} />
+                        <Ionicons name="location-sharp" size={12} color={Colors.forest} />
                         <Text style={styles.featureRegion}>{site.region}</Text>
+                        <View style={styles.featureRating}>
+                          <Ionicons name="star" size={12} color={Colors.gold} />
+                          <Text style={styles.featureRatingText}>{site.rating}</Text>
+                        </View>
                       </View>
                     </View>
-                  </ImageBackground>
                 </TouchableOpacity>
               ))}
             </ScrollView>
@@ -259,7 +289,6 @@ export default function Home() {
           </View>
         )}
 
-        <View style={{ height: 24 }} />
       </ScrollView>
     </View>
   );
@@ -271,9 +300,9 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.mist,
   },
   header: {
-    backgroundColor: Colors.forest,
-    paddingTop: 58,
-    paddingBottom: 18,
+    backgroundColor: Colors.mist,
+    paddingTop: 56,
+    paddingBottom: 4,
     paddingHorizontal: 20,
   },
   headerRow: {
@@ -281,15 +310,22 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  greeting: {
-    fontSize: 24,
+  welcomeLabel: {
+    fontSize: 11,
     fontWeight: '800',
-    color: Colors.gold,
-    letterSpacing: 0.3,
+    color: Colors.forest,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    marginBottom: 2,
+  },
+  greeting: {
+    fontSize: 23,
+    fontWeight: '800',
+    color: Colors.ink,
   },
   subGreeting: {
     fontSize: 13,
-    color: Colors.white,
+    color: Colors.slate,
     marginTop: 3,
     opacity: 0.9,
   },
@@ -299,7 +335,8 @@ const styles = StyleSheet.create({
   },
   bellButton: {
   width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center',
-  backgroundColor: 'rgba(255,255,255,0.15)', position: 'relative', marginRight: 8,
+  backgroundColor: Colors.white, position: 'relative', marginRight: 8,
+  borderWidth: 1, borderColor: Colors.line,
 },
 bellBadge: {
   position: 'absolute', top: 2, right: 2, backgroundColor: Colors.red, width: 16, height: 16,
@@ -312,15 +349,18 @@ bellBadgeText: { color: Colors.white, fontSize: 9, fontWeight: '800' },
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.15)',
+    backgroundColor: Colors.white,
+    borderWidth: 1,
+    borderColor: Colors.line,
     position: 'relative',
     marginRight: 8,
   },
   headerLogo: {
-    width: 46,
-    height: 46,
-    backgroundColor: Colors.white,
-    borderRadius: 23,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    borderWidth: 1,
+    borderColor: Colors.line,
   },
   wishlistBadge: {
     position: 'absolute',
@@ -376,26 +416,36 @@ bellBadgeText: { color: Colors.white, fontSize: 9, fontWeight: '800' },
     marginBottom: 12,
   },
   sectionTitle: {
-    fontSize: 17,
+    fontSize: 19,
     fontWeight: '800',
     color: Colors.ink,
   },
+  seeAll: { color: Colors.forest, fontSize: 12, fontWeight: '800' },
+  sectionHint: { color: Colors.slate, fontSize: 11, fontWeight: '600' },
+  popularRow: { paddingHorizontal: 16, gap: 12 },
+  popularItem: { width: 74, alignItems: 'center' },
+  popularImage: {
+    width: 62, height: 62, borderRadius: 20, backgroundColor: Colors.line, marginBottom: 7,
+  },
+  popularName: { width: 74, color: Colors.ink, fontSize: 10, fontWeight: '700', textAlign: 'center' },
   carousel: {
     paddingHorizontal: 16,
     gap: 12,
   },
   featureCard: {
-    width: 250,
-    height: 180,
-    justifyContent: 'flex-end',
+    width: 268,
+    height: 246,
+    backgroundColor: Colors.white,
+    borderRadius: Radius.lg,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: Colors.line,
+    ...Shadow.card,
   },
   featureImage: {
-    borderRadius: Radius.lg,
-  },
-  featureOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(6, 32, 19, 0.38)',
-    borderRadius: Radius.lg,
+    width: '100%',
+    height: 158,
+    backgroundColor: Colors.line,
   },
   heartButton: {
     position: 'absolute',
@@ -404,12 +454,16 @@ bellBadgeText: { color: Colors.white, fontSize: 9, fontWeight: '800' },
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: 'rgba(0,0,0,0.35)',
+    backgroundColor: Colors.white,
+    ...Shadow.card,
     alignItems: 'center',
     justifyContent: 'center',
   },
   featureInfo: {
-    padding: 14,
+    flex: 1,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    justifyContent: 'center',
   },
   featureBadge: {
     alignSelf: 'flex-start',
@@ -427,9 +481,9 @@ bellBadgeText: { color: Colors.white, fontSize: 9, fontWeight: '800' },
     letterSpacing: 0.5,
   },
   featureName: {
-    fontSize: 17,
+    fontSize: 15,
     fontWeight: '800',
-    color: Colors.white,
+    color: Colors.ink,
     marginBottom: 4,
   },
   featureMeta: {
@@ -439,9 +493,13 @@ bellBadgeText: { color: Colors.white, fontSize: 9, fontWeight: '800' },
   },
   featureRegion: {
     fontSize: 12,
-    color: Colors.white,
-    opacity: 0.9,
+    color: Colors.slate,
   },
+  featureRating: {
+    marginLeft: 'auto', flexDirection: 'row', alignItems: 'center', gap: 3,
+    backgroundColor: Colors.goldSoft, paddingHorizontal: 7, paddingVertical: 4, borderRadius: Radius.pill,
+  },
+  featureRatingText: { color: Colors.ink, fontSize: 11, fontWeight: '800' },
   list: {
     paddingHorizontal: 16,
     gap: 12,
@@ -511,4 +569,5 @@ bellBadgeText: { color: Colors.white, fontSize: 9, fontWeight: '800' },
   listHeart: {
     padding: 8,
   },
+  scrollContent: { paddingBottom: 108 },
 });

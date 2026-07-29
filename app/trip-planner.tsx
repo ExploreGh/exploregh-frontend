@@ -33,7 +33,7 @@ export default function TripPlanner() {
               key={trip.id}
               activeOpacity={0.9}
               onPress={() =>
-                router.push({ pathname: '/trip-details', params: { id: trip.id } })
+            router.push({ pathname: '/trip-details' as any, params: { id: trip.id } })
               }
               accessibilityRole="button"
               accessibilityLabel={`View ${trip.title} trip details`}

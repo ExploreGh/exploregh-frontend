@@ -8,8 +8,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, Radius, Shadow } from '@/constants/theme';
-import { KenteStrip } from '@/components';
+import { Colors, Radius } from '@/constants/theme';
 import { regions, sites, festivals } from '@/data/mockData';
 
 const exploreCategories: {
@@ -48,12 +47,15 @@ export default function Explore() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
+        <Text style={styles.eyebrow}>DISCOVER</Text>
         <Text style={styles.headerTitle}>Explore Ghana</Text>
-        <Text style={styles.headerSubtitle}>Find your next adventure</Text>
+        <Text style={styles.headerSubtitle}>Culture, coastlines and unforgettable stories</Text>
       </View>
-      <KenteStrip />
 
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
         <Text style={styles.sectionTitle}>Browse by category</Text>
         <View style={styles.grid}>
           {exploreCategories.map((cat) => {
@@ -110,7 +112,6 @@ export default function Explore() {
           ))}
         </View>
 
-        <View style={{ height: 24 }} />
       </ScrollView>
     </View>
   );
@@ -118,27 +119,29 @@ export default function Explore() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.mist },
-  header: { backgroundColor: Colors.forest, paddingTop: 58, paddingBottom: 18, paddingHorizontal: 20 },
-  headerTitle: { fontSize: 24, fontWeight: '800', color: Colors.gold },
-  headerSubtitle: { fontSize: 13, color: Colors.white, marginTop: 3, opacity: 0.9 },
-  sectionTitle: { fontSize: 17, fontWeight: '800', color: Colors.ink, marginHorizontal: 16, marginTop: 20, marginBottom: 12 },
+  header: { paddingTop: 58, paddingBottom: 8, paddingHorizontal: 20 },
+  eyebrow: { fontSize: 11, fontWeight: '800', color: Colors.forest, letterSpacing: 1.1, marginBottom: 3 },
+  headerTitle: { fontSize: 28, fontWeight: '800', color: Colors.ink },
+  headerSubtitle: { fontSize: 13, color: Colors.slate, marginTop: 4 },
+  scrollContent: { paddingBottom: 108 },
+  sectionTitle: { fontSize: 19, fontWeight: '800', color: Colors.ink, marginHorizontal: 16, marginTop: 24, marginBottom: 14 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 16, gap: 10 },
   categoryCard: {
-    backgroundColor: Colors.white, borderRadius: Radius.lg, paddingVertical: 16, alignItems: 'center',
-    width: '31%', borderWidth: 1, borderColor: Colors.line, ...Shadow.card,
+    backgroundColor: Colors.white, borderRadius: Radius.lg, paddingVertical: 17, alignItems: 'center',
+    width: '31%', borderWidth: 1, borderColor: Colors.line,
   },
   categoryIcon: {
-    width: 46, height: 46, borderRadius: 23, backgroundColor: Colors.forestSoft,
+    width: 48, height: 48, borderRadius: 17, backgroundColor: Colors.forestSoft,
     alignItems: 'center', justifyContent: 'center', marginBottom: 8,
   },
   categoryName: { fontSize: 13, fontWeight: '800', color: Colors.ink, marginBottom: 2 },
   categoryCount: { fontSize: 11, color: Colors.slate },
   regionsList: { paddingHorizontal: 16, gap: 12 },
-  regionCard: { height: 110, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 18 },
+  regionCard: { height: 156, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', padding: 18 },
   regionImage: { borderRadius: Radius.lg },
-  regionOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(6, 32, 19, 0.45)', borderRadius: Radius.lg },
+  regionOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: Colors.overlay, borderRadius: Radius.lg },
   regionInfo: {},
-  regionName: { fontSize: 18, fontWeight: '800', color: Colors.white, marginBottom: 3 },
+  regionName: { fontSize: 20, fontWeight: '800', color: Colors.white, marginBottom: 3 },
   regionSites: { fontSize: 12, color: Colors.gold, fontWeight: '600' },
   regionArrow: { width: 36, height: 36, borderRadius: 18, backgroundColor: Colors.gold, alignItems: 'center', justifyContent: 'center' },
 });

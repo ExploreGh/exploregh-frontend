@@ -17,6 +17,9 @@ export const Colors = {
   mist: '#F4F6F3',        // app background (soft green-tinted, not plain gray)
   line: '#E4E8E3',        // borders / dividers
   white: '#FFFFFF',
+  surface: '#FFFFFF',
+  sage: '#DCEDE3',
+  overlay: 'rgba(9, 35, 23, 0.46)',
 
   // Soft tints for badges & banners
   forestSoft: '#E7F2EC',
@@ -25,10 +28,10 @@ export const Colors = {
 };
 
 export const Radius = {
-  sm: 10,
-  md: 14,
-  lg: 20,
-  xl: 28,
+  sm: 12,
+  md: 16,
+  lg: 22,
+  xl: 32,
   pill: 999,
 };
 
@@ -44,9 +47,9 @@ export const Spacing = {
 export const Shadow = {
   card: {
     shadowColor: '#0B2818',
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 3,
+    shadowOpacity: 0.09,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 4,
   },
 };

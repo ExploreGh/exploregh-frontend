@@ -3,7 +3,7 @@ import { useState } from 'react';
 import {useRouter} from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Shadow } from '@/constants/theme';
-import { SearchBar, EmptyState, KenteStrip } from '@/components';
+import { SearchBar, EmptyState } from '@/components';
 import { guides } from '@/data/mockData';
 
 // ============================================================
@@ -30,10 +30,10 @@ export default function Guides() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
+        <Text style={styles.eyebrow}>MEET A LOCAL</Text>
         <Text style={styles.headerTitle}>Tour Guides</Text>
         <Text style={styles.headerSubtitle}>Verified local experts across Ghana</Text>
       </View>
-      <KenteStrip />
 
       <ScrollView showsVerticalScrollIndicator={false}>
         <SearchBar
@@ -86,7 +86,7 @@ export default function Guides() {
                 activeOpacity={0.92}
                 accessibilityRole="button"
                 accessibilityLabel={`View ${guide.name}`}
-                onPress={() => router.push({ pathname: '/guide-details', params: { id: guide.id } })}
+                onPress={() => router.push({ pathname: '/guide-details' as any, params: { id: guide.id } })}
               >
                 <View style={styles.cardTop}>
                   <Image source={{ uri: guide.photo }} style={styles.photo} />
@@ -161,7 +161,7 @@ export default function Guides() {
           </View>
         )}
 
-        <View style={{ height: 24 }} />
+        <View style={{ height: 108 }} />
       </ScrollView>
     </View>
   );
@@ -173,21 +173,27 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.mist,
   },
   header: {
-    backgroundColor: Colors.forest,
+    backgroundColor: Colors.mist,
     paddingTop: 58,
-    paddingBottom: 18,
+    paddingBottom: 10,
     paddingHorizontal: 20,
   },
-  headerTitle: {
-    fontSize: 24,
+  eyebrow: {
+    color: Colors.forest,
+    fontSize: 10,
     fontWeight: '800',
-    color: Colors.gold,
+    letterSpacing: 1.2,
+    marginBottom: 5,
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: Colors.ink,
   },
   headerSubtitle: {
     fontSize: 13,
-    color: Colors.white,
+    color: Colors.slate,
     marginTop: 3,
-    opacity: 0.9,
   },
   filterRow: {
     flexDirection: 'row',

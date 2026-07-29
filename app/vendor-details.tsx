@@ -130,7 +130,7 @@ export default function VendorDetails() {
                   key={product.id}
                   style={styles.productCard}
                   activeOpacity={0.9}
-                  onPress={() => router.push({ pathname: '/product-details', params: { id: product.id } })}
+              onPress={() => router.push({ pathname: '/product-details' as any, params: { id: product.id } })}
                 >
                   {product.image ? (
                     <Image source={{ uri: product.image }} style={styles.productImage} />

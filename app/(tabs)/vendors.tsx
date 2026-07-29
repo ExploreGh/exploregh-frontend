@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Shadow } from '@/constants/theme';
-import { SearchBar, Chip, EmptyState, KenteStrip } from '@/components';
+import { SearchBar, Chip, EmptyState } from '@/components';
 import { vendors, vendorCategories } from '@/data/mockData';
 import { useMarketplace } from '@/context/MarketplaceContext';
 
@@ -31,10 +31,10 @@ export default function Vendors() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Vendor Marketplace</Text>
+        <Text style={styles.eyebrow}>MADE IN GHANA</Text>
+        <Text style={styles.headerTitle}>Local Marketplace</Text>
         <Text style={styles.headerSubtitle}>Support local Ghanaian businesses</Text>
       </View>
-      <KenteStrip />
 
       <ScrollView showsVerticalScrollIndicator={false}>
         <SearchBar value={search} onChangeText={setSearch} placeholder="Search vendors..." />
@@ -70,7 +70,7 @@ export default function Vendors() {
               style={styles.productCard}
               activeOpacity={0.9}
               onPress={() =>
-                router.push({ pathname: '/product-details', params: { id: product.id } })
+                router.push({ pathname: '/product-details' as any, params: { id: product.id } })
               }
             >
               {product.image ? (
@@ -108,7 +108,7 @@ export default function Vendors() {
                 activeOpacity={0.92}
                 accessibilityRole="button"
                 accessibilityLabel={`View ${vendor.name}`}
-                onPress={() => router.push({ pathname: '/vendor-details', params: { id: vendor.id } })}
+                onPress={() => router.push({ pathname: '/vendor-details' as any, params: { id: vendor.id } })}
               >
                 <Image source={{ uri: vendor.image }} style={styles.cardImage} />
                 <View style={styles.cardBody}>
@@ -170,7 +170,7 @@ export default function Vendors() {
           </View>
         )}
 
-        <View style={{ height: 24 }} />
+        <View style={{ height: 108 }} />
       </ScrollView>
     </View>
   );
@@ -182,21 +182,27 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.mist,
   },
   header: {
-    backgroundColor: Colors.forest,
+    backgroundColor: Colors.mist,
     paddingTop: 58,
-    paddingBottom: 18,
+    paddingBottom: 10,
     paddingHorizontal: 20,
   },
-  headerTitle: {
-    fontSize: 24,
+  eyebrow: {
+    color: Colors.forest,
+    fontSize: 10,
     fontWeight: '800',
-    color: Colors.gold,
+    letterSpacing: 1.2,
+    marginBottom: 5,
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: Colors.ink,
   },
   headerSubtitle: {
     fontSize: 13,
-    color: Colors.white,
+    color: Colors.slate,
     marginTop: 3,
-    opacity: 0.9,
   },
   chipsRow: {
     marginTop: 14,

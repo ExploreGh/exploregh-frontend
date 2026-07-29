@@ -11,41 +11,74 @@ type SearchBarProps = {
   value: string;
   onChangeText: (text: string) => void;
   placeholder?: string;
+  onFilterPress?: () => void;
 };
 
-export default function SearchBar({ value, onChangeText, placeholder = 'Search...' }: SearchBarProps) {
+export default function SearchBar({
+  value,
+  onChangeText,
+  placeholder = 'Search...',
+  onFilterPress,
+}: SearchBarProps) {
   return (
-    <View style={styles.container}>
-      <Ionicons name="search" size={18} color={Colors.slate} />
-      <TextInput
-        style={styles.input}
-        placeholder={placeholder}
-        placeholderTextColor={Colors.slate}
-        value={value}
-        onChangeText={onChangeText}
-      />
-      {value.length > 0 && (
-        <TouchableOpacity onPress={() => onChangeText('')} hitSlop={8}>
-          <Ionicons name="close-circle" size={18} color={Colors.slate} />
+    <View style={styles.row}>
+      <View style={styles.container}>
+        <Ionicons name="search" size={18} color={Colors.slate} />
+        <TextInput
+          style={styles.input}
+          placeholder={placeholder}
+          placeholderTextColor={Colors.slate}
+          value={value}
+          onChangeText={onChangeText}
+        />
+        {value.length > 0 && (
+          <TouchableOpacity onPress={() => onChangeText('')} hitSlop={8}>
+            <Ionicons name="close-circle" size={18} color={Colors.slate} />
+          </TouchableOpacity>
+        )}
+      </View>
+      {onFilterPress ? (
+        <TouchableOpacity
+          style={styles.filterButton}
+          onPress={onFilterPress}
+          accessibilityRole="button"
+          accessibilityLabel="Open discovery filters"
+        >
+          <Ionicons name="options-outline" size={21} color={Colors.white} />
         </TouchableOpacity>
-      )}
+      ) : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginHorizontal: 16,
+    marginTop: 16,
+  },
   container: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: Colors.white,
-    marginHorizontal: 16,
-    marginTop: 16,
     borderRadius: Radius.md,
     paddingHorizontal: 14,
-    paddingVertical: 12,
+    minHeight: 50,
     gap: 8,
     borderWidth: 1,
     borderColor: Colors.line,
+    ...Shadow.card,
+  },
+  filterButton: {
+    width: 50,
+    height: 50,
+    borderRadius: Radius.md,
+    backgroundColor: Colors.forest,
+    alignItems: 'center',
+    justifyContent: 'center',
     ...Shadow.card,
   },
   input: {
