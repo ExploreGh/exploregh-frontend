@@ -9,11 +9,28 @@ import {
   Share,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Shadow } from '@/constants/theme';
 import { Button } from '@/components';
 import { sites } from '@/data/mockData';
 import { useWishlist } from '@/context/WishlistContext';
+
+const destinationHours: Record<string, { open: string; close: string; note: string }> = {
+  '1': { open: '9:00 AM', close: '4:30 PM', note: 'Open daily' },
+  '2': { open: '8:00 AM', close: '5:00 PM', note: 'Open daily' },
+  '3': { open: '6:00 AM', close: '11:00 PM', note: 'Open daily' },
+  '4': { open: '8:00 AM', close: '6:00 PM', note: 'Monday–Saturday' },
+  '5': { open: '6:00 AM', close: '6:00 PM', note: 'Open daily' },
+  '6': { open: '9:00 AM', close: '5:00 PM', note: 'Open daily' },
+  '7': { open: '8:00 AM', close: '5:00 PM', note: 'Open daily' },
+  '8': { open: '8:30 AM', close: '5:00 PM', note: 'Open daily' },
+  '9': { open: '8:30 AM', close: '5:00 PM', note: 'Open daily' },
+  '10': { open: '6:00 AM', close: '10:00 PM', note: 'Visitor access' },
+  '11': { open: '8:00 AM', close: '5:00 PM', note: 'Outside prayer times' },
+  '12': { open: '9:00 AM', close: '5:00 PM', note: 'Tuesday–Sunday' },
+  '13': { open: '8:00 AM', close: '5:00 PM', note: 'Open daily' },
+};
 
 // ============================================================
 // Site Details — full-bleed photo hero with overlay, rating,
@@ -26,10 +43,16 @@ export default function SiteDetails() {
   const router = useRouter();
   const { id } = useLocalSearchParams();
   const { wishlist, toggleWishlist } = useWishlist();
+  const [showFullDetails, setShowFullDetails] = useState(false);
 
   // Find the site by id; fall back to the first site
   const site = sites.find((s) => s.id === id) ?? sites[0];
   const saved = wishlist.includes(site.id);
+  const hours = destinationHours[site.id] ?? {
+    open: '8:00 AM',
+    close: '5:00 PM',
+    note: 'Confirm before visiting',
+  };
 
   const openDirections = () => {
     const url = `https://www.google.com/maps/dir/?api=1&destination=${site.latitude},${site.longitude}`;
@@ -108,6 +131,22 @@ export default function SiteDetails() {
           </View>
         </View>
 
+        <View style={styles.hoursCard}>
+          <View style={styles.hoursIcon}>
+            <Ionicons name="time" size={20} color={Colors.white} />
+          </View>
+          <View style={styles.hoursItem}>
+            <Text style={styles.hoursLabel}>OPENS</Text>
+            <Text style={styles.hoursValue}>{hours.open}</Text>
+          </View>
+          <View style={styles.hoursDivider} />
+          <View style={styles.hoursItem}>
+            <Text style={styles.hoursLabel}>CLOSES</Text>
+            <Text style={styles.hoursValue}>{hours.close}</Text>
+          </View>
+          <Text style={styles.hoursNote}>{hours.note}</Text>
+        </View>
+
         {/* Crowd meter */}
         <View style={styles.card}>
           <View style={styles.cardTitleRow}>
@@ -175,13 +214,32 @@ export default function SiteDetails() {
         </View>
 
         {/* About */}
-        <View style={styles.card}>
+        <TouchableOpacity
+          style={styles.card}
+          activeOpacity={0.82}
+          onPress={() => setShowFullDetails((current) => !current)}
+          accessibilityRole="button"
+          accessibilityState={{ expanded: showFullDetails }}
+          accessibilityLabel={`${showFullDetails ? 'Hide' : 'Show'} more details about ${site.name}`}
+        >
           <View style={styles.cardTitleRow}>
             <Ionicons name="information-circle-outline" size={17} color={Colors.ink} />
             <Text style={styles.cardTitle}>About this site</Text>
           </View>
-          <Text style={styles.cardText}>{site.description}</Text>
-        </View>
+          <Text style={styles.cardText} numberOfLines={showFullDetails ? undefined : 2}>
+            {site.description}
+          </Text>
+          <View style={styles.moreDetailsRow}>
+            <Text style={styles.moreDetailsText}>
+              {showFullDetails ? 'Show less' : 'More details'}
+            </Text>
+            <Ionicons
+              name={showFullDetails ? 'chevron-up' : 'chevron-down'}
+              size={16}
+              color={Colors.forest}
+            />
+          </View>
+        </TouchableOpacity>
 
         {/* Etiquette */}
         <View style={styles.card}>
@@ -333,6 +391,43 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: Colors.forest,
   },
+  hoursCard: {
+    minHeight: 76,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: Colors.forestDark,
+    borderRadius: Radius.lg,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    marginBottom: 14,
+    ...Shadow.card,
+  },
+  hoursIcon: {
+    width: 38,
+    height: 38,
+    borderRadius: 14,
+    backgroundColor: Colors.forest,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  hoursItem: { gap: 2 },
+  hoursLabel: {
+    color: Colors.sage,
+    fontSize: 9,
+    fontWeight: '800',
+    letterSpacing: 0.8,
+  },
+  hoursValue: { color: Colors.white, fontSize: 13, fontWeight: '800' },
+  hoursDivider: { width: 1, height: 34, backgroundColor: 'rgba(255,255,255,0.18)' },
+  hoursNote: {
+    flex: 1,
+    color: Colors.gold,
+    fontSize: 10,
+    fontWeight: '700',
+    lineHeight: 14,
+    textAlign: 'right',
+  },
   card: {
     backgroundColor: Colors.white,
     borderRadius: Radius.lg,
@@ -357,6 +452,13 @@ const styles = StyleSheet.create({
     color: Colors.slate,
     lineHeight: 21,
   },
+  moreDetailsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 10,
+  },
+  moreDetailsText: { color: Colors.forest, fontSize: 12, fontWeight: '800' },
   crowdMeter: {
     height: 10,
     backgroundColor: Colors.line,
