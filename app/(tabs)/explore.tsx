@@ -70,7 +70,10 @@ export default function Explore() {
 
         <Text style={styles.sectionTitle}>Browse by region</Text>
         <View style={styles.regionsList}>
-          {regions.map((region) => (
+          {regions.map((region) => {
+            const actualSiteCount = sites.filter((site) => site.region === region.name).length;
+
+            return (
             <TouchableOpacity
               key={region.id}
               activeOpacity={0.9}
@@ -91,7 +94,9 @@ export default function Explore() {
                 <View style={styles.regionOverlay} />
                 <View style={styles.regionInfo}>
                   <Text style={styles.regionName}>{region.name}</Text>
-                  <Text style={styles.regionSites}>{region.sitesCount} tourist sites</Text>
+                  <Text style={styles.regionSites}>
+                    {actualSiteCount} {actualSiteCount === 1 ? 'tourist site' : 'tourist sites'}
+                  </Text>
                 </View>
                 <View style={styles.regionArrow}>
                   <Ionicons
@@ -102,7 +107,8 @@ export default function Explore() {
                 </View>
               </ImageBackground>
             </TouchableOpacity>
-          ))}
+            );
+          })}
 
           <TouchableOpacity
             activeOpacity={0.9}
