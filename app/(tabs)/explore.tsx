@@ -12,7 +12,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Shadow } from '@/constants/theme';
 import { Chip, EmptyState, SearchBar } from '@/components';
-import { categories, regions, sites, Site } from '@/data/mockData';
+import { categories, regions, sites, festivals, culturalRegions, Site } from '@/data/mockData';
 
 export default function Explore() {
   const router = useRouter();
@@ -67,6 +67,50 @@ export default function Explore() {
             />
           ))}
         </ScrollView>
+
+        <View style={styles.discoveryCards}>
+          <TouchableOpacity
+            style={styles.discoveryCardWrap}
+            activeOpacity={0.9}
+            onPress={() => router.push('/festivals')}
+          >
+            <ImageBackground
+              source={{ uri: festivals[0].image }}
+              style={styles.discoveryCard}
+              imageStyle={styles.discoveryCardImage}
+            >
+              <View style={styles.discoveryOverlay} />
+              <View style={styles.discoveryIcon}>
+                <Ionicons name="musical-notes" size={18} color={Colors.forestDark} />
+              </View>
+              <View>
+                <Text style={styles.discoveryTitle}>Festivals & Events</Text>
+                <Text style={styles.discoverySubtitle}>Celebrate with Ghana</Text>
+              </View>
+            </ImageBackground>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.discoveryCardWrap}
+            activeOpacity={0.9}
+            onPress={() => router.push('/cultural-guide')}
+          >
+            <ImageBackground
+              source={{ uri: culturalRegions[0].image }}
+              style={styles.discoveryCard}
+              imageStyle={styles.discoveryCardImage}
+            >
+              <View style={styles.discoveryOverlay} />
+              <View style={styles.discoveryIcon}>
+                <Ionicons name="people" size={18} color={Colors.forestDark} />
+              </View>
+              <View>
+                <Text style={styles.discoveryTitle}>Cultural Guide</Text>
+                <Text style={styles.discoverySubtitle}>Customs by region</Text>
+              </View>
+            </ImageBackground>
+          </TouchableOpacity>
+        </View>
 
         <Text style={styles.sectionTitle}>Browse by region</Text>
         <View style={styles.regionsList}>
@@ -213,6 +257,34 @@ const styles = StyleSheet.create({
   headerSubtitle: { fontSize: 13, color: Colors.slate, marginTop: 4 },
   scrollContent: { paddingBottom: 108 },
   categoriesRow: { paddingHorizontal: 16, gap: 8, paddingTop: 4 },
+  discoveryCards: {
+    flexDirection: 'row',
+    gap: 12,
+    paddingHorizontal: 16,
+    marginTop: 18,
+  },
+  discoveryCardWrap: { flex: 1 },
+  discoveryCard: {
+    height: 144,
+    padding: 14,
+    justifyContent: 'space-between',
+  },
+  discoveryCardImage: { borderRadius: Radius.lg },
+  discoveryOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(7, 29, 19, 0.52)',
+    borderRadius: Radius.lg,
+  },
+  discoveryIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 14,
+    backgroundColor: Colors.gold,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  discoveryTitle: { color: Colors.white, fontSize: 15, fontWeight: '800', lineHeight: 19 },
+  discoverySubtitle: { color: Colors.gold, fontSize: 10, fontWeight: '700', marginTop: 3 },
   sectionTitle: { fontSize: 19, fontWeight: '800', color: Colors.ink, marginHorizontal: 16, marginTop: 24, marginBottom: 14 },
   regionsList: { paddingHorizontal: 16, gap: 12 },
   regionCard: { height: 156, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', padding: 18 },

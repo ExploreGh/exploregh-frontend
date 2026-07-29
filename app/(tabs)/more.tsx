@@ -23,7 +23,7 @@ type MenuItem = {
   bg: string;
 };
 
-const menuItems: MenuItem[] = [
+const travelTools: MenuItem[] = [
   {
     id: '1',
     title: 'Trip Planner',
@@ -31,24 +31,6 @@ const menuItems: MenuItem[] = [
     icon: 'calendar-outline',
     customIcon: 'trip',
     route: '/trip-planner',
-    color: Colors.forest,
-    bg: Colors.forestSoft,
-  },
-  {
-    id: '2',
-    title: 'Safety Alerts',
-    description: 'Real-time safety updates',
-    icon: 'warning-outline',
-    route: '/safety-alerts',
-    color: Colors.red,
-    bg: Colors.redSoft,
-  },
-  {
-    id: '3',
-    title: 'Cultural Guide',
-    description: 'Customs and etiquette by region',
-    icon: 'people-circle-outline',
-    route: '/cultural-guide',
     color: Colors.forest,
     bg: Colors.forestSoft,
   },
@@ -62,14 +44,17 @@ const menuItems: MenuItem[] = [
     color: Colors.forest,
     bg: Colors.forestSoft,
   },
+];
+
+const supportTools: MenuItem[] = [
   {
-    id: '5',
-    title: 'Festivals & Events',
-    description: 'Upcoming Ghanaian festivals',
-    icon: 'musical-notes-outline',
-    route: '/festivals',
-    color: Colors.forest,
-    bg: Colors.goldSoft,
+    id: '2',
+    title: 'Safety Alerts',
+    description: 'Community safety updates',
+    icon: 'warning-outline',
+    route: '/safety-alerts',
+    color: Colors.red,
+    bg: Colors.redSoft,
   },
   {
     id: '6',
@@ -79,15 +64,6 @@ const menuItems: MenuItem[] = [
     route: '/emergency-contacts',
     color: Colors.red,
     bg: Colors.redSoft,
-  },
-  {
-    id: '7',
-    title: 'Currency Converter',
-    description: 'Coming soon — live exchange rates',
-    icon: 'swap-horizontal-outline',
-    route: '/coming-soon',
-    color: Colors.slate,
-    bg: Colors.mist,
   },
 ];
 
@@ -105,8 +81,8 @@ export default function More() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.eyebrow}>YOUR GHANA COMPANION</Text>
-        <Text style={styles.headerTitle}>More to explore</Text>
-        <Text style={styles.headerSubtitle}>All ExploreGH features</Text>
+        <Text style={styles.headerTitle}>Your ExploreGH</Text>
+        <Text style={styles.headerSubtitle}>Travel tools, support and your account</Text>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -126,13 +102,12 @@ export default function More() {
           </TouchableOpacity>
         </View>
 
-        {/* Menu */}
-        <Text style={styles.sectionTitle}>Features</Text>
-        <View style={styles.menuList}>
-          {menuItems.map((item) => (
+        <Text style={styles.sectionTitle}>Travel tools</Text>
+        <View style={styles.quickTools}>
+          {travelTools.map((item) => (
             <TouchableOpacity
               key={item.id}
-              style={styles.menuItem}
+              style={styles.quickTool}
               onPress={() => router.push(item.route as any)}
               activeOpacity={0.85}
             >
@@ -145,6 +120,26 @@ export default function More() {
                   <Ionicons name={item.icon} size={20} color={item.color} />
                 )}
               </View>
+              <View style={styles.quickToolInfo}>
+                <Text style={styles.menuTitle}>{item.title}</Text>
+                <Text style={styles.menuDescription}>{item.description}</Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <Text style={[styles.sectionTitle, styles.sectionTitleSpaced]}>Safety & support</Text>
+        <View style={styles.menuList}>
+          {supportTools.map((item) => (
+            <TouchableOpacity
+              key={item.id}
+              style={[styles.menuItem, item.id === '6' && styles.emergencyItem]}
+              onPress={() => router.push(item.route as any)}
+              activeOpacity={0.85}
+            >
+              <View style={[styles.menuIcon, { backgroundColor: item.bg }]}>
+                <Ionicons name={item.icon} size={20} color={item.color} />
+              </View>
               <View style={styles.menuInfo}>
                 <Text style={styles.menuTitle}>{item.title}</Text>
                 <Text style={styles.menuDescription}>{item.description}</Text>
@@ -154,6 +149,7 @@ export default function More() {
           ))}
         </View>
 
+        <Text style={[styles.sectionTitle, styles.sectionTitleSpaced]}>Account</Text>
         {/* Logout */}
         <TouchableOpacity
           style={styles.logoutButton}
@@ -255,6 +251,28 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginBottom: 10,
   },
+  sectionTitleSpaced: {
+    marginTop: 22,
+  },
+  quickTools: {
+    flexDirection: 'row',
+    gap: 12,
+    paddingHorizontal: 16,
+  },
+  quickTool: {
+    flex: 1,
+    minHeight: 146,
+    justifyContent: 'space-between',
+    backgroundColor: Colors.white,
+    borderRadius: Radius.lg,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: Colors.line,
+    ...Shadow.card,
+  },
+  quickToolInfo: {
+    marginTop: 14,
+  },
   menuList: {
     paddingHorizontal: 16,
     gap: 10,
@@ -268,6 +286,10 @@ const styles = StyleSheet.create({
     padding: 13,
     borderWidth: 1,
     borderColor: Colors.line,
+  },
+  emergencyItem: {
+    borderColor: '#F1C9CC',
+    backgroundColor: '#FFFDFD',
   },
   menuIcon: {
     width: 44,

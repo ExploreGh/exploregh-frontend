@@ -13,7 +13,7 @@ import { useRef, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Shadow } from '@/constants/theme';
 import { SearchBar, EmptyState } from '@/components';
-import { sites, Site } from '@/data/mockData';
+import { sites, safetyAlerts, Site } from '@/data/mockData';
 import { useWishlist } from '@/context/WishlistContext';
 import { useProfile } from '@/context/ProfileContext';
 
@@ -107,6 +107,28 @@ export default function Home() {
           placeholder="Search destinations, regions..."
           onFilterPress={() => router.push('/(tabs)/explore')}
         />
+
+        <TouchableOpacity
+          style={styles.safetyCard}
+          activeOpacity={0.88}
+          onPress={() => router.push('/safety-alerts')}
+          accessibilityRole="button"
+          accessibilityLabel="Open community safety updates"
+        >
+          <View style={styles.safetyIcon}>
+            <Ionicons name="shield-checkmark" size={21} color={Colors.forest} />
+          </View>
+          <View style={styles.safetyInfo}>
+            <Text style={styles.safetyTitle}>Community safety updates</Text>
+            <Text style={styles.safetyText} numberOfLines={1}>
+              {safetyAlerts.length} advisories reported across Ghana
+            </Text>
+          </View>
+          <View style={styles.safetyAction}>
+            <Text style={styles.safetyActionText}>View</Text>
+            <Ionicons name="arrow-forward" size={14} color={Colors.red} />
+          </View>
+        </TouchableOpacity>
 
         {/* Featured carousel — only when not filtering */}
         {!isFiltering && (
@@ -566,4 +588,29 @@ bellBadgeText: { color: Colors.white, fontSize: 9, fontWeight: '800' },
     padding: 8,
   },
   scrollContent: { paddingBottom: 108 },
+  safetyCard: {
+    marginHorizontal: 16,
+    marginTop: 12,
+    padding: 13,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 11,
+    backgroundColor: Colors.white,
+    borderRadius: Radius.lg,
+    borderWidth: 1,
+    borderColor: Colors.line,
+  },
+  safetyIcon: {
+    width: 42,
+    height: 42,
+    borderRadius: 15,
+    backgroundColor: Colors.forestSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  safetyInfo: { flex: 1 },
+  safetyTitle: { color: Colors.ink, fontSize: 13, fontWeight: '800', marginBottom: 3 },
+  safetyText: { color: Colors.slate, fontSize: 11 },
+  safetyAction: { flexDirection: 'row', alignItems: 'center', gap: 3 },
+  safetyActionText: { color: Colors.red, fontSize: 11, fontWeight: '800' },
 });

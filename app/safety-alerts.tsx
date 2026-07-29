@@ -20,13 +20,13 @@ export default function SafetyAlerts() {
   const router = useRouter();
   return (
     <View style={styles.container}>
-      <ScreenHeader title="Safety Alerts" subtitle="Community-reported, in real time" />
+      <ScreenHeader title="Safety Alerts" subtitle="Community safety updates" />
 
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.banner}>
           <Ionicons name="shield-checkmark-outline" size={18} color={Colors.forestDark} />
           <Text style={styles.bannerText}>
-            Stay safe. Alerts are reported and confirmed by the ExploreGH community.
+            Stay alert. These community reports are helpful advisories, not official emergency notices.
           </Text>
         </View>
 
