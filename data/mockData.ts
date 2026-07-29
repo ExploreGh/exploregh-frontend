@@ -3,7 +3,7 @@
 // ALL placeholder data lives in this ONE file.
 // When the backend is ready, screens will fetch from the API
 // instead of importing from here — nothing else changes.
-// Images are free Unsplash placeholders; swap the URLs anytime.
+// Destination photos are reusable Wikimedia Commons images.
 // ============================================================
 
 export type Site = {
@@ -14,6 +14,8 @@ export type Site = {
   latitude: number;
   longitude: number;
   image: string;
+  imageCredit: string;
+  imageSource: string;
   rating: number;
   reviews: number;
   entryFee: string;
@@ -32,7 +34,9 @@ export const sites: Site[] = [
     category: 'History',
     latitude: 5.1053,
     longitude: -1.2466,
-    image: 'https://images.unsplash.com/photo-1591825729269-caeb344f6df2?w=800&q=60',
+    image: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Cape%20Coast%20castle.jpg?width=1200',
+    imageCredit: 'Kodex / Wikimedia Commons',
+    imageSource: 'https://commons.wikimedia.org/wiki/File:Cape_Coast_castle.jpg',
     rating: 4.8,
     reviews: 1240,
     entryFee: 'GHS 40 locals · USD 15 foreigners',
@@ -51,7 +55,9 @@ export const sites: Site[] = [
     category: 'Nature',
     latitude: 5.389,
     longitude: -1.3919,
-    image: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=800&q=60',
+    image: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Kakum%20Canopy%20Walk.jpg?width=1200',
+    imageCredit: 'Wikimedia Commons contributor',
+    imageSource: 'https://commons.wikimedia.org/wiki/File:Kakum_Canopy_Walk.jpg',
     rating: 4.7,
     reviews: 986,
     entryFee: 'GHS 30 locals · USD 10 foreigners',
@@ -69,7 +75,9 @@ export const sites: Site[] = [
     category: 'Beach',
     latitude: 5.5622,
     longitude: -0.1615,
-    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=60',
+    image: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Labadi%20beach.jpg?width=1200',
+    imageCredit: 'Dave Ley / Wikimedia Commons',
+    imageSource: 'https://commons.wikimedia.org/wiki/File:Labadi_beach.jpg',
     rating: 4.4,
     reviews: 2103,
     entryFee: 'GHS 20 per person',
@@ -87,7 +95,9 @@ export const sites: Site[] = [
     category: 'Culture',
     latitude: 6.7047,
     longitude: -1.6163,
-    image: 'https://images.unsplash.com/photo-1555529771-835f59fc5efe?w=800&q=60',
+    image: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Kejetia-Markt.jpg?width=1200',
+    imageCredit: 'Afus199620 / Wikimedia Commons (CC0)',
+    imageSource: 'https://commons.wikimedia.org/wiki/File:Kejetia-Markt.jpg',
     rating: 4.5,
     reviews: 764,
     entryFee: 'Free entry',
@@ -105,7 +115,9 @@ export const sites: Site[] = [
     category: 'Nature',
     latitude: 9.266,
     longitude: -1.848,
-    image: 'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=800&q=60',
+    image: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Mole%20national%20park.jpg?width=1200',
+    imageCredit: 'Enock Manoba / Wikimedia Commons',
+    imageSource: 'https://commons.wikimedia.org/wiki/File:Mole_national_park.jpg',
     rating: 4.9,
     reviews: 654,
     entryFee: 'GHS 60 locals · USD 20 foreigners',
@@ -123,7 +135,9 @@ export const sites: Site[] = [
     category: 'History',
     latitude: 5.0847,
     longitude: -1.3509,
-    image: 'https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=800&q=60',
+    image: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Elmina%20Castle%20-%20Elmina.jpg?width=1200',
+    imageCredit: 'Brans Wyte GH / Wikimedia Commons (CC0)',
+    imageSource: 'https://commons.wikimedia.org/wiki/File:Elmina_Castle_-_Elmina.jpg',
     rating: 4.7,
     reviews: 890,
     entryFee: 'GHS 40 locals · USD 15 foreigners',
@@ -141,7 +155,9 @@ export const sites: Site[] = [
     category: 'Nature',
     latitude: 7.1436,
     longitude: 0.585,
-    image: 'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?w=800&q=60',
+    image: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Wli%20WaterFalls.jpg?width=1200',
+    imageCredit: 'Blaq dynamite / Wikimedia Commons',
+    imageSource: 'https://commons.wikimedia.org/wiki/File:Wli_WaterFalls.jpg',
     rating: 4.8,
     reviews: 512,
     entryFee: 'GHS 25 locals · GHS 60 foreigners',
@@ -159,7 +175,9 @@ export const sites: Site[] = [
     category: 'Nature',
     latitude: 5.8486,
     longitude: -0.1731,
-    image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=60',
+    image: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Aburi%20Botanical%20Gardens%2006.jpg?width=1200',
+    imageCredit: 'Wikimedia Commons contributor',
+    imageSource: 'https://commons.wikimedia.org/wiki/File:Aburi_Botanical_Gardens_06.jpg',
     rating: 4.5,
     reviews: 693,
     entryFee: 'GHS 15 locals · GHS 40 foreigners',
@@ -177,7 +195,9 @@ export const sites: Site[] = [
     category: 'Wildlife',
     latitude: 6.7062,
     longitude: -1.6228,
-    image: 'https://images.unsplash.com/photo-1546182990-dffeafbe841d?w=800&q=60',
+    image: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Chimpazee%20at%20the%20Kumasi%20Zoo.jpg?width=1200',
+    imageCredit: 'Oheneba Ghana / Wikimedia Commons',
+    imageSource: 'https://commons.wikimedia.org/wiki/File:Chimpazee_at_the_Kumasi_Zoo.jpg',
     rating: 4.2,
     reviews: 438,
     entryFee: 'GHS 15 adults · GHS 8 children',
@@ -195,7 +215,9 @@ export const sites: Site[] = [
     category: 'Education',
     latitude: 6.6745,
     longitude: -1.5716,
-    image: 'https://images.unsplash.com/photo-1562774053-701939374585?w=800&q=60',
+    image: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/A%20Monument%20%28KNUST%29.jpg?width=1200',
+    imageCredit: 'Wikimedia Commons contributor',
+    imageSource: 'https://commons.wikimedia.org/wiki/File:A_Monument_(KNUST).jpg',
     rating: 4.7,
     reviews: 521,
     entryFee: 'Free entry',
@@ -213,7 +235,9 @@ export const sites: Site[] = [
     category: 'History',
     latitude: 9.221,
     longitude: -1.858,
-    image: 'https://images.unsplash.com/photo-1519817650390-64a93db51149?w=800&q=60',
+    image: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Larabanga%20Mosque%2C%20Ghana.jpg?width=1200',
+    imageCredit: 'ZSM / Wikimedia Commons',
+    imageSource: 'https://commons.wikimedia.org/wiki/File:Larabanga_Mosque,_Ghana.jpg',
     rating: 4.6,
     reviews: 287,
     entryFee: 'Donation-based (about GHS 20 suggested)',
@@ -231,7 +255,9 @@ export const sites: Site[] = [
     category: 'Culture',
     latitude: 6.71,
     longitude: -1.6122,
-    image: 'https://images.unsplash.com/photo-1566127992631-137a642a90f4?w=800&q=60',
+    image: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Manhyia%20Palace.jpg?width=1200',
+    imageCredit: 'jbdodane / Wikimedia Commons',
+    imageSource: 'https://commons.wikimedia.org/wiki/File:Manhyia_Palace.jpg',
     rating: 4.8,
     reviews: 356,
     entryFee: 'GHS 25 locals · GHS 60 foreigners',
@@ -249,7 +275,9 @@ export const sites: Site[] = [
     category: 'Nature',
     latitude: 6.1935,
     longitude: -0.211,
-    image: 'https://images.unsplash.com/photo-1467890947394-8171244e5410?w=800&q=60',
+    image: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Boti%20Falls%20Ghana.jpg?width=1200',
+    imageCredit: 'FaridhaSL / Wikimedia Commons',
+    imageSource: 'https://commons.wikimedia.org/wiki/File:Boti_Falls_Ghana.jpg',
     rating: 4.6,
     reviews: 402,
     entryFee: 'GHS 20 locals · GHS 50 foreigners',
@@ -551,7 +579,7 @@ export const trips: Trip[] = [
     endDate: 'Aug 18, 2026',
     stops: 4,
     budget: 'GHS 1,200',
-    image: 'https://images.unsplash.com/photo-1591825729269-caeb344f6df2?w=800&q=60',
+    image: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Cape%20Coast%20castle.jpg?width=1200',
   },
   {
     id: '2',
@@ -560,7 +588,7 @@ export const trips: Trip[] = [
     endDate: 'Sep 2, 2026',
     stops: 3,
     budget: 'GHS 450',
-    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=60',
+    image: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Labadi%20beach.jpg?width=1200',
   },
   {
     id: '3',
@@ -569,17 +597,17 @@ export const trips: Trip[] = [
     endDate: 'Oct 15, 2026',
     stops: 6,
     budget: 'GHS 3,500',
-    image: 'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=800&q=60',
+    image: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Mole%20national%20park.jpg?width=1200',
   },
 ];
 
 export const regions = [
-  { id: '1', name: 'Greater Accra', sitesCount: 34, image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=60' },
-  { id: '2', name: 'Ashanti Region', sitesCount: 28, image: 'https://images.unsplash.com/photo-1555529771-835f59fc5efe?w=800&q=60' },
-  { id: '3', name: 'Central Region', sitesCount: 19, image: 'https://images.unsplash.com/photo-1591825729269-caeb344f6df2?w=800&q=60' },
-  { id: '4', name: 'Volta Region', sitesCount: 22, image: 'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?w=800&q=60' },
-  { id: '5', name: 'Savannah Region', sitesCount: 11, image: 'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=800&q=60' },
-  { id: '6', name: 'Eastern Region', sitesCount: 16, image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=60' },
+  { id: '1', name: 'Greater Accra', sitesCount: 1, image: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Labadi%20beach.jpg?width=1200' },
+  { id: '2', name: 'Ashanti Region', sitesCount: 4, image: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Manhyia%20Palace.jpg?width=1200' },
+  { id: '3', name: 'Central Region', sitesCount: 3, image: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Cape%20Coast%20castle.jpg?width=1200' },
+  { id: '4', name: 'Volta Region', sitesCount: 1, image: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Wli%20WaterFalls.jpg?width=1200' },
+  { id: '5', name: 'Savannah Region', sitesCount: 2, image: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Mole%20national%20park.jpg?width=1200' },
+  { id: '6', name: 'Eastern Region', sitesCount: 2, image: 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Boti%20Falls%20Ghana.jpg?width=1200' },
 ];
 
 export type CulturalRegion = {

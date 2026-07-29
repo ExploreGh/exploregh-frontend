@@ -32,6 +32,74 @@ const destinationHours: Record<string, { open: string; close: string; note: stri
   '13': { open: '8:00 AM', close: '5:00 PM', note: 'Open daily' },
 };
 
+const destinationHighlights: Record<string, string[]> = {
+  '1': [
+    'Walk through the male and female dungeons and the Door of No Return with a guide.',
+    'Visit the West African Historical Museum and the former governor’s quarters.',
+    'Allow time for reflection—the history and stories shared here can be emotionally heavy.',
+  ],
+  '2': [
+    'Cross the seven-section canopy walkway high above the tropical rainforest.',
+    'Join a guided forest walk to learn about plants, birds, butterflies and wildlife habitats.',
+    'The visitor centre has refreshments, local food, exhibits and a craft shop.',
+  ],
+  '3': [
+    'Enjoy Atlantic sunsets, live drumming, dancing, horse rides and beach football.',
+    'Weekday mornings are calmer; weekends and holidays have a lively festival atmosphere.',
+    'Swim cautiously, watch sea conditions and keep phones and valuables secure.',
+  ],
+  '4': [
+    'Explore sections dedicated to kente, beads, produce, spices, crafts and household goods.',
+    'A local guide can help you navigate the market’s busy halls and specialised lanes.',
+    'Ask before taking portraits and agree on prices politely before purchasing.',
+  ],
+  '5': [
+    'Book ranger-led walking or vehicle safaris for elephants, antelope, baboons and birdlife.',
+    'The escarpment viewpoint overlooks a waterhole where animals often gather in dry months.',
+    'Wildlife sightings vary; early-morning outings generally offer cooler and quieter conditions.',
+  ],
+  '6': [
+    'Tour the dungeons, punishment cells, chapel, governor’s areas and Door of No Return.',
+    'The castle dates to 1482 and is the oldest surviving European building in sub-Saharan Africa.',
+    'Combine the visit with Elmina fishing harbour and nearby Fort St Jago.',
+  ],
+  '7': [
+    'The mostly level lower-falls trail crosses streams and passes rich butterfly and bird habitat.',
+    'Strong hikers can arrange the longer, steeper upper-falls route with an authorised guide.',
+    'Look for the large fruit-bat colony roosting along the cliffs near the falls.',
+  ],
+  '8': [
+    'Walk beneath historic palms and explore tropical plants introduced from around the world.',
+    'Look for the famous strangler fig, carved trees and the old helicopter installation.',
+    'The cooler Akuapem hills make the gardens popular for walks, picnics and photography.',
+  ],
+  '9': [
+    'See chimpanzees, crocodiles, antelope, reptiles and birds in the centre of Kumasi.',
+    'Morning visits are best for active animals and smaller school-trip crowds.',
+    'Never feed animals or cross barriers; follow all instructions from keepers.',
+  ],
+  '10': [
+    'See the Great Hall, central monuments, landscaped grounds and major college areas.',
+    'KNUST began as Kumasi College of Technology and developed into a leading public university.',
+    'Remember that this is an active campus—avoid interrupting lectures, research or student life.',
+  ],
+  '11': [
+    'Admire the whitewashed Sudano-Sahelian form, timber supports and distinctive buttresses.',
+    'Hear local accounts of the mosque’s founding and the sacred Qur’an associated with Larabanga.',
+    'Exterior visits should avoid prayer periods; entry is restricted and modest dress is expected.',
+  ],
+  '12': [
+    'Explore royal regalia, photographs, drums, palanquins and life-size figures of Asante rulers.',
+    'The 1925 building was the residence of Asantehene Prempeh I and became a museum in 1995.',
+    'Guided presentations explain Asante royal lineage, resistance, rituals and gold craftsmanship.',
+  ],
+  '13': [
+    'See the twin “male” and “female” falls, which are strongest during the rainy season.',
+    'Extend the visit with a guided hike to Umbrella Rock and the three-headed palm tree.',
+    'The descent includes many steps and slippery sections, so wear supportive footwear.',
+  ],
+};
+
 // ============================================================
 // Site Details — full-bleed photo hero with overlay, rating,
 // live crowd meter, info cards and action buttons.
@@ -53,6 +121,7 @@ export default function SiteDetails() {
     close: '5:00 PM',
     note: 'Confirm before visiting',
   };
+  const highlights = destinationHighlights[site.id] ?? [];
 
   const openDirections = () => {
     const url = `https://www.google.com/maps/dir/?api=1&destination=${site.latitude},${site.longitude}`;
@@ -117,6 +186,16 @@ export default function SiteDetails() {
           <Ionicons name="location-outline" size={15} color={Colors.forest} />
           <Text style={styles.contentLocationText}>{site.region}, Ghana</Text>
         </View>
+        <TouchableOpacity
+          style={styles.photoCredit}
+          onPress={() => Linking.openURL(site.imageSource)}
+          accessibilityRole="link"
+          accessibilityLabel={`Photo source: ${site.imageCredit}`}
+        >
+          <Ionicons name="camera-outline" size={13} color={Colors.slate} />
+          <Text style={styles.photoCreditText}>Photo: {site.imageCredit}</Text>
+          <Ionicons name="open-outline" size={12} color={Colors.slate} />
+        </TouchableOpacity>
 
         {/* Rating */}
         <View style={styles.ratingCard}>
@@ -229,6 +308,17 @@ export default function SiteDetails() {
           <Text style={styles.cardText} numberOfLines={showFullDetails ? undefined : 2}>
             {site.description}
           </Text>
+          {showFullDetails && highlights.length > 0 ? (
+            <View style={styles.highlights}>
+              <Text style={styles.highlightsTitle}>What to know</Text>
+              {highlights.map((highlight) => (
+                <View key={highlight} style={styles.highlightRow}>
+                  <View style={styles.highlightDot} />
+                  <Text style={styles.highlightText}>{highlight}</Text>
+                </View>
+              ))}
+            </View>
+          ) : null}
           <View style={styles.moreDetailsRow}>
             <Text style={styles.moreDetailsText}>
               {showFullDetails ? 'Show less' : 'More details'}
@@ -350,6 +440,15 @@ const styles = StyleSheet.create({
   contentTitle: { color: Colors.ink, fontSize: 25, fontWeight: '800', marginBottom: 6 },
   contentLocation: { flexDirection: 'row', alignItems: 'center', gap: 5, marginBottom: 16 },
   contentLocationText: { color: Colors.slate, fontSize: 13, fontWeight: '600' },
+  photoCredit: {
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    marginTop: -7,
+    marginBottom: 14,
+  },
+  photoCreditText: { color: Colors.slate, fontSize: 10, fontWeight: '600' },
   ratingCard: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -459,6 +558,23 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   moreDetailsText: { color: Colors.forest, fontSize: 12, fontWeight: '800' },
+  highlights: {
+    marginTop: 14,
+    paddingTop: 13,
+    borderTopWidth: 1,
+    borderTopColor: Colors.line,
+    gap: 9,
+  },
+  highlightsTitle: { color: Colors.ink, fontSize: 13, fontWeight: '800' },
+  highlightRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 9 },
+  highlightDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: Colors.gold,
+    marginTop: 7,
+  },
+  highlightText: { flex: 1, color: Colors.slate, fontSize: 13, lineHeight: 19 },
   crowdMeter: {
     height: 10,
     backgroundColor: Colors.line,
