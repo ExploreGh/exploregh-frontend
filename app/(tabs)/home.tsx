@@ -5,13 +5,15 @@ import {
   TouchableOpacity,
   ScrollView,
   Image,
+  Animated,
+  Dimensions,
 } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useState, useEffect } from 'react';
+import { useRouter } from 'expo-router';
+import { useRef, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius, Shadow } from '@/constants/theme';
-import { SearchBar, Chip, EmptyState } from '@/components';
-import { sites, categories, Site } from '@/data/mockData';
+import { SearchBar, EmptyState } from '@/components';
+import { sites, Site } from '@/data/mockData';
 import { useWishlist } from '@/context/WishlistContext';
 import { useProfile } from '@/context/ProfileContext';
 
@@ -24,21 +26,7 @@ export default function Home() {
   const router = useRouter();
   const { profile } = useProfile();
   const [search, setSearch] = useState('');
-  const { category, region } = useLocalSearchParams();
-  const [selectedCategory, setSelectedCategory] = useState(
-    typeof category === 'string' ? category : 'All'
-  );
-  const [selectedRegion, setSelectedRegion] = useState(
-    typeof region === 'string' ? region : ''
-  );
-
-  useEffect(() => {
-    setSelectedCategory(typeof category === 'string' ? category : 'All');
-  }, [category]);
-
-  useEffect(() => {
-    setSelectedRegion(typeof region === 'string' ? region : '');
-  }, [region]);
+  const carouselX = useRef(new Animated.Value(0)).current;
   const { wishlist, toggleWishlist } = useWishlist();
 
   const openSite = (site: Site) => {
@@ -51,14 +39,15 @@ export default function Home() {
       site.name.toLowerCase().includes(q) ||
       site.region.toLowerCase().includes(q) ||
       site.category.toLowerCase().includes(q);
-    const matchesCategory = selectedCategory === 'All' || site.category === selectedCategory;
-    const matchesRegion = !selectedRegion || site.region === selectedRegion;
-    return matchesSearch && matchesCategory && matchesRegion;
+    return matchesSearch;
   });
 
   const featured = sites.slice(0, 4);
   const popular = sites.slice(4, 8);
-  const isFiltering = search.length > 0 || selectedCategory !== 'All' || !!selectedRegion;
+  const isFiltering = search.trim().length > 0;
+  const cardWidth = Math.min(Dimensions.get('window').width - 58, 330);
+  const cardGap = 14;
+  const snapInterval = cardWidth + cardGap;
 
   return (
     <View style={styles.container}>
@@ -119,40 +108,6 @@ export default function Home() {
           onFilterPress={() => router.push('/(tabs)/explore')}
         />
 
-        {/* Category chips */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.chipsRow}
-          contentContainerStyle={styles.chipsContent}
-        >
-          {categories.map((cat) => (
-            <Chip
-              key={cat}
-              label={cat}
-              selected={selectedCategory === cat}
-              onPress={() => setSelectedCategory(cat)}
-            />
-          ))}
-        </ScrollView>
-
-        {selectedRegion ? (
-          <View style={styles.regionFilterRow}>
-            <View style={styles.regionFilter}>
-              <Ionicons name="location-sharp" size={14} color={Colors.forest} />
-              <Text style={styles.regionFilterText}>{selectedRegion}</Text>
-              <TouchableOpacity
-                onPress={() => setSelectedRegion('')}
-                hitSlop={8}
-                accessibilityRole="button"
-                accessibilityLabel={`Clear ${selectedRegion} filter`}
-              >
-                <Ionicons name="close-circle" size={18} color={Colors.slate} />
-              </TouchableOpacity>
-            </View>
-          </View>
-        ) : null}
-
         {/* Featured carousel — only when not filtering */}
         {!isFiltering && (
           <>
@@ -184,21 +139,58 @@ export default function Home() {
               <Text style={styles.sectionTitle}>Recommended</Text>
               <Text style={styles.sectionHint}>For your next trip</Text>
             </View>
-            <ScrollView
+            <Animated.ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.carousel}
-              snapToInterval={280}
+              contentContainerStyle={[
+                styles.carousel,
+                { paddingHorizontal: (Dimensions.get('window').width - cardWidth) / 2 },
+              ]}
+              snapToInterval={snapInterval}
               decelerationRate="fast"
               snapToAlignment="start"
+              scrollEventThrottle={16}
+              onScroll={Animated.event(
+                [{ nativeEvent: { contentOffset: { x: carouselX } } }],
+                { useNativeDriver: true }
+              )}
             >
-              {featured.map((site) => (
-                <TouchableOpacity
-                  key={site.id}
-                  style={styles.featureCard}
-                  activeOpacity={0.9}
-                  onPress={() => openSite(site)}
-                >
+              {featured.map((site, index) => {
+                const inputRange = [
+                  (index - 1) * snapInterval,
+                  index * snapInterval,
+                  (index + 1) * snapInterval,
+                ];
+                const scale = carouselX.interpolate({
+                  inputRange,
+                  outputRange: [0.9, 1, 0.9],
+                  extrapolate: 'clamp',
+                });
+                const translateY = carouselX.interpolate({
+                  inputRange,
+                  outputRange: [12, 0, 12],
+                  extrapolate: 'clamp',
+                });
+                const opacity = carouselX.interpolate({
+                  inputRange,
+                  outputRange: [0.72, 1, 0.72],
+                  extrapolate: 'clamp',
+                });
+
+                return (
+                  <Animated.View
+                    key={site.id}
+                    style={{
+                      width: cardWidth,
+                      opacity,
+                      transform: [{ scale }, { translateY }],
+                    }}
+                  >
+                    <TouchableOpacity
+                      style={styles.featureCard}
+                      activeOpacity={0.9}
+                      onPress={() => openSite(site)}
+                    >
                     <Image source={{ uri: site.image }} style={styles.featureImage} />
                     <TouchableOpacity
                       style={styles.heartButton}
@@ -225,24 +217,26 @@ export default function Home() {
                         </View>
                       </View>
                     </View>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
+                    </TouchableOpacity>
+                  </Animated.View>
+                );
+              })}
+            </Animated.ScrollView>
           </>
         )}
 
-        {/* Results / all sites list */}
-        <View style={styles.sectionRow}>
-          <Text style={styles.sectionTitle}>
-            {isFiltering ? `${filteredSites.length} result${filteredSites.length !== 1 ? 's' : ''}` : 'All destinations'}
-          </Text>
-        </View>
-
+        {isFiltering && (
+          <>
+          <View style={styles.sectionRow}>
+            <Text style={styles.sectionTitle}>
+              {`${filteredSites.length} result${filteredSites.length !== 1 ? 's' : ''}`}
+            </Text>
+          </View>
         {filteredSites.length === 0 ? (
           <EmptyState
             icon="search"
             title="No destinations found"
-            message="Try a different category or search term."
+            message="Try a different destination or region."
           />
         ) : (
           <View style={styles.list}>
@@ -287,6 +281,8 @@ export default function Home() {
               </TouchableOpacity>
             ))}
           </View>
+        )}
+          </>
         )}
 
       </ScrollView>
@@ -429,12 +425,12 @@ bellBadgeText: { color: Colors.white, fontSize: 9, fontWeight: '800' },
   },
   popularName: { width: 74, color: Colors.ink, fontSize: 10, fontWeight: '700', textAlign: 'center' },
   carousel: {
-    paddingHorizontal: 16,
-    gap: 12,
+    gap: 14,
+    paddingVertical: 14,
   },
   featureCard: {
-    width: 268,
-    height: 246,
+    width: '100%',
+    height: 282,
     backgroundColor: Colors.white,
     borderRadius: Radius.lg,
     overflow: 'hidden',
@@ -444,7 +440,7 @@ bellBadgeText: { color: Colors.white, fontSize: 9, fontWeight: '800' },
   },
   featureImage: {
     width: '100%',
-    height: 158,
+    height: 190,
     backgroundColor: Colors.line,
   },
   heartButton: {

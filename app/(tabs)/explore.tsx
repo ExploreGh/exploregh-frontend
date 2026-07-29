@@ -5,44 +5,35 @@ import {
   TouchableOpacity,
   ScrollView,
   ImageBackground,
+  Image,
 } from 'react-native';
+import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, Radius } from '@/constants/theme';
-import { regions, sites, festivals } from '@/data/mockData';
-
-const exploreCategories: {
-  id: string;
-  name: string;
-  icon: keyof typeof Ionicons.glyphMap;
-}[] = [
-  { id: '1', name: 'History', icon: 'business-outline' },
-  { id: '2', name: 'Nature', icon: 'leaf-outline' },
-  { id: '3', name: 'Beach', icon: 'water-outline' },
-  { id: '4', name: 'Culture', icon: 'color-palette-outline' },
-  { id: '5', name: 'Wildlife', icon: 'paw-outline' },
-  { id: '6', name: 'Education', icon: 'school-outline' },
-  { id: '7', name: 'Festivals', icon: 'musical-notes-outline' },
-];
+import { Colors, Radius, Shadow } from '@/constants/theme';
+import { Chip, EmptyState, SearchBar } from '@/components';
+import { categories, regions, sites, Site } from '@/data/mockData';
 
 export default function Explore() {
   const router = useRouter();
+  const [search, setSearch] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedRegion, setSelectedRegion] = useState('');
 
-  const getCount = (categoryName: string) => {
-    if (categoryName === 'Festivals') return festivals.length;
-    return sites.filter((s) => s.category === categoryName).length;
-  };
+  const filteredSites = sites.filter((site) => {
+    const query = search.trim().toLowerCase();
+    const matchesSearch =
+      !query ||
+      site.name.toLowerCase().includes(query) ||
+      site.region.toLowerCase().includes(query) ||
+      site.category.toLowerCase().includes(query);
+    const matchesCategory = selectedCategory === 'All' || site.category === selectedCategory;
+    const matchesRegion = !selectedRegion || site.region === selectedRegion;
+    return matchesSearch && matchesCategory && matchesRegion;
+  });
 
-  const openCategory = (categoryName: string) => {
-    if (categoryName === 'Festivals') {
-      router.push('/festivals');
-      return;
-    }
-    router.push({
-      pathname: '/(tabs)/home',
-      params: { category: categoryName },
-    });
-  };
+  const openSite = (site: Site) =>
+    router.push({ pathname: '/site-details', params: { id: site.id } });
 
   return (
     <View style={styles.container}>
@@ -56,28 +47,26 @@ export default function Explore() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        <Text style={styles.sectionTitle}>Browse by category</Text>
-        <View style={styles.grid}>
-          {exploreCategories.map((cat) => {
-            const count = getCount(cat.name);
-            return (
-              <TouchableOpacity
-                key={cat.id}
-                style={styles.categoryCard}
-                activeOpacity={0.85}
-                onPress={() => openCategory(cat.name)}
-              >
-                <View style={styles.categoryIcon}>
-                  <Ionicons name={cat.icon} size={24} color={Colors.forest} />
-                </View>
-                <Text style={styles.categoryName}>{cat.name}</Text>
-                <Text style={styles.categoryCount}>
-                  {count} {count === 1 ? 'place' : 'places'}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
+        <SearchBar
+          value={search}
+          onChangeText={setSearch}
+          placeholder="Search destinations or regions..."
+        />
+
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.categoriesRow}
+        >
+          {categories.map((category) => (
+            <Chip
+              key={category}
+              label={category}
+              selected={selectedCategory === category}
+              onPress={() => setSelectedCategory(category)}
+            />
+          ))}
+        </ScrollView>
 
         <Text style={styles.sectionTitle}>Browse by region</Text>
         <View style={styles.regionsList}>
@@ -88,15 +77,15 @@ export default function Explore() {
               accessibilityRole="button"
               accessibilityLabel={`Explore destinations in ${region.name}`}
               onPress={() =>
-                router.push({
-                  pathname: '/(tabs)/home',
-                  params: { region: region.name },
-                })
+                setSelectedRegion((current) => current === region.name ? '' : region.name)
               }
             >
               <ImageBackground
                 source={{ uri: region.image }}
-                style={styles.regionCard}
+                style={[
+                  styles.regionCard,
+                  selectedRegion === region.name && styles.regionCardSelected,
+                ]}
                 imageStyle={styles.regionImage}
               >
                 <View style={styles.regionOverlay} />
@@ -105,12 +94,72 @@ export default function Explore() {
                   <Text style={styles.regionSites}>{region.sitesCount} tourist sites</Text>
                 </View>
                 <View style={styles.regionArrow}>
-                  <Ionicons name="arrow-forward" size={18} color={Colors.forestDark} />
+                  <Ionicons
+                    name={selectedRegion === region.name ? 'checkmark' : 'arrow-forward'}
+                    size={18}
+                    color={Colors.forestDark}
+                  />
                 </View>
               </ImageBackground>
             </TouchableOpacity>
           ))}
         </View>
+
+        <View style={styles.destinationsHeader}>
+          <View>
+            <Text style={styles.sectionTitleInline}>Destinations</Text>
+            <Text style={styles.destinationCount}>
+              {filteredSites.length} place{filteredSites.length === 1 ? '' : 's'} to discover
+            </Text>
+          </View>
+          {selectedRegion ? (
+            <TouchableOpacity
+              style={styles.clearRegion}
+              onPress={() => setSelectedRegion('')}
+            >
+              <Text style={styles.clearRegionText}>Clear region</Text>
+              <Ionicons name="close" size={15} color={Colors.forest} />
+            </TouchableOpacity>
+          ) : null}
+        </View>
+
+        {filteredSites.length === 0 ? (
+          <EmptyState
+            icon="map-outline"
+            title="No destinations found"
+            message="Try another category, region or search."
+          />
+        ) : (
+          <View style={styles.destinationsList}>
+            {filteredSites.map((site) => (
+              <TouchableOpacity
+                key={site.id}
+                style={styles.destinationCard}
+                activeOpacity={0.9}
+                onPress={() => openSite(site)}
+              >
+                <Image source={{ uri: site.image }} style={styles.destinationImage} />
+                <View style={styles.destinationBody}>
+                  <View style={styles.destinationTop}>
+                    <Text style={styles.destinationName} numberOfLines={1}>{site.name}</Text>
+                    <View style={styles.rating}>
+                      <Ionicons name="star" size={13} color={Colors.gold} />
+                      <Text style={styles.ratingText}>{site.rating}</Text>
+                    </View>
+                  </View>
+                  <View style={styles.destinationMeta}>
+                    <Ionicons name="location-outline" size={14} color={Colors.forest} />
+                    <Text style={styles.destinationRegion}>{site.region}</Text>
+                  </View>
+                  <View style={styles.categoryBadge}>
+                    <Text style={styles.categoryBadgeText}>{site.category}</Text>
+                  </View>
+                </View>
+                <Ionicons name="chevron-forward" size={19} color={Colors.slate} />
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
 
       </ScrollView>
     </View>
@@ -124,24 +173,45 @@ const styles = StyleSheet.create({
   headerTitle: { fontSize: 28, fontWeight: '800', color: Colors.ink },
   headerSubtitle: { fontSize: 13, color: Colors.slate, marginTop: 4 },
   scrollContent: { paddingBottom: 108 },
+  categoriesRow: { paddingHorizontal: 16, gap: 8, paddingTop: 4 },
   sectionTitle: { fontSize: 19, fontWeight: '800', color: Colors.ink, marginHorizontal: 16, marginTop: 24, marginBottom: 14 },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 16, gap: 10 },
-  categoryCard: {
-    backgroundColor: Colors.white, borderRadius: Radius.lg, paddingVertical: 17, alignItems: 'center',
-    width: '31%', borderWidth: 1, borderColor: Colors.line,
-  },
-  categoryIcon: {
-    width: 48, height: 48, borderRadius: 17, backgroundColor: Colors.forestSoft,
-    alignItems: 'center', justifyContent: 'center', marginBottom: 8,
-  },
-  categoryName: { fontSize: 13, fontWeight: '800', color: Colors.ink, marginBottom: 2 },
-  categoryCount: { fontSize: 11, color: Colors.slate },
   regionsList: { paddingHorizontal: 16, gap: 12 },
   regionCard: { height: 156, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', padding: 18 },
+  regionCardSelected: { borderWidth: 3, borderColor: Colors.gold, borderRadius: Radius.lg },
   regionImage: { borderRadius: Radius.lg },
   regionOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: Colors.overlay, borderRadius: Radius.lg },
   regionInfo: {},
   regionName: { fontSize: 20, fontWeight: '800', color: Colors.white, marginBottom: 3 },
   regionSites: { fontSize: 12, color: Colors.gold, fontWeight: '600' },
   regionArrow: { width: 36, height: 36, borderRadius: 18, backgroundColor: Colors.gold, alignItems: 'center', justifyContent: 'center' },
+  destinationsHeader: {
+    marginTop: 28, marginBottom: 14, paddingHorizontal: 16,
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+  },
+  sectionTitleInline: { fontSize: 21, fontWeight: '800', color: Colors.ink },
+  destinationCount: { fontSize: 12, color: Colors.slate, marginTop: 3 },
+  clearRegion: {
+    flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: Colors.forestSoft,
+    borderRadius: Radius.pill, paddingVertical: 7, paddingHorizontal: 10,
+  },
+  clearRegionText: { color: Colors.forest, fontSize: 11, fontWeight: '800' },
+  destinationsList: { paddingHorizontal: 16, gap: 12 },
+  destinationCard: {
+    minHeight: 116, backgroundColor: Colors.white, borderRadius: Radius.lg,
+    flexDirection: 'row', alignItems: 'center', padding: 10, gap: 12,
+    borderWidth: 1, borderColor: Colors.line, ...Shadow.card,
+  },
+  destinationImage: { width: 102, height: 96, borderRadius: Radius.md, backgroundColor: Colors.line },
+  destinationBody: { flex: 1 },
+  destinationTop: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  destinationName: { flex: 1, fontSize: 15, fontWeight: '800', color: Colors.ink },
+  rating: { flexDirection: 'row', alignItems: 'center', gap: 3 },
+  ratingText: { fontSize: 12, fontWeight: '800', color: Colors.ink },
+  destinationMeta: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 7 },
+  destinationRegion: { fontSize: 12, color: Colors.slate },
+  categoryBadge: {
+    alignSelf: 'flex-start', marginTop: 9, backgroundColor: Colors.forestSoft,
+    paddingVertical: 4, paddingHorizontal: 9, borderRadius: Radius.pill,
+  },
+  categoryBadgeText: { color: Colors.forest, fontSize: 10, fontWeight: '800' },
 });
