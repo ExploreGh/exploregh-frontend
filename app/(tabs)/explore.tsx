@@ -17,7 +17,7 @@ import { categories, regions, sites, Site } from '@/data/mockData';
 export default function Explore() {
   const router = useRouter();
   const [search, setSearch] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedRegion, setSelectedRegion] = useState('');
 
   const filteredSites = sites.filter((site) => {
@@ -27,7 +27,7 @@ export default function Explore() {
       site.name.toLowerCase().includes(query) ||
       site.region.toLowerCase().includes(query) ||
       site.category.toLowerCase().includes(query);
-    const matchesCategory = selectedCategory === 'All' || site.category === selectedCategory;
+    const matchesCategory = !selectedCategory || site.category === selectedCategory;
     const matchesRegion = !selectedRegion || site.region === selectedRegion;
     return matchesSearch && matchesCategory && matchesRegion;
   });
@@ -58,7 +58,7 @@ export default function Explore() {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.categoriesRow}
         >
-          {categories.map((category) => (
+          {categories.filter((category) => category !== 'All').map((category) => (
             <Chip
               key={category}
               label={category}
@@ -103,6 +103,39 @@ export default function Explore() {
               </ImageBackground>
             </TouchableOpacity>
           ))}
+
+          <TouchableOpacity
+            activeOpacity={0.9}
+            accessibilityRole="button"
+            accessibilityLabel="Show all destinations in Ghana"
+            onPress={() => {
+              setSelectedRegion('');
+              setSelectedCategory('');
+              setSearch('');
+            }}
+          >
+            <ImageBackground
+              source={{ uri: sites[0].image }}
+              style={[
+                styles.regionCard,
+                !selectedRegion && !selectedCategory && !search && styles.regionCardSelected,
+              ]}
+              imageStyle={styles.regionImage}
+            >
+              <View style={styles.regionOverlay} />
+              <View style={styles.regionInfo}>
+                <Text style={styles.regionName}>All Destinations</Text>
+                <Text style={styles.regionSites}>{sites.length} places across Ghana</Text>
+              </View>
+              <View style={styles.regionArrow}>
+                <Ionicons
+                  name={!selectedRegion && !selectedCategory && !search ? 'checkmark' : 'grid-outline'}
+                  size={18}
+                  color={Colors.forestDark}
+                />
+              </View>
+            </ImageBackground>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.destinationsHeader}>
